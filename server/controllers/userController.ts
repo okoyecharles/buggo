@@ -1,11 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '../models/userModel';
+import User, { UserType } from '../models/userModel';
+import { Request, Response } from 'express';
 
 const secret = process.env.JWT_SECRET || '';
 const tokenExpiration = process.env.NODE_ENV === 'development' ? '1d' : '1hr';
 
-export const register = async (req: any, res: any) => {
+export const register = async (req: Request<never, never, UserType>, res: Response) => {
   const { name, image, email, password } = req.body;
 
   try {
@@ -31,7 +32,7 @@ export const register = async (req: any, res: any) => {
   }
 };
 
-export const login = async (req: any, res: any) => {
+export const login = async (req: Request<never, never, UserType>, res: Response) => {
   const { email, password } = req.body;
 
   try {
