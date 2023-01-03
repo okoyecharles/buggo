@@ -53,3 +53,30 @@ export const getProjectById = async (req: Request, res: Response) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+/*
+* @route   PUT /projects/:id
+* @desc    Update a project by id
+* @access  Private
+*/
+export const updateProject = async (req: AuthorizedRequest<ProjectType>, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { title } = req.body;
+    const project = await Project
+      .findById(id)
+      .populate('author', 'name');
+    
+    if (project?.author.id !== req.user) {
+      return res.status(401).json({ message: 'User not authorized' })
+    }
+
+    if (project) {
+      project.title = title;
+      const updatedProject = await project.save();
+      res.status(200).json({ project: updatedProject });
+    }
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
