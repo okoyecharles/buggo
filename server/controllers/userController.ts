@@ -6,6 +6,11 @@ import { Request, Response } from 'express';
 const secret = process.env.JWT_SECRET || '';
 const tokenExpiration = process.env.NODE_ENV === 'development' ? '1d' : '1hr';
 
+/*
+* @route   POST /users
+* @desc    Register a new user
+* @access  Public
+*/
 export const register = async (req: Request<never, never, UserType>, res: Response) => {
   const { name, image, email, password } = req.body;
 
@@ -32,6 +37,11 @@ export const register = async (req: Request<never, never, UserType>, res: Respon
   }
 };
 
+/*
+* @route   POST /users/login
+* @desc    Login a user
+* @access  Public
+*/
 export const login = async (req: Request<never, never, UserType>, res: Response) => {
   const { email, password } = req.body;
 
@@ -53,6 +63,9 @@ export const login = async (req: Request<never, never, UserType>, res: Response)
   }
 }
 
+/*
+* @desc    Genrate a token based on user id
+*/
 const generateToken = (id: any) => {
   const token = jwt.sign({ id }, secret, {
     expiresIn: tokenExpiration

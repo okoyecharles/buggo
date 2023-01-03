@@ -1,9 +1,10 @@
 import { NextFunction, Response } from "express";
 import AuthorizedRequest from '../types/request';
 import jwt from 'jsonwebtoken';
+import User from "../models/userModel";
 
 const secret = process.env.JWT_SECRET || '';
-const protect = (req: AuthorizedRequest<any>, res: Response, next: NextFunction) => {
+const protect = async (req: AuthorizedRequest<any>, res: Response, next: NextFunction) => {
   const requestToken = req.headers.authorization;
   let token = '';
 
@@ -12,6 +13,7 @@ const protect = (req: AuthorizedRequest<any>, res: Response, next: NextFunction)
       token = requestToken.split(' ')[1];
 
       const decoded: any = jwt.verify(token, secret);
+
       req.user = decoded.id;
 
       next();
