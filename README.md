@@ -1,0 +1,1 @@
+![ERD diagram](assets/ERD.png)
