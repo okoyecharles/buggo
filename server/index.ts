@@ -4,7 +4,9 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import morgan from 'morgan';
+
 import userRouter from './routes/userRoutes';
+import projectRouter from './routes/projectRoutes';
 
 const app = express();
 
@@ -18,6 +20,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/users', userRouter);
+app.use('/projects', projectRouter);
 
 const PORT = process.env.PORT || 8080;
 const CONNECTION_URI = process.env.MONGO_URI || '';
