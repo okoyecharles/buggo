@@ -80,3 +80,28 @@ export const updateProject = async (req: AuthorizedRequest<ProjectType>, res: Re
     res.status(400).json({ message: error.message });
   }
 };
+
+/*
+* @route   DELETE /projects/:id
+* @desc    Delete a project by id
+* @access  Private
+*/
+export const deleteProject = async (req: AuthorizedRequest<ProjectType>, res: Response) => {
+  try {
+    const { id } = req.params;
+    const project = await Project
+      .findById(id)
+      .populate('author', 'name');
+    
+    if (project?.author.id !== req.user) {
+      return res.status(401).json({ message: 'User not authorized' })
+    }
+
+    if (project) {
+      await project.delete();
+      res.status(200).json({ message: 'Project removed' });
+    }
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
