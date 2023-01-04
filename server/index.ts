@@ -7,6 +7,7 @@ import morgan from 'morgan';
 
 import userRouter from './routes/userRoutes';
 import projectRouter from './routes/projectRoutes';
+import ticketRouter from './routes/ticketRoutes';
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
 
 app.use('/users', userRouter);
 app.use('/projects', projectRouter);
+app.use('/tickets', ticketRouter);
 
 const PORT = process.env.PORT || 8080;
 const CONNECTION_URI = process.env.MONGO_URI || '';
