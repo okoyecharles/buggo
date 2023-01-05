@@ -1,127 +1,170 @@
-import React, { FormEvent, useEffect, useState } from 'react';
-import Link from 'next/link';
-import store, { storeType } from '../redux/configureStore';
-import { useSelector } from 'react-redux';
-import { login } from '../redux/actions/userActions';
-import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
-// import { validateEmail, validatePassword } from '../components/validation';
-// import InlineError from '../components/InlineError';
-// import Loader from '../components/Loader';
+import React, { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
+import { useSpring, a } from "@react-spring/web";
+import Loader from "../components/Loader";
+import { validateEmail, validatePassword } from "../utils/formValidation";
+import { useSelector } from "react-redux";
+import store, { storeType } from "../redux/configureStore";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
+import { login } from "../redux/actions/userActions";
 
 const Login = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  // const [emailError, setEmailError] = useState('');
-  // const [passwordError, setPasswordError] = useState('');
-  // const [submit, setSubmit] = useState(false);
-  // const [valid, setValid] = useState(false);
-  const userLogin = useSelector((store: storeType) => store.login);
-  const { loading, error, userInfo } = userLogin;
   const router = useRouter();
 
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [processing, setProcessing] = useState<boolean>(false);
+
+  const [emailError, setEmailError] = useState<null | string>(null);
+  const [passwordError, setPasswordError] = useState<null | string>(null);
+
+  const loginStore = useSelector((store: storeType) => store.login);
+  const currentUser = useSelector((store: storeType) => store.currentUser);
+
+  const [springs, api] = useSpring(() => ({
+    opacity: 0.5,
+    y: -60,
+    rotateX: 45,
+  }));
+
   useEffect(() => {
-    // validateEmail({ email, setEmailError });
-    // validatePassword({ password, setPasswordError });
-    // if (emailError || passwordError || !email || !password) {
-    //   setValid(false);
-    // } else {
-    //   setValid(true);
-    // }
-    if (userInfo) {
-      router.push('/');
+    api.start({
+      opacity: 1,
+      y: 0,
+      rotateX: 0,
+      config: {
+        tension: 200,
+        friction: 15,
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    setProcessing(loginStore.loading);
+    if (loginStore.error) {
+      toast.error(loginStore.error.message);
     }
-  }, [userInfo]);
-  // [emailError, passwordError, userInfo, navigate, email, password];
+    if (currentUser.user) {
+      router.replace("/");
+      toast.success('Logged In successfully');
+    }
+  }, [loginStore, currentUser]);
+
+  const throwError = (error: string | null, type: string) => {
+    if (error) setProcessing(false);
+
+    // Throw error
+    if (type === "email") {
+      setEmailError(error);
+    } else if (type === "password") {
+      setPasswordError(error);
+    }
+  };
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    // if(valid) {
-    //  store.dispatch(login(email, password));
-    // }
+    setEmailError(null);
+    setPasswordError(null);
+    setProcessing(true);
+
+    // Validate email
+    let emailValidationError = validateEmail(email);
+    throwError(emailValidationError, "email");
+
+    // Validate password
+    let passwordValidationError = validatePassword(password);
+    throwError(passwordValidationError, "password");
+
+    // If errors exist, return
+    if (emailValidationError || passwordValidationError) return;
+
+    // If no errors, send request to server
     store.dispatch(login(email, password));
-    toast.success('Logged In successful');
-    // else{
-    toast.error(userLogin.error?.message);
-    // }
   };
 
   return (
-    <div>
-      {loading && <Loader />}
-      <section className="bg-gray-50 dark:bg-gray-900">
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-          <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-            <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-              <h2 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                Sign in to your account
-              </h2>
-              <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    className={`shadow appearance-none border rounded 
-            w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline
-                ${submit && !email ? 'border-red-500 border-2' : ''}
-            `}
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  {/* {emailError && <InlineError error={emailError} />} */}
-                </div>
-                <div>
-                  <label
-                    htmlFor="password"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    placeholder="••••••••"
-                    className={`shadow appearance-none border rounded 
-            w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline
-            ${submited && !password ? 'border-red-500 border-2' : ''}
-            `}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  {passwordError && password && (
-                    <InlineError error={passwordError} />
-                  )}
-                </div>
-                <button
-                  type="submit"
-                  className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                  onClick={error && notify()}
-                >
-                  Sign in
-                </button>
-                <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                  Don’t have an account yet?{' '}
-                  <Link
-                    href="/register"
-                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                  >
-                    Sign up
-                  </Link>
-                </p>
-              </form>
-            </div>
-          </div>
+    <div className="bg-gray-900 form__container w-screen h-screen flex justify-center items-center sm:p-4">
+      <a.form
+        onSubmit={handleSubmit}
+        className="bg-gray-800 w-screen h-screen text-gray-300 font-noto flex flex-col p-6 sm:h-auto sm:rounded max-w-[450px] sm:shadow-lg"
+        style={springs}
+      >
+        <h2 className="text-gray-100 text-xl font-semibold self-center mb-2">
+          Welcome back!
+        </h2>
+        <span className="self-center text-ss">
+          We're so excited to see you again!
+        </span>
+
+        <div className="flex flex-col mt-4">
+          <label
+            htmlFor="email"
+            className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
+              emailError && "text-red-300"
+            }`}
+          >
+            Email {emailError && <span className="text-red-300"> - </span>}
+            <span className="capitalize font-normal italic text-red-300">
+              {emailError ? (
+                `${emailError}`
+              ) : (
+                <span className="text-red-500">*</span>
+              )}
+            </span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email address"
+            className="p-3 text-ss bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
         </div>
-      </section>
+
+        <div className="flex flex-col mt-4">
+          <label
+            htmlFor="password"
+            className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
+              passwordError && "text-red-300"
+            }`}
+          >
+            Password {passwordError && <span className="text-red-300">-</span>}
+            <span className="capitalize font-normal italic text-red-300">
+              {passwordError ? (
+                `${passwordError}`
+              ) : (
+                <span className="text-red-500">*</span>
+              )}
+            </span>
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            className="p-3 text-ss bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+        </div>
+
+        <button
+          className="font-open font-semibold p-3 text-ss mt-6 bg-blue-600 text-white rounded hover:bg-blue-700 hover:text-blue-100 disabled:opacity-80 disabled:cursor-not-allowed  transition flex justify-center"
+          disabled={processing}
+        >
+          {processing ? <Loader /> : "Log In"}
+        </button>
+
+        <p className="text-ss text-gray-400 mt-4">
+          Need an account?{" "}
+          <Link href="/register" className="text-blue-500 hover:underline">
+            Register
+          </Link>
+        </p>
+      </a.form>
     </div>
   );
 };

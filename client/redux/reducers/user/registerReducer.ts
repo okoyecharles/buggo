@@ -3,13 +3,11 @@ import { ActionType } from '../../types';
 
 type State = {
   loading: boolean;
-  userInfo: null;
   error: null | { message: string };
 };
 const initialState = {
   loading: false,
   error: null,
-  userInfo: null,
 };
 
 const registerReducer = (
@@ -19,9 +17,7 @@ const registerReducer = (
   const { type, payload } = action;
   switch (type) {
     case types.USER_REGISTER_REQUEST:
-      return { ...state, loading: true };
-    case types.USER_REGISTER_SUCCESS:
-      return { error: null, userInfo: payload, loading: false };
+      return { ...state, loading: true, error: null };
     case types.USER_REGISTER_FAIL:
       return { ...state, loading: false, error: payload };
     default:
