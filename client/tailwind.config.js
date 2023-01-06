@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  mode: 'jit',
   content: [
     './pages/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
@@ -38,6 +39,7 @@ module.exports = {
           '700': '#53585f',
           '800': '#3b3f44',
           '900': '#242629',
+          '950': '#1a1c1f',
         },
         'blue': {
           '100': '#e6f5ff',

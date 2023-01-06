@@ -5,6 +5,7 @@ import store, { storeType } from '../redux/configureStore';
 import { fetchProjects } from '../redux/actions/projectActions';
 import { useRouter } from 'next/router';
 import { fetchTickets } from '../redux/actions/ticketActions';
+import Layout from '../components/Layout';
 
 export default function Home() {
   const router = useRouter();
@@ -29,9 +30,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className='p-8 text-gray-300'>
-        <h1 className='text-2xl text-blue-500 font-bold font-open'>Bug tracker</h1>
-      </main>
+      <Layout />
     </>
   );
 }
