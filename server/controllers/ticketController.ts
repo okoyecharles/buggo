@@ -19,6 +19,30 @@ export const getUserTickets = async (req: AuthorizedRequest<TicketType>, res: Re
 }
 
 /*
+* @route    GET /tickets/:id
+* @desc     Get a ticket by id
+* @access   Private
+*/
+export const getTicketById = async (req: AuthorizedRequest<TicketType>, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Get a ticket by id and populate the author and comments (with comments author)
+    const ticket = await Ticket.findById(id).populate('author', 'name').populate({
+      path: 'comments',
+      populate: {
+        path: 'author',
+        select: 'name image email'
+      }
+    });
+
+    res.status(200).json({ ticket });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+/*
 * @route    PUT /tickets/:id
 * @desc     Update a ticket by id
 * @access   Private
