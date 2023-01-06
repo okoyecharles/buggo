@@ -1,16 +1,6 @@
 import { ActionType } from "../../types";
 import { TICKET_LIST_FAIL, TICKET_LIST_REQUEST, TICKET_LIST_SUCCESS } from "../../constants/ticketConstants";
-
-type Ticket = {
-  _id: string;
-  title: string;
-  description: string; 
-  status: string;
-  priority: string;
-  type: string;
-  time_estimate: number;
-  project: string;
-};
+import Ticket from "./types";
 
 interface TicketsState {
   tickets: Ticket[];

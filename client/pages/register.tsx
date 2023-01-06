@@ -13,8 +13,9 @@ import store, { storeType } from "../redux/configureStore";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { register } from "../redux/actions/userActions";
-import FileBase from "react-file-base64";
 import Head from "next/head";
+import Compressor from "compressorjs";
+import { toBase64 } from "../utils/imageHelper";
 
 const Register = () => {
   const router = useRouter();
@@ -22,7 +23,8 @@ const Register = () => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [image, setImage] = useState<string>("");
+  const [image, setImage] = useState<File | Blob | null>(null);
+  const [base64Image, setBase64Image] = useState<string>("");
   const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
 
   const [nameError, setNameError] = useState<null | string>(null);
@@ -80,7 +82,7 @@ const Register = () => {
     }
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setNameError(null);
     setEmailError(null);
@@ -108,16 +110,32 @@ const Register = () => {
     throwError(passwordConfirmationValidationError, "passwordConfirmation");
 
     // If errors exist, return
-    if (emailValidationError || passwordValidationError) return;
+    if (
+      emailValidationError ||
+      passwordValidationError ||
+      passwordConfirmationValidationError ||
+      nameError ||
+      !image
+    )
+      return;
 
-    if (!image)
-      setImage(
-        "https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
-      );
-    const formData = { name, email, password, image };
-    // If no errors, send request to server
+    const formData = { name, email, password, image: base64Image };
     store.dispatch(register(formData));
   };
+
+  useEffect(() => {
+    async function convertImage() {
+      // Convert image to base64
+      if (image) {
+        console.log("converting image to base64");
+        const imageFile = await toBase64(image as File | Blob);
+        setBase64Image(imageFile as string);
+      } else {
+        setBase64Image("");
+      }
+    }
+    convertImage();
+  }, [image]);
 
   return (
     <>
@@ -247,14 +265,29 @@ const Register = () => {
             >
               Profile Image
             </label>
-            <FileBase
-              required
+            <input
+              type="file"
               id="avatar"
               name="avatar"
-              type="file"
-              multiple={false}
-              value={image}
-              onDone={({ base64 }: any) => setImage(base64 ? base64 : image)}
+              accept="image/*"
+              onChange={(event) => {
+                if (event.target.files?.length) {
+                  // Compress image
+                  new Compressor(event.target.files[0], {
+                    checkOrientation: true,
+                    strict: true,
+                    convertSize: 5000000,
+                    maxWidth: 200,
+                    quality: 0.8,
+                    success(result) {
+                      console.log("compressed image", result.size);
+                      setImage(result);
+                    },
+                  });
+                } else {
+                  setImage(null);
+                }
+              }}
             />
           </div>
 

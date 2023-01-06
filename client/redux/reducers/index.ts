@@ -5,6 +5,7 @@ import currentUserReducer from './user/currentUser';
 import projectsReducer from './projects/projectsReducer';
 import ticketsReducer from './tickets/ticketsReducer';
 import projectReducer from './projects/projectReducer';
+import ticketReducer from './tickets/ticketReducer';
 
 const rootReducer = combineReducers({
   login: loginReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
   currentUser: currentUserReducer,
   projects: projectsReducer,
   project: projectReducer,
-  tickets: ticketsReducer
+  tickets: ticketsReducer,
+  ticket: ticketReducer,
 });
 
 export default rootReducer;
