@@ -8,6 +8,7 @@ import store, { storeType } from "../redux/configureStore";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { login } from "../redux/actions/userActions";
+import Head from "next/head";
 
 const Login = () => {
   const router = useRouter();
@@ -45,9 +46,9 @@ const Login = () => {
     if (loginStore.error) {
       toast.error(loginStore.error.message);
     }
-    if (currentUser.user) {
+    if (currentUser?.user) {
       router.replace("/");
-      toast.success('Logged In successfully');
+      toast.success("Logged In successfully");
     }
   }, [loginStore, currentUser]);
 
@@ -84,88 +85,96 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-gray-900 form__container w-screen h-screen flex justify-center items-center sm:p-4">
-      <a.form
-        onSubmit={handleSubmit}
-        className="bg-gray-800 w-screen h-screen text-gray-300 font-noto flex flex-col p-6 sm:h-auto sm:rounded max-w-[450px] sm:shadow-lg"
-        style={springs}
-      >
-        <h2 className="text-gray-100 text-xl font-semibold self-center mb-2">
-          Welcome back!
-        </h2>
-        <span className="self-center text-ss">
-          We're so excited to see you again!
-        </span>
-
-        <div className="flex flex-col mt-4">
-          <label
-            htmlFor="email"
-            className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
-              emailError && "text-red-300"
-            }`}
-          >
-            Email {emailError && <span className="text-red-300"> - </span>}
-            <span className="capitalize font-normal italic text-red-300">
-              {emailError ? (
-                `${emailError}`
-              ) : (
-                <span className="text-red-500">*</span>
-              )}
-            </span>
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Enter your email address"
-            className="p-3 text-ss bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </div>
-
-        <div className="flex flex-col mt-4">
-          <label
-            htmlFor="password"
-            className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
-              passwordError && "text-red-300"
-            }`}
-          >
-            Password {passwordError && <span className="text-red-300">-</span>}
-            <span className="capitalize font-normal italic text-red-300">
-              {passwordError ? (
-                `${passwordError}`
-              ) : (
-                <span className="text-red-500">*</span>
-              )}
-            </span>
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Enter your password"
-            className="p-3 text-ss bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </div>
-
-        <button
-          className="font-open font-semibold p-3 text-ss mt-6 bg-blue-600 text-white rounded hover:bg-blue-700 hover:text-blue-100 disabled:opacity-80 disabled:cursor-not-allowed  transition flex justify-center"
-          disabled={processing}
+    <>
+      <Head>
+        <title>Login</title>
+      </Head>
+      <div className="bg-gray-900 form__container w-screen h-screen flex justify-center items-center sm:p-4">
+        <a.form
+          onSubmit={handleSubmit}
+          className="bg-gray-800 w-screen h-screen text-gray-300 font-noto flex flex-col p-6 sm:h-auto sm:rounded sm:max-w-[450px] sm:shadow-lg"
+          style={springs}
         >
-          {processing ? <Loader /> : "Log In"}
-        </button>
+          <h2 className="text-gray-100 text-xl font-semibold self-center mb-2">
+            Welcome back!
+          </h2>
+          <span className="self-center text-ss">
+            {router.query.redirect
+              ? "Please login to continue"
+              : "We're so excited to see you again!"}
+          </span>
 
-        <p className="text-ss text-gray-400 mt-4">
-          Need an account?{" "}
-          <Link href="/register" className="text-blue-500 hover:underline">
-            Register
-          </Link>
-        </p>
-      </a.form>
-    </div>
+          <div className="flex flex-col mt-4">
+            <label
+              htmlFor="email"
+              className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
+                emailError && "text-red-300"
+              }`}
+            >
+              Email {emailError && <span className="text-red-300"> - </span>}
+              <span className="capitalize font-normal italic text-red-300">
+                {emailError ? (
+                  `${emailError}`
+                ) : (
+                  <span className="text-red-500">*</span>
+                )}
+              </span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email address"
+              className="p-3 text-ss bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+          </div>
+
+          <div className="flex flex-col mt-4">
+            <label
+              htmlFor="password"
+              className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
+                passwordError && "text-red-300"
+              }`}
+            >
+              Password{" "}
+              {passwordError && <span className="text-red-300">-</span>}
+              <span className="capitalize font-normal italic text-red-300">
+                {passwordError ? (
+                  `${passwordError}`
+                ) : (
+                  <span className="text-red-500">*</span>
+                )}
+              </span>
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              className="p-3 text-ss bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </div>
+
+          <button
+            className="font-open font-semibold p-3 text-ss mt-6 bg-blue-600 text-white rounded hover:bg-blue-700 hover:text-blue-100 disabled:opacity-80 disabled:cursor-not-allowed  transition flex justify-center"
+            disabled={processing}
+          >
+            {processing ? <Loader /> : "Log In"}
+          </button>
+
+          <p className="text-ss text-gray-400 mt-4">
+            Need an account?{" "}
+            <Link href="/register" className="text-blue-500 hover:underline">
+              Register
+            </Link>
+          </p>
+        </a.form>
+      </div>
+    </>
   );
 };
 

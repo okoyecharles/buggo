@@ -4,8 +4,8 @@ import { ActionType } from '../../types';
 type State = {
   user?: {},
   token?: string
-};
-const initialState = {};
+} | null;
+const initialState = null;
 
 const currentUserReducer = (
   state: State = initialState,
