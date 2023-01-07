@@ -20,6 +20,8 @@ const registerReducer = (
       return { ...state, loading: true, error: null };
     case types.USER_REGISTER_FAIL:
       return { ...state, loading: false, error: payload };
+    case types.USER_LOGOUT:
+      return initialState;
     default:
       return state;
   }

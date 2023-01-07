@@ -20,6 +20,8 @@ const loginReducer = (
       return { ...state, loading: true, error: null };
     case types.USER_LOGIN_FAIL:
       return { ...state, loading: false, error: payload };
+    case types.USER_LOGOUT:
+      return initialState;
     default:
       return state;
   }

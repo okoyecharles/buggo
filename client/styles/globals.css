@@ -45,6 +45,10 @@ input[type="file"]::-webkit-file-upload-button:hover {
   color: #e6f5ff;
 }
 
+b {
+  color: #2c2f32
+}
+
 input#file-upload-button {
   background: red !important;
 }
