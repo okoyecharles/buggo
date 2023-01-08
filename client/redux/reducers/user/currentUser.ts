@@ -1,14 +1,6 @@
 import * as types from '../../constants/userConstants';
 import { ActionType } from '../../types';
-
-interface User {
-  name: string;
-  image: string;
-  email: string;
-  password: string;
-  admin: boolean;
-  googleId?: string | undefined;
-};
+import User from './types';
 
 type State = {
   user: User,

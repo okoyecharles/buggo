@@ -9,7 +9,7 @@ const tickets = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <h1 className="m-4 text-gray-400 text-xl font-semibold font-open">
+      <h1 className="text-gray-400 text-xl font-semibold font-open">
         Tickets
       </h1>
     </>

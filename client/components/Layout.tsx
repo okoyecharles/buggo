@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { IoTicket } from "react-icons/io5";
 import { HiUsers } from "react-icons/hi";
 import { RiArrowRightSLine } from "react-icons/ri";
+import { BsFillPencilFill } from "react-icons/bs";
 import {
   MdOutlineArrowDropDown,
   MdLogout,
@@ -103,9 +104,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </header>
       <div className="flex-1 flex flex-col lg:flex-row-reverse lg:relative">
         <main
-          className={`-z-20 text-gray-200 flex-1 ${
-            expandNav ? "lg:pl-36" : "lg:pl-[60px]"
-          } transition`}
+          className={`text-gray-300 font-open flex-1 p-4 ${
+            expandNav ? "lg:ml-36" : "lg:ml-[60px]"
+          } transition-all`}
         >
           {children}
         </main>
@@ -184,7 +185,6 @@ const ProfileDropdown: React.FC<{ open: boolean; setOpen: any }> = ({
   open,
   setOpen,
 }) => {
-  const router = useRouter();
   const spring = useSpring({
     opacity: 0,
     y: -10,
@@ -203,7 +203,10 @@ const ProfileDropdown: React.FC<{ open: boolean; setOpen: any }> = ({
   return (
     <a.div
       className="absolute top-[calc(100%+1rem)] right-1 w-48 bg-gray-900 shadow-lg shadow-gray-950/40 rounded-md select-none isolate"
-      style={spring}
+      style={{
+        ...spring,
+        pointerEvents: open ? "all" : "none",
+      }}
     >
       <div
         className={
@@ -211,16 +214,26 @@ const ProfileDropdown: React.FC<{ open: boolean; setOpen: any }> = ({
         }
         onClick={() => setOpen(false)}
       />
-      <div className="flex flex-col gap-2 py-2 z-10">
+      <div className="flex flex-col gap-2 p-2 z-10">
         <button
-          className="py-2 px-4 group text-red-500 hover:bg-red-500 hover:text-red-50 flex justify-between items-center transition-colors"
+          className="p-2 group text-gray-300 hover:bg-blue-600 hover:text-blue-50 flex justify-between items-center transition-colors rounded"
+          onClick={() => {
+            toast.success("Profile edited successfully");
+          }}
+        >
+          Edit Profile
+          <BsFillPencilFill className="inline-block text-xl" />
+        </button>
+        <hr className="border-gray-800 w-10/12 self-center" />
+        <button
+          className="p-2 group text-red-500 hover:bg-red-500 hover:text-red-50 flex justify-between items-center transition-colors rounded"
           onClick={() => {
             toast.success("Logged out successfully");
             store.dispatch(logout());
           }}
         >
           Logout
-          <MdLogout className="inline-block text-xl" />
+          <MdLogout className="inline-block text-lg" />
         </button>
       </div>
     </a.div>

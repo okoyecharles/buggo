@@ -1,7 +1,10 @@
+import User from "../user/types";
+
 export type Project = {
   _id: string;
   title: string;
-  author: string;
-  team: [];
+  author: User;
+  team: User[];
   tickets: [];
+  createdAt: Date;
 };
