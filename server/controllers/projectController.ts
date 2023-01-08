@@ -107,7 +107,7 @@ export const deleteProject = async (req: AuthorizedRequest<ProjectType>, res: Re
     }
 
     if (project) {
-      await project.delete();
+      await project.remove();
       res.status(200).json({ message: 'Project removed' });
     }
   } catch (error: any) {

@@ -88,7 +88,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <MdOutlineArrowDropDown
               id="account-toggle"
               className={`text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none ${
-                openDropdown && "rotate-90 bg-gray-700 text-gray-200"
+                openDropdown && "rotate-180 bg-gray-700 text-gray-200"
               }`}
               onClick={() => setOpenDropdown((state) => !state)}
             />
@@ -121,7 +121,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {navLinks.map((link) => (
               <li
                 key={link.name}
-                className={` w-20 group hover:rounded active:bg-orange-700/90  hover:bg-orange-600/90 transition-all overflow-hidden ${
+                className={` w-20 items-center group hover:rounded active:bg-orange-700/90  hover:bg-orange-600/90 transition-all overflow-hidden ${
                   link.href === router.pathname
                     ? "bg-orange-600/90 rounded"
                     : "bg-gray-850 rounded-lg"
@@ -131,7 +131,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               >
                 <Link
                   href={link.href}
-                  className={`p-1 flex flex-col items-center lg:p-3 lg:justify-start lg:flex-row`}
+                  className={`p-1 flex flex-col justify-center items-center lg:p-3 lg:justify-start lg:flex-row`}
                 >
                   {link.icon(
                     `text-2xl group-hover:text-white transition ${
@@ -149,7 +149,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       expandNav ? "lg:opacity-100 lg:delay-75" : "lg:opacity-0"
                     } lg:w-0 lg:transition lg:uppercase lg:font-semibold`}
                   >
-                    &#160;&#160;{link.name}
+                    <span className="hidden lg:inline">&nbsp;&nbsp;</span>
+                    {link.name}
                   </span>
                 </Link>
               </li>

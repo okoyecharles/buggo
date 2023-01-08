@@ -1,4 +1,5 @@
 import mongoose, { InferSchemaType } from 'mongoose';
+import Comment from './commentModel';
 
 // Status: New | Open | In Progress | Resolved | Closed
 // Priority: Immediate | High | Medium | Low
@@ -17,6 +18,21 @@ const ticketSchema = new mongoose.Schema({
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
 }, {
   timestamps: true
+});
+
+// Delete associated comments when ticket is removed from db
+ticketSchema.pre("remove", { document: true }, async function (next) {
+  const ticket: any = this;
+  console.log('Deleting associated comments... for ticket: ', ticket.title);
+  await Comment.deleteMany({ ticket: ticket._id });
+  next();
+});
+
+ticketSchema.pre("deleteMany", async function (next) {
+  const ticket: any = this;
+  console.log('Deleting associated comments... for ticket: ', this.getQuery());
+  await Comment.deleteMany({ ticket: ticket._id });
+  next();
 });
 
 export type TicketType = InferSchemaType<typeof ticketSchema>;

@@ -96,7 +96,8 @@ export const createTicketComment = async (req: AuthorizedRequest<CommentType>, r
 
     const comment = await Comment.create({
       text,
-      author: commentAuthor
+      author: commentAuthor,
+      ticket: commentTicket?._id
     });
 
     // Add comment reference to the ticket
