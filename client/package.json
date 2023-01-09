@@ -25,6 +25,7 @@
     "react-google-login": "^5.2.2",
     "react-icons": "^4.7.1",
     "react-loader-spinner": "^5.3.4",
+    "react-paginate": "^8.1.4",
     "react-pluralize": "^1.6.3",
     "react-redux": "^8.0.5",
     "react-toastify": "^9.1.1",

@@ -75,7 +75,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               className="rounded-full h-10 w-10"
             />
             <div className="profile-info flex flex-col h-full justify-start">
-              <p className="text-sm font-bold">{currentUser?.user.name}</p>
+              <p className="text-sm font-bold">{currentUser?.user.name.split(' ')[0]}</p>
               <p
                 className={`text-xsm ${
                   currentUser?.user.admin
