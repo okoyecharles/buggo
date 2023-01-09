@@ -10,6 +10,10 @@
   --toastify-font-family: 'Open Sans' !important;
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 .Toastify__toast {
   box-shadow: 0 0 0 0.05rem #53585f !important;
 }

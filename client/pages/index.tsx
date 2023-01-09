@@ -10,6 +10,7 @@ import {
 } from "react-icons/bs";
 import ProjectCard from "../components/project/ProjectCard";
 import { Tooltip } from "react-tooltip";
+import ProjectsGrid from "../components/project/ProjectsGrid";
 
 export default function Home() {
   const currentUser = useSelector((store: storeType) => store.currentUser);
@@ -29,8 +30,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <header>
-        <h2 className="text-lg font-semibold text-gray-200">
-          {getGreeting()}, {currentUser?.user.name}!
+        <h2 className="text-xl font-semibold text-orange-400/90">
+          {getGreeting()}, <span className="text-gray-100">{currentUser?.user.name}!</span>
         </h2>
       </header>
       <section className="p-4 bg-gray-750 mt-2 rounded ring-1 ring-gray-700 lg:w-3/4">
@@ -43,11 +44,8 @@ export default function Home() {
           <Tooltip anchorId="create-project" content="Create Project" />
         </header>
 
-        <div className="project__container flex flex-col gap-2 mt-4">
-          {projects.projects?.map((project) => (
-            <ProjectCard key={project._id} project={project} />
-          ))}
-        </div>
+        <ProjectsGrid projects={projects.projects} />
+        
       </section>
     </>
   );
