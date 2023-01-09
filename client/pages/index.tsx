@@ -44,10 +44,10 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <header>
+      <header className="mb-4">
         <h2 className="text-xl font-semibold text-orange-400/90">
           {getGreeting()},{" "}
-          <span className="text-gray-100">{currentUser?.user.name}!</span>
+          <span className="text-gray-200 text-orange-400/90 whitespace-nowrap">{currentUser?.user.name}!</span>
         </h2>
       </header>
       <div className="projects lg:w-3/4 flex flex-col">
