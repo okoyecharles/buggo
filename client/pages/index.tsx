@@ -14,28 +14,12 @@ import { AiFillQuestionCircle } from "react-icons/ai";
 import ProjectSearch from "../components/project/ProjectSearch";
 import Loader from "../components/Loader";
 import { useSpring, a } from "@react-spring/web";
+import ProjectSection from "../components/project/ProjectSection";
 
 export default function Home() {
   const currentUser = useSelector((store: storeType) => store.currentUser);
   const projects = useSelector((store: storeType) => store.projects);
   const tickets = useSelector((store: storeType) => store.tickets);
-
-  const [projectsPerPage] = useState(3);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const indexOfLastProject = currentPage * projectsPerPage;
-  const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-  const currentProjects = projects.projects.slice(
-    indexOfFirstProject,
-    indexOfLastProject
-  );
-
-  const projectPageCount = Math.ceil(
-    projects.projects.length / projectsPerPage
-  );
-  const handleProjectPageChange = (data: any) => {
-    setCurrentPage(data.selected + 1);
-  };
 
   useEffect(() => {
     if (!projects.loading) store.dispatch(fetchProjects());
@@ -58,36 +42,7 @@ export default function Home() {
         </h2>
       </header>
       <div className="grid gap-16 xl:gap-4 xl:grid-cols-4">
-        <section className="projects flex flex-col xl:col-span-3">
-          <div className="p-4 bg-gray-750 relative mt-2 rounded ring-1 ring-gray-700">
-            <header className="flex gap-2 items-center">
-              <h3 className="text-white text-xl font-bold mr-auto">
-                Recent Projects
-              </h3>
-
-              <div className="hidden lg:block">
-                <ProjectSearch />
-              </div>
-
-              <button className="group cursor-pointer" id="create-project">
-                <BsPlusLg className="bg-gray-700 text-blue-400 group-hover:bg-blue-500 text-4xl p-3 rounded-full group-hover:text-white group-hover:rounded-xl group-active:bg-blue-600 transition" />
-              </button>
-              <Tooltip anchorId="create-project" content="Create Project" />
-            </header>
-            <div className="lg:hidden">
-              <ProjectSearch />
-            </div>
-            <ProjectsGrid projects={currentProjects} />
-          </div>
-          <Paginate
-            pageCount={projectPageCount}
-            handlePageChange={handleProjectPageChange}
-            indexOfFirstProject={indexOfFirstProject}
-            indexOfLastProject={indexOfLastProject}
-            totalItems={projects.projects.length}
-            itemName={"project"}
-          />
-        </section>
+        <ProjectSection projects={projects.projects} />
         <section className="ticketStats xl:col-span-1 bg-gray-850 rounded flex flex-col p-4">
           <header className="mb-4">
             <h3 className="text-xl font-bold text-white  flex items-center justify-between">
