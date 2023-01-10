@@ -7,6 +7,7 @@ import {
   ResponsiveContainer,
   Tooltip as ChartTooltip,
 } from 'recharts';
+import { off } from 'process';
 
 interface Props {
   tickets: Ticket[];
@@ -40,21 +41,21 @@ const renderCustomizedLabel: React.FC<any> = ({
   );
 };
 
-const TicketsByType: React.FC<Props> = ({ tickets }) => {
+const TicketsByStatus: React.FC<Props> = ({ tickets }) => {
   // Create an array of objects (ticketType: string, count: number) for each ticket type
   const [data, setData] = useState<any[]>([]);
   useEffect(() => {
     const ticketData: any[] = [];
     for (let i = 0; i < tickets.length; i++) {
-      const ticketType = tickets[i].type;
+      const ticketStatus = tickets[i].status;
 
-      const ticketTypeIndex = ticketData.findIndex(
-        (obj) => obj.name === ticketType
+      const ticketStatusIndex = ticketData.findIndex(
+        (obj) => obj.name === ticketStatus
       );
-      if (ticketTypeIndex === -1) {
-        ticketData.push({ name: ticketType, count: 1 });
+      if (ticketStatusIndex === -1) {
+        ticketData.push({ name: ticketStatus, count: 1 });
       } else {
-        ticketData[ticketTypeIndex].count++;
+        ticketData[ticketStatusIndex].count++;
       }
     }
     setData(ticketData);
@@ -62,9 +63,9 @@ const TicketsByType: React.FC<Props> = ({ tickets }) => {
 
   // Create a pie chart with the ticket type and count using recharts
   return (
-    <div className="flex flex-col ">
-      <h3>Tickets by type</h3>
-      <ResponsiveContainer width="100%">
+    <>
+      <h3>Tickets by Status</h3>
+      <ResponsiveContainer width="100%" height="100%">
         <PieChart width={400} height={400}>
           <Pie
             data={data}
@@ -86,8 +87,8 @@ const TicketsByType: React.FC<Props> = ({ tickets }) => {
           <ChartTooltip />
         </PieChart>
       </ResponsiveContainer>
-    </div>
+    </>
   );
 };
 
-export default TicketsByType;
+export default TicketsByStatus;
