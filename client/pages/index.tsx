@@ -1,17 +1,19 @@
-import Head from 'next/head';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import store, { storeType } from '../redux/configureStore';
-import { fetchProjects } from '../redux/actions/projectActions';
-import { fetchTickets } from '../redux/actions/ticketActions';
-import { getGreeting } from '../utils/InterfaceHelper';
-import { BsPlusLg } from 'react-icons/bs';
-import { Tooltip } from 'react-tooltip';
-import ProjectsGrid from '../components/project/ProjectsGrid';
-import Paginate from '../components/project/Paginate';
-import TicketStats from '../components/charts/Tickets/TicketStats';
-import { AiFillQuestionCircle } from 'react-icons/ai';
-import ProjectSearch from '../components/project/ProjectSearch';
+import Head from "next/head";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import store, { storeType } from "../redux/configureStore";
+import { fetchProjects } from "../redux/actions/projectActions";
+import { fetchTickets } from "../redux/actions/ticketActions";
+import { getGreeting } from "../utils/InterfaceHelper";
+import { BsPlusLg } from "react-icons/bs";
+import { Tooltip } from "react-tooltip";
+import ProjectsGrid from "../components/project/ProjectsGrid";
+import Paginate from "../components/project/Paginate";
+import TicketStats from "../components/charts/Tickets/TicketStats";
+import { AiFillQuestionCircle } from "react-icons/ai";
+import ProjectSearch from "../components/project/ProjectSearch";
+import Loader from "../components/Loader";
+import { useSpring, a } from "@react-spring/web";
 
 export default function Home() {
   const currentUser = useSelector((store: storeType) => store.currentUser);
@@ -49,7 +51,7 @@ export default function Home() {
       </Head>
       <header className="mb-4">
         <h2 className="text-xl font-semibold text-orange-400/90">
-          {getGreeting()},{' '}
+          {getGreeting()},{" "}
           <span className="text-gray-200 text-orange-400/90 whitespace-nowrap">
             {currentUser?.user.name}!
           </span>
@@ -57,7 +59,7 @@ export default function Home() {
       </header>
       <div className="grid gap-16 xl:gap-4 xl:grid-cols-4">
         <section className="projects flex flex-col xl:col-span-3">
-          <div className="p-4 bg-gray-750 mt-2 rounded ring-1 ring-gray-700">
+          <div className="p-4 bg-gray-750 relative overflow-hidden mt-2 rounded ring-1 ring-gray-700">
             <header className="flex gap-2 items-center">
               <h3 className="text-white text-xl font-bold mr-auto">
                 Recent Projects
@@ -83,13 +85,13 @@ export default function Home() {
             indexOfFirstProject={indexOfFirstProject}
             indexOfLastProject={indexOfLastProject}
             totalItems={projects.projects.length}
-            itemName={'project'}
+            itemName={"project"}
           />
         </section>
         <section className="ticketStats xl:col-span-1 bg-gray-850 rounded flex flex-col p-4">
           <header className="mb-4">
             <h3 className="text-xl font-bold text-white  flex items-center justify-between">
-              Ticket Stats{' '}
+              Ticket Stats{" "}
               <AiFillQuestionCircle
                 className="text-gray-500 hover:text-blue-600 text-2xl hover:scale-105 outline-none transition"
                 id="ticketStats__info"

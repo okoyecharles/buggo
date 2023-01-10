@@ -56,7 +56,7 @@ const TicketsByStatus: React.FC<Props> = ({ tickets }) => {
   }, [tickets]);
 
   return (
-    <div className="row-span-1 bg-gray-900 p-4 rounded shadow flex-1">
+    <>
       <h3 className="mb-2 font-bold text-gray-300 flex justify-between">
         Tickets by Status{" "}
         <AiFillInfoCircle
@@ -101,7 +101,7 @@ const TicketsByStatus: React.FC<Props> = ({ tickets }) => {
           />
         </PieChart>
       </div>
-    </div>
+    </>
   );
 };
 
