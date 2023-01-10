@@ -75,7 +75,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               className="rounded-full h-10 w-10"
             />
             <div className="profile-info flex flex-col h-full justify-start">
-              <p className="text-sm font-bold">{currentUser?.user.name}</p>
+              <p className="text-sm font-bold">{currentUser?.user.name.split(' ')[0]}</p>
               <p
                 className={`text-xsm ${
                   currentUser?.user.admin
@@ -202,7 +202,7 @@ const ProfileDropdown: React.FC<{ open: boolean; setOpen: any }> = ({
 
   return (
     <a.div
-      className="absolute top-[calc(100%+1rem)] right-1 w-48 bg-gray-900 shadow-lg shadow-gray-950/40 rounded-md select-none isolate"
+      className="absolute top-[calc(100%+1rem)] right-1 w-48 bg-gray-950 shadow-lg shadow-gray-950/50 rounded-md select-none isolate"
       style={{
         ...spring,
         pointerEvents: open ? "all" : "none",
@@ -214,19 +214,19 @@ const ProfileDropdown: React.FC<{ open: boolean; setOpen: any }> = ({
         }
         onClick={() => setOpen(false)}
       />
-      <div className="flex flex-col gap-2 p-2 z-10">
+      <div className="flex flex-col gap-2 p-2 z-10 text-ss">
         <button
-          className="p-2 group text-gray-300 hover:bg-blue-600 hover:text-blue-50 flex justify-between items-center transition-colors rounded"
+          className="p-2 group text-gray-300 hover:bg-blue-600 hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm"
           onClick={() => {
             toast.success("Profile edited successfully");
           }}
         >
           Edit Profile
-          <BsFillPencilFill className="inline-block text-xl" />
+          <BsFillPencilFill className="inline-block" />
         </button>
-        <hr className="border-gray-800 w-10/12 self-center" />
+        <hr className="border-gray-800 w-11/12 self-center" />
         <button
-          className="p-2 group text-red-500 hover:bg-red-500 hover:text-red-50 flex justify-between items-center transition-colors rounded"
+          className="p-2 group text-red-500 hover:bg-red-500 hover:text-red-50 flex justify-between items-center transition-colors rounded-sm"
           onClick={() => {
             toast.success("Logged out successfully");
             store.dispatch(logout());

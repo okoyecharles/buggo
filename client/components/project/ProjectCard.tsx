@@ -89,6 +89,7 @@ const ProjectCard: React.FC<projectProps> = ({ project }) => {
           <button
             id={`remove-self-${project._id}`}
             className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors"
+            tabIndex={-1}
           >
             <BsPersonDashFill />
           </button>
@@ -96,6 +97,7 @@ const ProjectCard: React.FC<projectProps> = ({ project }) => {
           <button
             id={`assign-self-${project._id}`}
             className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors"
+            tabIndex={-1}
           >
             <BsPersonPlusFill />
           </button>
@@ -106,6 +108,7 @@ const ProjectCard: React.FC<projectProps> = ({ project }) => {
             <button
               id={`assign-project-${project._id}`}
               className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors"
+              tabIndex={-1}
             >
               <BsFillPersonCheckFill />
             </button>
@@ -113,6 +116,7 @@ const ProjectCard: React.FC<projectProps> = ({ project }) => {
             <button
               id={`edit-project-${project._id}`}
               className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors"
+              tabIndex={-1}
             >
               <BsFillPencilFill />
             </button>
@@ -125,6 +129,7 @@ const ProjectCard: React.FC<projectProps> = ({ project }) => {
                       lg:hover:text-red-100 hover:text-orange-50
                       lg:text-red-500/90 text-orange-500 
                       aspect-square items-center justify-center transition-colors"
+              tabIndex={-1}
             >
               <BsFillTrashFill />
             </button>
