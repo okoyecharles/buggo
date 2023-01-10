@@ -30,6 +30,7 @@ const ProjectSearch = () => {
         onClick={() => {
           inputRef.current?.focus();
         }}
+        onMouseDown={(e) => e.preventDefault()}
       />
       <MdOutlineClose
         className={`close-icon text-xl text-gray-500 cursor-pointer absolute top-1/2 -translate-y-1/2 right-3 lg:right-2 hover:text-gray-400 transition ${
@@ -41,6 +42,7 @@ const ProjectSearch = () => {
           setSearch("");
           inputRef.current?.focus();
         }}
+        onMouseDown={(e) => e.preventDefault()}
       />
     </div>
   );

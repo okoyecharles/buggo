@@ -59,7 +59,7 @@ export default function Home() {
       </header>
       <div className="grid gap-16 xl:gap-4 xl:grid-cols-4">
         <section className="projects flex flex-col xl:col-span-3">
-          <div className="p-4 bg-gray-750 relative overflow-hidden mt-2 rounded ring-1 ring-gray-700">
+          <div className="p-4 bg-gray-750 relative mt-2 rounded ring-1 ring-gray-700">
             <header className="flex gap-2 items-center">
               <h3 className="text-white text-xl font-bold mr-auto">
                 Recent Projects
