@@ -9,6 +9,11 @@ import { BsPlusLg } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
 import ProjectsGrid from "../components/project/ProjectsGrid";
 import Paginate from "../components/project/Paginate";
+import TicketStats from "../components/charts/Tickets/TicketStats";
+import { AiFillInfoCircle } from "react-icons/ai";
+import { FaSearch } from "react-icons/fa";
+import { GrFormClose } from "react-icons/gr";
+import ProjectSearch from "../components/project/ProjectSearch";
 
 export default function Home() {
   const currentUser = useSelector((store: storeType) => store.currentUser);
@@ -47,29 +52,52 @@ export default function Home() {
       <header className="mb-4">
         <h2 className="text-xl font-semibold text-orange-400/90">
           {getGreeting()},{" "}
-          <span className="text-gray-200 text-orange-400/90 whitespace-nowrap">{currentUser?.user.name}!</span>
+          <span className="text-gray-200 text-orange-400/90 whitespace-nowrap">
+            {currentUser?.user.name}!
+          </span>
         </h2>
       </header>
-      <div className="projects lg:w-3/4 flex flex-col">
-        <section className="p-4 bg-gray-750 mt-2 rounded ring-1 ring-gray-700">
-          <header className="flex justify-between items-center">
-            <h3 className="text-white text-xl font-bold">Recent Projects</h3>
+      <div className="grid gap-4 xl:grid-cols-4">
+        <section className="projects flex flex-col xl:col-span-3">
+          <div className="p-4 bg-gray-750 mt-2 rounded ring-1 ring-gray-700">
+            <header className="flex gap-2 items-center">
+              <h3 className="text-white text-xl font-bold mr-auto">Recent Projects</h3>
 
-            <button className="group cursor-pointer" id="create-project">
-              <BsPlusLg className="bg-gray-700 text-blue-400 group-hover:bg-blue-500 text-4xl p-3 rounded-full group-hover:text-white group-hover:rounded-xl group-active:bg-blue-600 transition" />
-            </button>
-            <Tooltip anchorId="create-project" content="Create Project" />
-          </header>
-          <ProjectsGrid projects={currentProjects} />
+              <div className="hidden lg:block"><ProjectSearch /></div>
+
+              <button className="group cursor-pointer" id="create-project">
+                <BsPlusLg className="bg-gray-700 text-blue-400 group-hover:bg-blue-500 text-4xl p-3 rounded-full group-hover:text-white group-hover:rounded-xl group-active:bg-blue-600 transition" />
+              </button>
+              <Tooltip anchorId="create-project" content="Create Project" />
+            </header>
+            <div className="lg:hidden"><ProjectSearch /></div>
+            <ProjectsGrid projects={currentProjects} />
+          </div>
+          <Paginate
+            pageCount={projectPageCount}
+            handlePageChange={handleProjectPageChange}
+            indexOfFirstProject={indexOfFirstProject}
+            indexOfLastProject={indexOfLastProject}
+            totalItems={projects.projects.length}
+            itemName={"project"}
+          />
         </section>
-        <Paginate
-          pageCount={projectPageCount}
-          handlePageChange={handleProjectPageChange}
-          indexOfFirstProject={indexOfFirstProject}
-          indexOfLastProject={indexOfLastProject}
-          totalItems={projects.projects.length}
-          itemName={'project'}
-        />
+        <section className="ticketStats xl:col-span-1 bg-gray-850 rounded flex flex-col p-4">
+          <header className="mb-4">
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              Ticket Stats{" "}
+              <AiFillInfoCircle
+                className="text-gray-500 hover:text-blue-600 hover:scale-105 outline-none transition"
+                id="ticketStats__info"
+              />
+            </h3>
+            <Tooltip
+              anchorId="ticketStats__info"
+              content="Statistics based on the tickets you have created"
+            />
+          </header>
+          <TicketStats ticketStore={tickets} />
+        </section>
       </div>
     </>
   );
