@@ -1,5 +1,6 @@
 import { ActionType } from "../../types";
 import * as types from "../../constants/projectConstants";
+import * as userTypes from "../../constants/userConstants";
 import { Project } from "./types";
 
 type ProjectsState = {
@@ -42,6 +43,9 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
       return { ...state, loading: false, ...payload, error: null };
     case types.PROJECT_UPDATE_FAIL:
       return { ...state, loading: false, error: payload };
+    
+    case userTypes.USER_LOGOUT:
+      return initialState;
     default:
       return state;
   }

@@ -1,5 +1,6 @@
 import { ActionType } from "../../types";
 import * as types from "../../constants/ticketConstants";
+import * as userTypes from "../../constants/userConstants";
 import Ticket from "./types";
 
 interface TicketState {
@@ -25,6 +26,8 @@ const ticketReducer = (state: TicketState = initialState, action: ActionType): T
       return { ...state, loading: false, error: null, ...payload };
     case types.TICKET_DETAILS_FAIL:
       return { ...state, loading: false, error: payload };
+    case userTypes.USER_LOGOUT:
+      return initialState;
     default:
       return state;
   }

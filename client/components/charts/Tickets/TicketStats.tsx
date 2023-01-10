@@ -3,6 +3,7 @@ import TicketsByType from './TicketsByType';
 import { storeType } from '../../../redux/configureStore';
 import TicketsByStatus from './TicketsByStatus';
 import TicketsByPriority from './TicketsByPriority';
+import TicketStatsLoader from './Loader';
 
 interface Props {
   ticketStore: storeType['tickets'];
@@ -12,12 +13,14 @@ const TicketStats: React.FC<Props> = ({
   ticketStore: { error, loading, tickets },
 }) => {
   return tickets.length && !loading ? (
-    <div className="flex xl:flex-col">
+    <div className="flex flex-col md:flex-row xl:flex-col gap-4">
       <TicketsByType tickets={tickets} />
       <TicketsByStatus tickets={tickets} />
       <TicketsByPriority tickets={tickets} />
     </div>
-  ) : (
+  ) : loading ? (
+    <TicketStatsLoader />
+  ): (
     <div className="no-tickets flex flex-col justify-center xl:flex-1">
       <h3 className="text-blue-500/90 text-lg mb-4 font-bold text-center">
         You don't have enough tickets

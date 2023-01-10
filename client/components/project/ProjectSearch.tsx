@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { GrFormClose } from "react-icons/gr";
 import { MdOutlineClose } from "react-icons/md";
 
 const ProjectSearch = () => {

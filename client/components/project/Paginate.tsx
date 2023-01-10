@@ -22,12 +22,6 @@ const Paginate: React.FC<PaginateProps> = ({
 }) => {
   const paginateRef = useRef(null);
 
-  useEffect(() => {
-    if (paginateRef.current) {
-      console.log(paginateRef.current);
-    }
-  }, [paginateRef.current])
-
   return (
     <nav className="flex flex-col lg:flex-row items-center gap-4 lg:w-fit lg:self-end mt-4">
       <p className="font-semibold text-ss text-gray-400">

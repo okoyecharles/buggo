@@ -10,7 +10,7 @@ import { Tooltip } from 'react-tooltip';
 import ProjectsGrid from '../components/project/ProjectsGrid';
 import Paginate from '../components/project/Paginate';
 import TicketStats from '../components/charts/Tickets/TicketStats';
-import { AiFillInfoCircle } from 'react-icons/ai';
+import { AiFillQuestionCircle } from 'react-icons/ai';
 import ProjectSearch from '../components/project/ProjectSearch';
 
 export default function Home() {
@@ -55,7 +55,7 @@ export default function Home() {
           </span>
         </h2>
       </header>
-      <div className="grid gap-4 xl:grid-cols-4">
+      <div className="grid gap-16 xl:gap-4 xl:grid-cols-4">
         <section className="projects flex flex-col xl:col-span-3">
           <div className="p-4 bg-gray-750 mt-2 rounded ring-1 ring-gray-700">
             <header className="flex gap-2 items-center">
@@ -88,16 +88,16 @@ export default function Home() {
         </section>
         <section className="ticketStats xl:col-span-1 bg-gray-850 rounded flex flex-col p-4">
           <header className="mb-4">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <h3 className="text-xl font-bold text-white  flex items-center justify-between">
               Ticket Stats{' '}
-              <AiFillInfoCircle
-                className="text-gray-500 hover:text-blue-600 hover:scale-105 outline-none transition"
+              <AiFillQuestionCircle
+                className="text-gray-500 hover:text-blue-600 text-2xl hover:scale-105 outline-none transition"
                 id="ticketStats__info"
               />
             </h3>
             <Tooltip
               anchorId="ticketStats__info"
-              content="Statistics based on the tickets you have created"
+              content="Statistics based on your tickets"
             />
           </header>
           <TicketStats ticketStore={tickets} />
