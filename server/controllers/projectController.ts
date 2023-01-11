@@ -17,7 +17,8 @@ export const createProject = async (req: AuthorizedRequest<ProjectType>, res: Re
 
   try {
     const newProject = await project.save();
-    res.status(201).json({ project: newProject });
+    const returnProject = await Project.findById(newProject.id).populate('author', 'name').populate('team', "image");
+    res.status(201).json({ project: returnProject });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
@@ -50,7 +51,7 @@ export const getProjectById = async (req: Request, res: Response) => {
       .populate('author', 'name')
       .populate('tickets')
       .populate('team', "name image email");
-    
+
     res.status(200).json({ project });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
@@ -69,11 +70,11 @@ export const updateProject = async (req: AuthorizedRequest<ProjectType>, res: Re
     const project = await Project
       .findById(id)
       .populate('author', 'name');
-    
+
     if (!project) {
-      return res.status(404).json({ message: 'Project not found'})
+      return res.status(404).json({ message: 'Project not found' })
     };
-  
+
     if (project?.author.id !== req.user) {
       return res.status(401).json({ message: 'User not authorized' })
     }
@@ -83,7 +84,8 @@ export const updateProject = async (req: AuthorizedRequest<ProjectType>, res: Re
       if (team) project.team = team;
 
       const updatedProject = await project.save();
-      res.status(200).json({ project: updatedProject });
+      const returnProject = await Project.findById(updatedProject.id).populate('author', 'name').populate('team', "image");
+      res.status(200).json({ project: returnProject });
     }
   } catch (error: any) {
     res.status(400).json({ message: error.message });
@@ -101,7 +103,7 @@ export const deleteProject = async (req: AuthorizedRequest<ProjectType>, res: Re
     const project = await Project
       .findById(id)
       .populate('author', 'name');
-    
+
     if (project?.author.id !== req.user) {
       return res.status(401).json({ message: 'User not authorized' })
     }
@@ -147,7 +149,7 @@ export const createTicket = async (req: AuthorizedRequest<TicketType>, res: Resp
     // Assign ticket to projects relationship
     ticketProject?.tickets.push(ticket._id);
     await ticketProject?.save();
-  
+
     res.status(200).json({ ticket });
   } catch (error: any) {
     res.status(400).json({ message: error.message })

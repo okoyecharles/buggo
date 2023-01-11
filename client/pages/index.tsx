@@ -1,19 +1,13 @@
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
 import { fetchProjects } from "../redux/actions/projectActions";
 import { fetchTickets } from "../redux/actions/ticketActions";
 import { getGreeting } from "../utils/InterfaceHelper";
-import { BsPlusLg } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
-import ProjectsGrid from "../components/project/ProjectsGrid";
-import Paginate from "../components/project/Paginate";
 import TicketStats from "../components/charts/Tickets/TicketStats";
 import { AiFillQuestionCircle } from "react-icons/ai";
-import ProjectSearch from "../components/project/ProjectSearch";
-import Loader from "../components/Loader";
-import { useSpring, a } from "@react-spring/web";
 import ProjectSection from "../components/project/ProjectSection";
 
 export default function Home() {
@@ -22,7 +16,8 @@ export default function Home() {
   const tickets = useSelector((store: storeType) => store.tickets);
 
   useEffect(() => {
-    if (!projects.loading) store.dispatch(fetchProjects());
+    if (!projects.loading && !projects.method.list)
+      store.dispatch(fetchProjects());
     if (!tickets.loading) store.dispatch(fetchTickets());
   }, []);
 
@@ -42,7 +37,11 @@ export default function Home() {
         </h2>
       </header>
       <div className="grid gap-16 xl:gap-4 xl:grid-cols-4">
-        <ProjectSection projects={projects.projects} />
+        <ProjectSection
+          projects={projects.projects}
+          loading={projects.loading}
+          method={projects.method}
+        />
         <section className="ticketStats xl:col-span-1 bg-gray-850 rounded flex flex-col p-4">
           <header className="mb-4">
             <h3 className="text-xl font-bold text-white  flex items-center justify-between">
