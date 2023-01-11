@@ -1,16 +1,16 @@
-import React, { FormEvent, useEffect, useState } from "react";
-import ProjectSearch from "./ProjectSearch";
-import { BsPlusLg } from "react-icons/bs";
-import { Tooltip } from "react-tooltip";
-import ProjectsGrid from "./ProjectsGrid";
-import Paginate from "./Paginate";
-import { Project } from "../../redux/reducers/projects/types";
-import { IoMdClose } from "react-icons/io";
-import Loader from "../Loader";
-import store from "../../redux/configureStore";
-import { createProject } from "../../redux/actions/projectActions";
-import { toast } from "react-toastify";
-import Modal from "../modals";
+import React, { FormEvent, useEffect, useState } from 'react';
+import ProjectSearch from './ProjectSearch';
+import { BsPlusLg } from 'react-icons/bs';
+import { Tooltip } from 'react-tooltip';
+import ProjectsGrid from './ProjectsGrid';
+import Paginate from './Paginate';
+import { Project } from '../../redux/reducers/projects/types';
+import { IoMdClose } from 'react-icons/io';
+import Loader from '../Loader';
+import store from '../../redux/configureStore';
+import { createProject } from '../../redux/actions/projectActions';
+import { toast } from 'react-toastify';
+import Modal from '../modals';
 
 interface ProjectSectionProps {
   projects: Project[];
@@ -23,7 +23,7 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
   loading,
   method,
 }) => {
-  const [projectsPerPage] = useState(3);
+  const [projectsPerPage] = useState(4);
   const [currentPage, setCurrentPage] = useState(1);
 
   const indexOfLastProject = currentPage * projectsPerPage;
@@ -74,7 +74,7 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
         indexOfFirstProject={indexOfFirstProject}
         indexOfLastProject={indexOfLastProject}
         totalItems={projects.length}
-        itemName={"project"}
+        itemName={'project'}
       />
       <CreateProjectModal
         open={createModalOpen}
@@ -99,7 +99,7 @@ const CreateProjectModal = ({
     [key: string]: any;
   };
 }) => {
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState('');
 
   const [titleError, setTitleError] = useState<string | null>(null);
 
@@ -108,17 +108,17 @@ const CreateProjectModal = ({
     setTitleError(null);
 
     if (!title) {
-      setTitleError("Title is required");
+      setTitleError('Title is required');
       return;
     }
 
     if (title.length < 5) {
-      setTitleError("Title must be at least 5 characters");
+      setTitleError('Title must be at least 5 characters');
       return;
     }
 
     if (title.length > 25) {
-      setTitleError("Title must be less than 25 characters");
+      setTitleError('Title must be less than 25 characters');
       return;
     }
 
@@ -130,9 +130,9 @@ const CreateProjectModal = ({
   useEffect(() => {
     if (open && loading === false && !method.create) {
       setOpen(false);
-      setTitle("");
+      setTitle('');
       setTitleError(null);
-      toast.success("Project created successfully");
+      toast.success('Project created successfully');
     }
   }, [loading, method]);
 
@@ -158,12 +158,12 @@ const CreateProjectModal = ({
           <label
             htmlFor="name"
             className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
-              titleError && "text-red-300"
+              titleError && 'text-red-300'
             }`}
           >
             Title {titleError && <span className="text-red-300"> - </span>}
             <span className="capitalize font-normal italic text-red-300">
-              {titleError ? `${titleError}` : ""}
+              {titleError ? `${titleError}` : ''}
             </span>
           </label>
           <input
@@ -183,7 +183,7 @@ const CreateProjectModal = ({
           disabled={loading && method.create}
           type="submit"
         >
-          {loading && method.create ? <Loader /> : "Create"}
+          {loading && method.create ? <Loader /> : 'Create'}
         </button>
       </form>
     </Modal>

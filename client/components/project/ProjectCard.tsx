@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   BsFillPencilFill,
   BsFillPersonCheckFill,
@@ -6,18 +6,19 @@ import {
   BsPersonDashFill,
   BsPersonPlusFill,
   BsThreeDots,
-} from "react-icons/bs";
-import { AiFillClockCircle } from "react-icons/ai";
-import { Tooltip } from "react-tooltip";
-import { IoTicket } from "react-icons/io5";
-import Image from "next/image";
-import moment from "moment";
-import Pluralize from "react-pluralize";
-import { Project } from "../../redux/reducers/projects/types";
-import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
-import { storeType } from "../../redux/configureStore";
-import { useSpring, a } from "@react-spring/web";
+} from 'react-icons/bs';
+import { AiFillClockCircle } from 'react-icons/ai';
+import { Tooltip } from 'react-tooltip';
+import { IoTicket } from 'react-icons/io5';
+import Image from 'next/image';
+import moment from 'moment';
+import Pluralize from 'react-pluralize';
+import { Project } from '../../redux/reducers/projects/types';
+import { useRouter } from 'next/router';
+import { useSelector } from 'react-redux';
+import { storeType } from '../../redux/configureStore';
+import { useSpring, a } from '@react-spring/web';
+import Modal from '../modals';
 
 interface projectProps {
   project: Project;
@@ -28,6 +29,8 @@ const ProjectCard: React.FC<projectProps> = ({ project }) => {
   const currentUser = useSelector((store: storeType) => store.currentUser);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [optionsPos, setOptionsPos] = useState(0);
+
+  const [projectDeleteConfirm, setProjectDeleteConfirm] = useState(false);
 
   const isInTeam = (project: any) => {
     return !!project.team.filter(
@@ -67,7 +70,7 @@ const ProjectCard: React.FC<projectProps> = ({ project }) => {
               Assign Yourself?
             </button>
           ) : (
-            ""
+            ''
           )
         }
       </div>
@@ -77,8 +80,8 @@ const ProjectCard: React.FC<projectProps> = ({ project }) => {
           {moment(project.createdAt).fromNow()}
         </p>
         <p className="text-gray-500 uppercase text-xsm flex items-center gap-2">
-          <IoTicket className="text-orange-400" />{" "}
-          <Pluralize singular={"ticket"} count={project.tickets.length} />
+          <IoTicket className="text-orange-400" />{' '}
+          <Pluralize singular={'ticket'} count={project.tickets.length} />
         </p>
         <p className="uppercase lg:ml-auto text-orange-500/90 text-xsm font-semibold">
           By {project.author.name}
@@ -130,6 +133,7 @@ const ProjectCard: React.FC<projectProps> = ({ project }) => {
                       lg:text-red-500/90 text-orange-500 
                       aspect-square items-center justify-center transition-colors"
               tabIndex={-1}
+              onClick={() => setProjectDeleteConfirm(true)}
             >
               <BsFillTrashFill />
             </button>
@@ -164,6 +168,12 @@ const ProjectCard: React.FC<projectProps> = ({ project }) => {
         project={project}
         setOpen={setOptionsOpen}
         pos={optionsPos}
+        setProjectDeleteConfirm={setProjectDeleteConfirm}
+      />
+      <ProjectDeletePopup
+        open={projectDeleteConfirm}
+        setOpen={setProjectDeleteConfirm}
+        project={project}
       />
     </article>
   );
@@ -173,8 +183,9 @@ const ProjectOptionsPopup: React.FC<{
   open: boolean;
   project: Project;
   setOpen: any;
+  setProjectDeleteConfirm: any;
   pos: number;
-}> = ({ open, project, setOpen, pos }) => {
+}> = ({ open, project, setOpen, pos, setProjectDeleteConfirm }) => {
   const currentUser = useSelector((store: storeType) => store.currentUser);
   const isInTeam = (project: any) => {
     return !!project.team.filter(
@@ -202,11 +213,11 @@ const ProjectOptionsPopup: React.FC<{
       className={`projectOptionsPopup absolute top-4 right-4 w-48 bg-gray-950 shadow-lg shadow-gray-950/40 rounded-md p-2 z-40 isolate`}
       style={{
         ...spring,
-        pointerEvents: open ? "all" : "none",
+        pointerEvents: open ? 'all' : 'none',
       }}
     >
       <div
-        className={open ? "fixed top-0 left-0 h-screen w-screen -z-10" : ""}
+        className={open ? 'fixed top-0 left-0 h-screen w-screen -z-10' : ''}
         onClick={() => {
           setOpen(false);
         }}
@@ -238,7 +249,10 @@ const ProjectOptionsPopup: React.FC<{
               <BsFillPencilFill />
             </button>
 
-            <button className="p-2 group text-red-500 hover:bg-red-500 active:bg-red-600 hover:text-red-50 flex justify-between items-center transition-colors rounded-sm text-sm">
+            <button
+              className="p-2 group text-red-500 hover:bg-red-500 active:bg-red-600 hover:text-red-50 flex justify-between items-center transition-colors rounded-sm text-sm"
+              onClick={() => setProjectDeleteConfirm(true)}
+            >
               Delete Project
               <BsFillTrashFill />
             </button>
@@ -246,6 +260,44 @@ const ProjectOptionsPopup: React.FC<{
         )}
       </div>
     </a.div>
+  );
+};
+
+const ProjectDeletePopup: React.FC<{
+  open: boolean;
+  setOpen: any;
+  project: Project;
+}> = ({ open, setOpen, project }) => {
+  return (
+    <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
+      <div className="p-4">
+        <header className="flex flex-col gap-2">
+          <h2 className="text-xl font-semibold text-white">Delete Project</h2>
+          <p className="text-gray-200 mb-4">
+            Are you sure you want to delete this project?
+          </p>
+        </header>
+        <div className="shadow-lg gap-2 bg-gray-700 p-2 rounded mb-2">
+          <p className="font-semibold text-gray-100">{project.title}</p>
+          <p>{moment(project.createdAt).calendar()}</p>
+        </div>
+        <p className="text-gray-400 text-sm mb-2">
+          This action will delete all tickets and comments associated with this
+          project.
+        </p>
+      </div>
+      <div className="flex gap-2 bg-gray-850 p-4 justify-end">
+        <button
+          className="px-6 p-2 hover:underline text-white font-semibold"
+          onClick={() => setOpen(false)}
+        >
+          Cancel
+        </button>
+        <button className="px-6 p-2 bg-red-500 text-red-50 rounded-sm font-semibold hover:bg-red-700 transition-colors">
+          Delete
+        </button>
+      </div>
+    </Modal>
   );
 };
 
