@@ -32,7 +32,7 @@ const Modal: React.FC<ModalProps> = ({ open, setOpen, children, style }) => {
         }}
       >
         <animated.div
-          className="content z-50 bg-gray-800 w-96 p-3 rounded"
+          className="content z-50 bg-gray-800 w-96 p-3 rounded overflow-hidden"
           style={{ ...spring, ...style }}
         >
           {children}

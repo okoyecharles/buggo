@@ -14,6 +14,8 @@ const ProjectsGrid: React.FC<ProjectsGridType> = ({
   loading,
   method,
 }) => {
+  const [currentEdit, setCurrentEdit] = React.useState<string>('');
+
   return (
     <>
       <div className="project__container flex flex-col gap-2 mt-4">
@@ -23,6 +25,8 @@ const ProjectsGrid: React.FC<ProjectsGridType> = ({
             project={project}
             loading={loading}
             method={method}
+            currentEdit={currentEdit}
+            setCurrentEdit={setCurrentEdit}
           />
         ))}
       </div>

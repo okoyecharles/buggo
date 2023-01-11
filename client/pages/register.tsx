@@ -279,7 +279,7 @@ const Register = () => {
                     checkOrientation: true,
                     strict: true,
                     convertSize: 5000000,
-                    maxWidth: 200,
+                    maxWidth: 100,
                     quality: 0.8,
                     success(result) {
                       console.log("compressed image", result.size);

@@ -104,6 +104,7 @@ const CreateProjectModal = ({
   };
 }) => {
   const [title, setTitle] = useState('');
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const [titleError, setTitleError] = useState<string | null>(null);
 
@@ -140,6 +141,12 @@ const CreateProjectModal = ({
     }
   }, [loading, method]);
 
+  useEffect(() => {
+    if (open) {
+      inputRef.current?.focus();
+    }
+  }, [open]);
+
   return (
     <Modal open={open} setOpen={setOpen}>
       <header className="header flex justify-between items-center">
@@ -173,6 +180,7 @@ const CreateProjectModal = ({
           <input
             type="text"
             id="name"
+            ref={inputRef}
             name="name"
             placeholder="eg. Limitless horizons"
             className="p-3 text-ss bg-gray-950 rounded outline-none text-gray-200 mb-1 sm:p-2"

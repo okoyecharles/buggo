@@ -71,8 +71,8 @@ const projectsReducer = (state: ProjectsState = initialState, action: ActionType
         error: null,
         loading: false,
         projects: state.projects.map((project) => {
-          if (project._id === payload._id) {
-            return payload;
+          if (project._id === payload.project._id) {
+            return payload.project;
           }
           return project;
         }),

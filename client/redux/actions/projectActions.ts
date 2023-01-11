@@ -87,7 +87,7 @@ export const createProject = (project: any) => async (dispatch: DispatchType, ge
   }
 };
 
-export const updateProject = (project: any) => async (dispatch: DispatchType, getState: () => storeType) => {
+export const updateProject = ({ id, project }: { id: string, project: any }) => async (dispatch: DispatchType, getState: () => storeType) => {
   try {
     dispatch({
       type: types.PROJECT_UPDATE_REQUEST,
@@ -100,7 +100,7 @@ export const updateProject = (project: any) => async (dispatch: DispatchType, ge
         Authorization: `Bearer ${currentUser?.token}`,
       },
     };
-    const { data } = await axios.put(`${BACKEND_URL}/projects/${project._id}`, project, config);
+    const { data } = await axios.put(`${BACKEND_URL}/projects/${id}`, project, config);
 
     dispatch({
       type: types.PROJECT_UPDATE_SUCCESS,
