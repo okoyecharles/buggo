@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BsFillPencilFill,
   BsFillPersonCheckFill,
@@ -16,15 +16,22 @@ import Pluralize from 'react-pluralize';
 import { Project } from '../../redux/reducers/projects/types';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
-import { storeType } from '../../redux/configureStore';
+import store, { storeType } from '../../redux/configureStore';
 import { useSpring, a } from '@react-spring/web';
+import { deleteProject } from '../../redux/actions/projectActions';
 import Modal from '../modals';
+import Loader from '../Loader';
+import { toast } from 'react-toastify';
 
 interface projectProps {
   project: Project;
+  loading: boolean;
+  method: {
+    [key: string]: any;
+  };
 }
 
-const ProjectCard: React.FC<projectProps> = ({ project }) => {
+const ProjectCard: React.FC<projectProps> = ({ project, loading, method }) => {
   const router = useRouter();
   const currentUser = useSelector((store: storeType) => store.currentUser);
   const [optionsOpen, setOptionsOpen] = useState(false);
@@ -174,6 +181,8 @@ const ProjectCard: React.FC<projectProps> = ({ project }) => {
         open={projectDeleteConfirm}
         setOpen={setProjectDeleteConfirm}
         project={project}
+        loading={loading}
+        method={method}
       />
     </article>
   );
@@ -267,7 +276,22 @@ const ProjectDeletePopup: React.FC<{
   open: boolean;
   setOpen: any;
   project: Project;
-}> = ({ open, setOpen, project }) => {
+  loading: boolean;
+  method: {
+    [key: string]: any;
+  };
+}> = ({ open, setOpen, project, loading, method }) => {
+  const handleDelete = () => {
+    store.dispatch(deleteProject(project._id));
+    toast.success('Project deleted successfully');
+  };
+
+  useEffect(() => {
+    if (open && loading === false && !method.delete) {
+      setOpen(false);
+    }
+  }, [loading, method]);
+
   return (
     <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
       <div className="p-4">
@@ -278,8 +302,8 @@ const ProjectDeletePopup: React.FC<{
           </p>
         </header>
         <div className="shadow-lg gap-2 bg-gray-700 p-2 rounded mb-2">
+          <p className="text-sm">{moment(project.createdAt).calendar()}</p>
           <p className="font-semibold text-gray-100">{project.title}</p>
-          <p>{moment(project.createdAt).calendar()}</p>
         </div>
         <p className="text-gray-400 text-sm mb-2">
           This action will delete all tickets and comments associated with this
@@ -293,8 +317,12 @@ const ProjectDeletePopup: React.FC<{
         >
           Cancel
         </button>
-        <button className="px-6 p-2 bg-red-500 text-red-50 rounded-sm font-semibold hover:bg-red-700 transition-colors">
-          Delete
+        <button
+          className="px-6 p-2 bg-red-500 text-red-50 rounded-sm font-semibold hover:bg-red-600 active:bg-red-700 transition-colors disabled:opacity-75"
+          disabled={loading && method.delete}
+          onClick={handleDelete}
+        >
+          {loading && method.delete ? <Loader /> : 'Delete'}
         </button>
       </div>
     </Modal>

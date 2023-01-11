@@ -66,7 +66,11 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
         <div className="lg:hidden">
           <ProjectSearch />
         </div>
-        <ProjectsGrid projects={currentProjects} />
+        <ProjectsGrid
+          projects={currentProjects}
+          loading={loading}
+          method={method}
+        />
       </div>
       <Paginate
         pageCount={projectPageCount}
