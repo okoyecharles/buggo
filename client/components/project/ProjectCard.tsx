@@ -26,6 +26,7 @@ import Modal from "../modals";
 import Loader from "../Loader";
 import { toast } from "react-toastify";
 import ProjectDeletePopup from "../modals/projectDelete";
+import { restrictLength } from "../../utils/stringHelper";
 
 interface projectProps {
   project: Project;
@@ -92,7 +93,7 @@ const ProjectCard: React.FC<projectProps> = ({
       className="project flex flex-col gap-2 bg-gray-850 p-4 group hover:bg-gray-900 rounded relative"
     >
       <h4 className={`font-bold text-gray-200 font-noto text-xl ${editMode ? 'hidden' : ''}`}>
-        {project.title}
+        {restrictLength(project.title, 25)}
       </h4>
       <div className={`relative ${editMode ? '' : 'hidden'}`}>
         <input

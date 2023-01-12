@@ -1,46 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import store, { storeType } from "../redux/configureStore";
+import { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
-import { IoTicket } from "react-icons/io5";
-import { HiUsers } from "react-icons/hi";
 import { RiArrowRightSLine } from "react-icons/ri";
-import { BsFillPencilFill } from "react-icons/bs";
-import {
-  MdOutlineArrowDropDown,
-  MdLogout,
-  MdSpaceDashboard,
-} from "react-icons/md";
-import { useSpring, a } from "@react-spring/web";
-import { logout } from "../redux/actions/userActions";
+import { MdOutlineArrowDropDown } from "react-icons/md";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
 import { Tooltip } from "react-tooltip";
-
-const navLinks = [
-  {
-    name: "Dashboard",
-    icon: (className: string) => (
-      <MdSpaceDashboard className={className} title="Dashboard" />
-    ),
-    href: "/",
-  },
-  {
-    name: "Tickets",
-    icon: (className: string) => (
-      <IoTicket className={className} title="Tickets" />
-    ),
-    href: "/tickets",
-  },
-  {
-    name: "Users",
-    icon: (className: string) => (
-      <HiUsers className={className} title="Users" />
-    ),
-    href: "/users",
-  },
-];
+import ProfileDropdown from "./ProfileDropdown";
+import navLinks from "./data/navLinks";
+import { restrictLength } from "../../utils/stringHelper";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -75,7 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               className="rounded-full h-10 w-10"
             />
             <div className="profile-info flex flex-col h-full justify-start">
-              <p className="text-sm font-bold">{currentUser?.user.name.split(' ')[0]}</p>
+              <p className="text-sm font-bold">{restrictLength(currentUser?.user.name, 20)}</p>
               <p
                 className={`text-xsm ${
                   currentUser?.user.admin
@@ -178,65 +147,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </aside>
       </div>
     </div>
-  );
-};
-
-const ProfileDropdown: React.FC<{ open: boolean; setOpen: any }> = ({
-  open,
-  setOpen,
-}) => {
-  const spring = useSpring({
-    opacity: 0,
-    y: -10,
-    scale: 0.8,
-    to: {
-      opacity: open ? 1 : 0,
-      y: open ? 0 : -10,
-      scale: open ? 1 : 0.8,
-    },
-    config: {
-      tension: 350,
-      friction: 20,
-    },
-  });
-
-  return (
-    <a.div
-      className="absolute top-[calc(100%+1rem)] right-1 w-48 bg-gray-950 shadow-lg shadow-gray-950/50 rounded-md select-none isolate"
-      style={{
-        ...spring,
-        pointerEvents: open ? "all" : "none",
-      }}
-    >
-      <div
-        className={
-          "outclick fixed h-screen w-full top-0 left-0 -z-10 opacity-0"
-        }
-        onClick={() => setOpen(false)}
-      />
-      <div className="flex flex-col gap-2 p-2 z-10 text-ss">
-        <button
-          className="p-2 group text-gray-300 hover:bg-blue-600 hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm"
-          onClick={() => {
-            toast.success("Profile edited successfully");
-          }}
-        >
-          Edit Profile
-          <BsFillPencilFill className="inline-block" />
-        </button>
-        <hr className="border-gray-800 w-11/12 self-center" />
-        <button
-          className="p-2 group text-red-500 hover:bg-red-500 hover:text-red-50 flex justify-between items-center transition-colors rounded-sm"
-          onClick={() => {
-            toast.success("Logged out successfully");
-            store.dispatch(logout());
-          }}
-        >
-          Logout
-          <MdLogout className="inline-block text-lg" />
-        </button>
-      </div>
-    </a.div>
   );
 };
 

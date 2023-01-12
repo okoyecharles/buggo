@@ -20,9 +20,9 @@ const Modal: React.FC<ModalProps> = ({ open, setOpen, children, style }) => {
   });
 
   return (
-    <div className="createProjectModal text-gray-300 text-ss z-50 isolate font-open">
+    <div className="text-gray-300 text-ss z-50 isolate font-open">
       <div
-        className={`outclick fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/75 z-0 transition ${
+        className={`outclick fixed top-0 left-0 w-screen h-screen flex justify-center items-end sm:items-center bg-black/50 backdrop-blur-sm sm:backdrop-blur-0 sm:bg-black/75 z-0 transition ${
           open ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={(e) => {
@@ -32,7 +32,7 @@ const Modal: React.FC<ModalProps> = ({ open, setOpen, children, style }) => {
         }}
       >
         <animated.div
-          className="content z-50 bg-gray-800 w-96 p-3 rounded overflow-hidden"
+          className="content z-50 bg-gray-800 ring-1 ring-gray-600 sm:ring-0 w-full sm:w-96 p-3 sm:rounded overflow-hidden"
           style={{ ...spring, ...style }}
         >
           {children}
