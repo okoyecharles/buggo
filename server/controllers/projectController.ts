@@ -38,7 +38,7 @@ export const getProjects = async (req: Request, res: Response) => {
   try {
     const projects = await Project.find()
       .populate('author', 'name')
-      .populate('team', 'image')
+      .populate('team', 'name email image')
       .sort({ createdAt: -1 });
     res.status(200).json({ projects });
   } catch (error: any) {
@@ -60,6 +60,22 @@ export const getProjectById = async (req: Request, res: Response) => {
       .populate('team', 'name image email');
 
     res.status(200).json({ project });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+/*
+ * @route   GET /projects/:id/team
+ * @desc    Get a project's team by id
+ * @access  Private
+*/
+export const getProjectTeam = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const project = await Project.findById(id);
+
+    res.status(200).json({ team: project?.team || []  });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
@@ -94,7 +110,7 @@ export const updateProject = async (
       const updatedProject = await project.save();
       const returnProject = await Project.findById(updatedProject.id)
         .populate('author', 'name')
-        .populate('team', 'image');
+        .populate('team', 'name email image');
       res.status(200).json({ project: returnProject });
     }
   } catch (error: any) {

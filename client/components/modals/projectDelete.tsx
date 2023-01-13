@@ -5,7 +5,7 @@ import { Project } from "../../redux/reducers/projects/types";
 import { useEffect } from "react";
 import Modal from ".";
 import moment from "moment";
-import Loader from "../Loader";
+import { ThreeDotsLoader } from "../Loader";
 
 const ProjectDeletePopup: React.FC<{
   open: boolean;
@@ -31,7 +31,7 @@ const ProjectDeletePopup: React.FC<{
     <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
       <div className="p-4">
         <header className="flex flex-col gap-2">
-          <h2 className="text-xl font-semibold text-white">Delete Project</h2>
+          <h2 className="text-lg font-semibold text-white">Delete Project</h2>
           <p className="text-gray-200 mb-4">
             Are you sure you want to delete this project?
           </p>
@@ -40,7 +40,7 @@ const ProjectDeletePopup: React.FC<{
           <p className="text-sm text-blue-500">{moment(project.createdAt).calendar()}</p>
           <p className="font-semibold text-gray-100">{project.title}</p>
         </div>
-        <p className="text-gray-400 text-sm mb-2">
+        <p className="text-gray-400 text-xsm mb-2">
           This action will delete all tickets and comments associated with this
           project.
         </p>
@@ -57,7 +57,7 @@ const ProjectDeletePopup: React.FC<{
           disabled={loading && method.delete}
           onClick={handleDelete}
         >
-          {loading && method.delete ? <Loader /> : "Delete"}
+          {loading && method.delete ? <ThreeDotsLoader /> : "Delete"}
         </button>
       </div>
     </Modal>

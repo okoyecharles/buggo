@@ -1,12 +1,6 @@
 export const restrictLength = (str: string = "", length: number) => {
-  if (str.length <= length) {
-    return str;
+  if (str.length > length) {
+    return str.slice(0, length) + "...";
   }
-
-  return (
-    <>
-      {str.substring(0, length)}
-      <span className="text-gray-300">...</span>
-    </>
-  );
+  return str;
 };

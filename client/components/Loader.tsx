@@ -1,7 +1,18 @@
 import React from "react";
-import { ThreeDots } from "react-loader-spinner";
+import { TailSpin, ThreeDots } from "react-loader-spinner";
 
-const Loader = ({ color = "#fff", height = "22", width="30" }: any) => (
+interface LoaderProps {
+  color?: string;
+  height?: string | number;
+  width?: string | number;
+  className?: string;
+}
+
+const ThreeDotsLoader: React.FC<LoaderProps> = ({
+  color = "#fff",
+  height = "22",
+  width = "30",
+}) => (
   <ThreeDots
     height={height}
     width={width}
@@ -13,4 +24,22 @@ const Loader = ({ color = "#fff", height = "22", width="30" }: any) => (
   />
 );
 
-export default Loader;
+const TailSpinLoader: React.FC<LoaderProps> = ({
+  color = "#fff",
+  height = "30",
+  width = "30",
+  className
+}) => (
+  <TailSpin
+    height={height}
+    width={width}
+    color={color}
+    ariaLabel="tail-spin-loading"
+    radius="2"
+    wrapperStyle={{}}
+    wrapperClass={className}
+    visible={true}
+  />
+);
+
+export { ThreeDotsLoader, TailSpinLoader };

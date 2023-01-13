@@ -1,4 +1,5 @@
-import { storeType } from './../configureStore';
+import { Project } from './../reducers/projects/types';
+import store, { storeType } from './../configureStore';
 import BACKEND_URL from '../../config/Backend';
 import * as types from '../constants/projectConstants';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -125,6 +126,23 @@ export const updateProject =
       });
     }
   };
+
+export const getProjectTeamIds = async (project: Project) => {
+  const currentUser = store.getState().currentUser;
+
+  const config: AxiosRequestConfig<any> = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${currentUser?.token}`,
+    },
+  };
+
+  const { data } = await axios.get(
+    `${BACKEND_URL}/projects/${project._id}/team`,
+    config
+  );
+  return data.team;
+};
 
 export const deleteProject =
   (id: string) => async (dispatch: DispatchType, getState: () => storeType) => {

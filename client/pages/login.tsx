@@ -1,7 +1,7 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSpring, a } from "@react-spring/web";
-import Loader from "../components/Loader";
+import { ThreeDotsLoader } from "../components/Loader";
 import { validateEmail, validatePassword } from "../utils/formValidation";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
@@ -165,7 +165,7 @@ const Login = () => {
             className="font-open font-semibold p-3 text-ss mt-6 bg-blue-600 text-white rounded hover:bg-blue-700 hover:text-blue-100 disabled:opacity-80 disabled:cursor-not-allowed  transition flex justify-center"
             disabled={processing}
           >
-            {processing ? <Loader /> : "Log In"}
+            {processing ? <ThreeDotsLoader /> : "Log In"}
           </button>
 
           <p className="text-ss text-gray-400 mt-4">

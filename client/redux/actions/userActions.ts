@@ -67,4 +67,17 @@ const logout = () => (dispatch: DispatchType) => {
   });
 };
 
-export { login, register, logout };
+const getUsers = async () => {
+  const config: AxiosRequestConfig<any> = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  const { data } = await axios.get(`${BACKEND_URL}/users`, config);
+
+  return data;
+};
+
+
+export { login, register, logout, getUsers };
