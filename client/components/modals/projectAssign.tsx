@@ -4,7 +4,7 @@ import { Project } from "../../redux/reducers/projects/types";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { MdOutlineClose } from "react-icons/md";
-import { TailSpinLoader, ThreeDotsLoader } from "../Loader";
+import { TailSpinLoader, ThreeDotsLoader } from "../loader";
 import User from "../../redux/reducers/user/types";
 import { getUsers } from "../../redux/actions/userActions";
 import { searchByNameOrEmail } from "../../utils/searchHelper";

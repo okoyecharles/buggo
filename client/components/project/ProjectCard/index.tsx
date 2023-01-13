@@ -13,18 +13,18 @@ import { IoTicket } from "react-icons/io5";
 import Image from "next/image";
 import moment from "moment";
 import Pluralize from "react-pluralize";
-import { Project } from "../../redux/reducers/projects/types";
+import { Project } from "../../../redux/reducers/projects/types";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../../redux/configureStore";
-import { useSpring, a } from "@react-spring/web";
+import store, { storeType } from "../../../redux/configureStore";
 import {
   getProjectTeamIds,
   updateProject,
-} from "../../redux/actions/projectActions";
-import ProjectDeletePopup from "../modals/projectDelete";
-import { restrictLength } from "../../utils/stringHelper";
-import Modal from "../modals";
-import ProjectAssignPopup from "../modals/projectAssign";
+} from "../../../redux/actions/projectActions";
+import ProjectDeletePopup from "../../modals/projectDelete";
+import { restrictLength } from "../../../utils/stringHelper";
+import ProjectAssignPopup from "../../modals/projectAssign";
+import ProjectOptionsPopup from "./Options";
+import ProjectCardMembers from "./Members";
 
 interface projectProps {
   project: Project;
@@ -189,38 +189,13 @@ const ProjectCard: React.FC<projectProps> = ({
           />
         </button>
       </div>
-      <div className="flex mb-2 gap-2 lg:items-center text-ss lg:h-7">
-        <h4 className="font-bold text-gray-400 flex items-center">MEMBERS:</h4>
-        <div className="flex gap-2 items-center h-7">
-          {project.team.length ? (
-            project.team.map((member) => (
-              <Image
-                src={member.image}
-                alt={member.name}
-                width={28}
-                height={28}
-                className="h-full rounded-full ring-1 ring-orange-500/50"
-              />
-            ))
-          ) : (
-            <p className="text-ss text-gray-500">No team members</p>
-          )}
-        </div>
-        {
-          // Display button if user does not exist in team
-          !isInTeam(project) ? (
-            <button
-              className="hidden lg:flex items-center h-full hover:underline text-orange-500/75 self-start disabled:opacity-75"
-              onClick={handleAssign}
-              disabled={loading && method.update}
-            >
-              Assign Yourself?
-            </button>
-          ) : (
-            ""
-          )
-        }
-      </div>
+      <ProjectCardMembers
+        project={project}
+        handleAssign={handleAssign}
+        isInTeam={isInTeam}
+        loading={loading}
+        method={method}
+      />
       <div className="flex flex-col mt-4 lg:flex-row lg:mt-0  lg:gap-4">
         <p className="text-gray-500 uppercase text-xsm flex items-center gap-2">
           <AiFillClockCircle className="text-orange-400" />
@@ -333,125 +308,6 @@ const ProjectCard: React.FC<projectProps> = ({
         method={method}
       />
     </article>
-  );
-};
-
-const ProjectOptionsPopup: React.FC<{
-  open: boolean;
-  project: Project;
-  loading: boolean;
-  method: any;
-  setOpen: any;
-  setProjectDeleteConfirm: any;
-  handleEditMode: any;
-  handleAssign: any;
-  setProjectAssign: any;
-  pos: number;
-}> = ({
-  open,
-  project,
-  loading,
-  method,
-  setOpen,
-  handleAssign,
-  pos,
-  handleEditMode,
-  setProjectDeleteConfirm,
-  setProjectAssign,
-}) => {
-  const currentUser = useSelector((store: storeType) => store.currentUser);
-  const isInTeam = (project: any) => {
-    return !!project.team.filter(
-      (member: any) => member._id === currentUser?.user._id
-    ).length;
-  };
-
-  const spring = useSpring({
-    opacity: 0,
-    y: -10,
-    scale: 0.8,
-    to: {
-      opacity: open ? 1 : 0,
-      y: open ? 0 : -10,
-      scale: open ? 1 : 0.8,
-    },
-    config: {
-      tension: 350,
-      friction: 25,
-    },
-  });
-
-  return (
-    <a.div
-      className={`projectOptionsPopup absolute top-4 right-4 w-48 bg-gray-950 shadow-lg shadow-gray-950/40 rounded-md p-2 z-40 isolate`}
-      style={{
-        ...spring,
-        pointerEvents: open ? "all" : "none",
-      }}
-    >
-      <div
-        className={open ? "fixed top-0 left-0 h-screen w-screen -z-10" : ""}
-        onClick={() => {
-          setOpen(false);
-        }}
-      />
-      <div className="flex flex-col gap-1">
-        <button
-          id={`remove-self-${project._id}`}
-          className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700  hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
-          onClick={() => {
-            handleAssign();
-            setOpen(false);
-          }}
-          disabled={loading && method.update}
-        >
-          {isInTeam(project) ? (
-            <>
-              Remove Yourself <BsPersonDashFill />
-            </>
-          ) : (
-            <>
-              Assign Yourself <BsPersonPlusFill />
-            </>
-          )}
-        </button>
-        {currentUser?.user._id === project.author._id && (
-          <>
-            <button
-              className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700  hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
-              disabled={loading && method.update}
-              onClick={() => {
-                setProjectAssign(true);
-                setOpen(false);
-              }}
-            >
-              Assign Members
-              <BsFillPersonCheckFill />
-            </button>
-
-            <button
-              className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700 hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
-              disabled={loading && method.update}
-              onClick={() => {
-                setOpen(false);
-                handleEditMode();
-              }}
-            >
-              Edit Project
-              <BsFillPencilFill />
-            </button>
-
-            <button
-              className="p-2 group text-red-500 hover:bg-red-500 active:bg-red-600 hover:text-red-50 flex justify-between items-center transition-colors rounded-sm text-sm"
-              onClick={() => setProjectDeleteConfirm(true)}
-            >
-              Delete Project
-              <BsFillTrashFill />
-            </button>
-          </>
-        )}
-      </div>
-    </a.div>
   );
 };
 

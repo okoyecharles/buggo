@@ -4,7 +4,7 @@ import store from "../../redux/configureStore";
 import { toast } from "react-toastify";
 import Modal from ".";
 import { IoMdClose } from "react-icons/io";
-import { ThreeDotsLoader } from "../Loader";
+import { ThreeDotsLoader } from "../loader";
 
 const CreateProjectModal = ({
   open,

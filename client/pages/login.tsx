@@ -1,7 +1,7 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSpring, a } from "@react-spring/web";
-import { ThreeDotsLoader } from "../components/Loader";
+import { ThreeDotsLoader } from "../components/loader";
 import { validateEmail, validatePassword } from "../utils/formValidation";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";

@@ -5,7 +5,7 @@ import { Project } from "../../redux/reducers/projects/types";
 import { useEffect } from "react";
 import Modal from ".";
 import moment from "moment";
-import { ThreeDotsLoader } from "../Loader";
+import { ThreeDotsLoader } from "../loader";
 
 const ProjectDeletePopup: React.FC<{
   open: boolean;
