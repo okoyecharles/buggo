@@ -32,7 +32,7 @@ export default function Home() {
         <h2 className="text-xl font-semibold text-orange-400/90">
           {getGreeting()},{" "}
           <span className="text-gray-200 text-orange-400/90 whitespace-nowrap">
-            {currentUser?.user.name}!
+            {currentUser.user?.name}!
           </span>
         </h2>
       </header>

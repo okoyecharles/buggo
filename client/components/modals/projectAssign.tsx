@@ -31,7 +31,7 @@ const projectMembersReducer = (state: User[], action: any) => {
   }
 };
 
-const ProjectAssignPopup: React.FC<{
+const ProjectAssignModal: React.FC<{
   open: boolean;
   setOpen: any;
   project: Project;
@@ -124,13 +124,13 @@ const ProjectAssignPopup: React.FC<{
           {members.map((member: User) => (
             <>
               <li className="flex gap-2 bg-gray-950 items-center p-2 rounded-lg group select-none">
-                <div className="h-6 w-6">
+                <div className="h-6 w-6 overflow-hidden rounded-full">
                   <Image
                     src={member.image}
                     alt={member.name}
                     width={30}
                     height={30}
-                    className="rounded-full"
+                    className="h-full object-center object-cover bg-gray-850"
                   />
                 </div>
                 <span>{restrictLength(member.name.split(" ")[0], 10)}</span>
@@ -270,4 +270,4 @@ const ProjectAssignPopup: React.FC<{
   );
 };
 
-export default ProjectAssignPopup;
+export default ProjectAssignModal;

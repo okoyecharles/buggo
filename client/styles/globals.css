@@ -24,7 +24,6 @@
 }
 
 input[type="file"] {
-  display: block;
   width: 100%;
   font-size: 0.8rem;
   background: #242629;

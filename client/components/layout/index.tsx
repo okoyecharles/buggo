@@ -10,6 +10,8 @@ import { Tooltip } from "react-tooltip";
 import ProfileDropdown from "./ProfileDropdown";
 import navLinks from "./data/navLinks";
 import { restrictLength } from "../../utils/stringHelper";
+import EditProfileModal from "../modals/profileEdit";
+import User from "../../redux/reducers/user/types";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,13 +22,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const currentUser = useSelector((store: storeType) => store.currentUser);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [expandNav, setExpandNav] = useState(false);
+  const [editProfile, setEditProfile] = useState(false);
 
   useEffect(() => {
-    if (!currentUser) {
+    if (!currentUser.user) {
       router.replace("/login/?redirect=true");
       return;
     }
-  }, [currentUser]);
+  }, [currentUser.user]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -37,22 +40,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
           <div className="profile flex items-center gap-2 relative select-none">
             <Image
-              src={currentUser?.user.image || ""}
+              src={currentUser.user?.image || ""}
               width="200"
               height="200"
               alt="profile__image"
-              className="rounded-full h-10 w-10"
+              className="rounded-full h-10 w-10 object-center object-cover bg-gray-700"
             />
             <div className="profile-info flex flex-col h-full justify-start">
-              <p className="text-sm font-bold">{restrictLength(currentUser?.user.name, 20)}</p>
+              <p className="text-sm font-bold">
+                {restrictLength(currentUser.user?.name, 20)}
+              </p>
               <p
                 className={`text-xsm ${
-                  currentUser?.user.admin
+                  currentUser.user?.admin
                     ? "text-blue-500/90"
                     : "text-orange-500/90"
                 } uppercase font-bold`}
               >
-                {currentUser?.user.admin ? "admin" : "dev"}
+                {currentUser.user?.admin ? "admin" : "dev"}
               </p>
             </div>
             <MdOutlineArrowDropDown
@@ -67,7 +72,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               content="Account"
               className={openDropdown ? "hidden" : ""}
             />
-            <ProfileDropdown open={openDropdown} setOpen={setOpenDropdown} />
+            <ProfileDropdown
+              open={openDropdown}
+              setOpen={setOpenDropdown}
+              setEditProfile={setEditProfile}
+            />
+            <EditProfileModal
+              open={editProfile}
+              setOpen={setEditProfile}
+              user={currentUser.user}
+              loading={currentUser.loading}
+              method={currentUser.method}
+            />
           </div>
         </nav>
       </header>

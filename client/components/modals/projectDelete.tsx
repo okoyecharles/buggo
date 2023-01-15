@@ -7,7 +7,7 @@ import Modal from ".";
 import moment from "moment";
 import { ThreeDotsLoader } from "../loader";
 
-const ProjectDeletePopup: React.FC<{
+const ProjectDeleteModal: React.FC<{
   open: boolean;
   setOpen: any;
   project: Project;
@@ -64,4 +64,4 @@ const ProjectDeletePopup: React.FC<{
   );
 };
 
-export default ProjectDeletePopup;
+export default ProjectDeleteModal;

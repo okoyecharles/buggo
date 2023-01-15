@@ -3,10 +3,21 @@ import { ActionType } from '../../types';
 import User from './types';
 
 type State = {
-  user: User,
-  token: string
-} | null;
-const initialState = null;
+  user: User | null,
+  token: string | null,
+  loading: boolean,
+  method: {
+    update: boolean;
+  };
+};
+const initialState: State = {
+  user: null,
+  token: null,
+  loading: false,
+  method: {
+    update: false
+  }
+};
 
 const currentUserReducer = (
   state: State = initialState,
@@ -15,11 +26,33 @@ const currentUserReducer = (
   const { type, payload } = action;
   switch (type) {
     case types.USER_LOGIN_SUCCESS:
-      return payload;
+      return {
+        ...payload,
+        loading: false,
+        method: { update: false }
+      };
     case types.USER_REGISTER_SUCCESS:
-      return payload;
+      return {
+        ...payload,
+        loading: false,
+        method: { update: false }
+      };
     case types.USER_LOGOUT:
       return initialState;
+
+    case types.USER_PROFILE_UPDATE_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        method: { update: true }
+      };
+
+    case types.USER_PROFILE_UPDATE_FAIL:
+      return {
+        ...state,
+        loading: false,
+        method: { update: false }
+      };
     default:
       return state;
   }

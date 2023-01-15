@@ -28,7 +28,7 @@ const ProjectCardMembers: React.FC<ProjectCardMembersProps> = ({
               alt={member.name}
               width={28}
               height={28}
-              className="h-full rounded-full ring-1 ring-orange-500/50"
+              className="h-full object-center object-cover rounded-full ring-1 ring-orange-500/50 bg-gray-800"
             />
           ))
         ) : (

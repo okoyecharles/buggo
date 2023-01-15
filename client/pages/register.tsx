@@ -127,7 +127,6 @@ const Register = () => {
     async function convertImage() {
       // Convert image to base64
       if (image) {
-        console.log("converting image to base64");
         const imageFile = await toBase64(image as File | Blob);
         setBase64Image(imageFile as string);
       } else {
@@ -272,6 +271,7 @@ const Register = () => {
               id="avatar"
               name="avatar"
               accept="image/*"
+              className="block"
               onChange={(event) => {
                 if (event.target.files?.length) {
                   // Compress image

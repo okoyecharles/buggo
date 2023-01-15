@@ -20,9 +20,9 @@ import {
   getProjectTeamIds,
   updateProject,
 } from "../../../redux/actions/projectActions";
-import ProjectDeletePopup from "../../modals/projectDelete";
+import ProjectDeleteModal from "../../modals/projectDelete";
 import { restrictLength } from "../../../utils/stringHelper";
-import ProjectAssignPopup from "../../modals/projectAssign";
+import ProjectAssignModal from "../../modals/projectAssign";
 import ProjectOptionsPopup from "./Options";
 import ProjectCardMembers from "./Members";
 
@@ -293,14 +293,14 @@ const ProjectCard: React.FC<projectProps> = ({
         handleAssign={handleAssign}
         setProjectAssign={setProjectAssign}
       />
-      <ProjectAssignPopup
+      <ProjectAssignModal
         open={projectAssign}
         setOpen={setProjectAssign}
         project={project}
         loading={loading}
         method={method}
       />
-      <ProjectDeletePopup
+      <ProjectDeleteModal
         open={projectDeleteConfirm}
         setOpen={setProjectDeleteConfirm}
         project={project}

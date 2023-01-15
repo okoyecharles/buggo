@@ -5,10 +5,11 @@ import { logout } from "../../redux/actions/userActions";
 import store from "../../redux/configureStore";
 import { MdLogout } from "react-icons/md";
 
-const ProfileDropdown: React.FC<{ open: boolean; setOpen: any }> = ({
-  open,
-  setOpen,
-}) => {
+const ProfileDropdown: React.FC<{
+  open: boolean;
+  setOpen: any;
+  setEditProfile: any;
+}> = ({ open, setOpen, setEditProfile }) => {
   const spring = useSpring({
     opacity: 0,
     y: -10,
@@ -42,7 +43,8 @@ const ProfileDropdown: React.FC<{ open: boolean; setOpen: any }> = ({
         <button
           className="p-2 group text-gray-300 hover:bg-blue-600 hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm"
           onClick={() => {
-            toast.success("Profile edited successfully");
+            setEditProfile(true);
+            setOpen(false);
           }}
         >
           Edit Profile

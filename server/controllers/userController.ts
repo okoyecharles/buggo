@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User, { UserType } from '../models/userModel';
 import { Request, Response } from 'express';
+import AuthorizedRequest from '../types/request';
 
 const secret = process.env.JWT_SECRET || '';
 const tokenExpiration = process.env.NODE_ENV === 'development' ? '1d' : '1hr';
@@ -115,6 +116,46 @@ export const login = async (
       .json({ message: 'Something went wrong... Please try again' });
   }
 };
+
+/*
+ * @route   PUT /users/:id
+ * @desc    Update a user
+ * @access  Public
+  */
+export const updateUser = async (
+  req: AuthorizedRequest<UserType>,
+  res: Response
+) => {
+  const { id } = req.params;
+  const { name, image } = req.body;
+
+  const userId = req.user;
+
+  try {
+    const userExists = await User.findById(id);
+    if (!userExists) {
+      return res.status(404).json({ message: 'User not found' });
+    };
+
+    if (userId !== userExists._id.toString()) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    };
+
+    if (name) userExists.name = name;
+    if (image) userExists.image = image;
+
+    const updatedUser = await userExists.save();
+    res.status(200).json({
+      user: updatedUser,
+      token: generateToken(updatedUser._id),
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Something went wrong... Please try again' });
+  }
+};
+
 
 export const googleSignIn = async (
   req: Request<never, never, UserType>,
