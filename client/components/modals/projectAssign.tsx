@@ -1,30 +1,30 @@
-import { IoMdClose, IoMdReturnRight } from "react-icons/io";
-import Modal from ".";
-import { Project } from "../../redux/reducers/projects/types";
-import { useEffect, useReducer, useRef, useState } from "react";
-import { FaSearch } from "react-icons/fa";
-import { MdOutlineClose } from "react-icons/md";
-import { TailSpinLoader, ThreeDotsLoader } from "../loader";
-import User from "../../redux/reducers/user/types";
-import { getUsers } from "../../redux/actions/userActions";
-import { searchByNameOrEmail } from "../../utils/searchHelper";
-import Image from "next/image";
-import { restrictLength } from "../../utils/stringHelper";
-import Highlighter from "react-highlight-words";
-import store from "../../redux/configureStore";
-import { updateProject } from "../../redux/actions/projectActions";
-import { toast } from "react-toastify";
+import { IoMdClose, IoMdReturnRight } from 'react-icons/io';
+import Modal from '.';
+import { Project } from '../../redux/reducers/projects/types';
+import { useEffect, useReducer, useRef, useState } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { MdOutlineClose } from 'react-icons/md';
+import { TailSpinLoader, ThreeDotsLoader } from '../loader';
+import User from '../../redux/reducers/user/types';
+import { getUsers } from '../../redux/actions/userActions';
+import { searchByNameOrEmail } from '../../utils/searchHelper';
+import Image from 'next/image';
+import { restrictLength } from '../../utils/stringHelper';
+import Highlighter from 'react-highlight-words';
+import store from '../../redux/configureStore';
+import { updateProject } from '../../redux/actions/projectActions';
+import { toast } from 'react-toastify';
 
 const projectMembersReducer = (state: User[], action: any) => {
   switch (action.type) {
-    case "ADD":
+    case 'ADD':
       if (state.find((member) => member._id === action.payload._id)) {
         return state;
       }
       return [action.payload, ...state];
-    case "REMOVE":
+    case 'REMOVE':
       return state.filter((member) => member._id !== action.payload);
-    case "RESET":
+    case 'RESET':
       return action.payload;
     default:
       return state;
@@ -39,7 +39,7 @@ const ProjectAssignModal: React.FC<{
   method: any;
 }> = ({ open, setOpen, project, loading, method }) => {
   const searchRef = useRef<HTMLInputElement>(null);
-  const [search, setSearch] = useState<string>("");
+  const [search, setSearch] = useState<string>('');
   const [showClose, setShowClose] = useState<boolean>(false);
   const [searching, setSearching] = useState<boolean>(false);
 
@@ -81,8 +81,8 @@ const ProjectAssignModal: React.FC<{
 
   useEffect(() => {
     if (open) {
-      setSearch("");
-      updateMembers({ type: "RESET", payload: project.team });
+      setSearch('');
+      updateMembers({ type: 'RESET', payload: project.team });
       searchRef.current?.focus();
     }
   }, [open]);
@@ -90,9 +90,9 @@ const ProjectAssignModal: React.FC<{
   useEffect(() => {
     if (open && !loading && !method.update) {
       setOpen(false);
-      toast.success("Members assigned successfully");
+      toast.success('Members assigned successfully');
     }
-  }, [loading, method])
+  }, [loading, method]);
 
   return (
     <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
@@ -133,11 +133,11 @@ const ProjectAssignModal: React.FC<{
                     className="h-full object-center object-cover bg-gray-850"
                   />
                 </div>
-                <span>{restrictLength(member.name.split(" ")[0], 10)}</span>
+                <span>{restrictLength(member.name.split(' ')[0], 10)}</span>
                 <IoMdClose
                   className="text-xl cursor-pointer text-gray-600 hover:text-gray-200 transition"
                   onClick={() => {
-                    updateMembers({ type: "REMOVE", payload: member._id });
+                    updateMembers({ type: 'REMOVE', payload: member._id });
                   }}
                 />
               </li>
@@ -158,8 +158,8 @@ const ProjectAssignModal: React.FC<{
           <FaSearch
             className={`search-icon text-gray-500 cursor-pointer absolute top-1/2 -translate-y-1/2 right-3 lg:right-2 hover:text-gray-400 transition ${
               showClose
-                ? "opacity-0 pointer-events-none rotate-90"
-                : "opacity-100 pointer-events-auto rotate-0"
+                ? 'opacity-0 pointer-events-none rotate-90'
+                : 'opacity-100 pointer-events-auto rotate-0'
             }`}
             onClick={() => {
               searchRef.current?.focus();
@@ -169,11 +169,11 @@ const ProjectAssignModal: React.FC<{
           <MdOutlineClose
             className={`close-icon text-xl text-gray-500 cursor-pointer absolute top-1/2 -translate-y-1/2 right-3 lg:right-2 hover:text-gray-400 transition ${
               showClose
-                ? "opacity-100 pointer-events-auto rotate-0"
-                : "opacity-0 pointer-events-none -rotate-90"
+                ? 'opacity-100 pointer-events-auto rotate-0'
+                : 'opacity-0 pointer-events-none -rotate-90'
             }`}
             onClick={() => {
-              setSearch("");
+              setSearch('');
               searchRef.current?.focus();
             }}
             onMouseDown={(e) => e.preventDefault()}
@@ -192,58 +192,59 @@ const ProjectAssignModal: React.FC<{
             <li className="text-gray-400">No users found</li>
           ) : (
             users.map((user) => (
-              <>
-                <li className="flex items-center gap-2 p-2 px-3 bg-gray-950 rounded cursor-pointer select-none">
-                  <div className="">
-                    <Image
-                      src={user.image}
-                      width={100}
-                      height={100}
-                      alt={user.name}
-                      className="rounded-full h-10 w-10"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-200">
-                      <Highlighter
-                        autoEscape={true}
-                        textToHighlight={restrictLength(user.name, 25)}
-                        searchWords={[search]}
-                        highlightClassName="bg-blue-500/0 text-blue-500"
-                      />
-                    </h4>
-                    <p className="text-gray-400 text-sm">
-                      <Highlighter
-                        autoEscape={true}
-                        textToHighlight={restrictLength(user.email, 30)}
-                        searchWords={[search]}
-                        highlightClassName="bg-blue-500/0 text-blue-500"
-                      />
-                    </p>
-                  </div>
-                  <input
-                    id="default-checkbox"
-                    type="checkbox"
-                    checked={members.some(
-                      (member: User) => member._id === user._id
-                    )}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        updateMembers({
-                          type: "ADD",
-                          payload: user,
-                        });
-                      } else {
-                        updateMembers({
-                          type: "REMOVE",
-                          payload: user._id,
-                        });
-                      }
-                    }}
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              <li
+                className="flex items-center gap-2 p-2 px-3 bg-gray-950 rounded cursor-pointer select-none"
+                key={user._id}
+              >
+                <div className="">
+                  <Image
+                    src={user.image}
+                    width={100}
+                    height={100}
+                    alt={user.name}
+                    className="rounded-full h-10 w-10"
                   />
-                </li>
-              </>
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-200">
+                    <Highlighter
+                      autoEscape={true}
+                      textToHighlight={restrictLength(user.name, 25)}
+                      searchWords={[search]}
+                      highlightClassName="bg-blue-500/0 text-blue-500"
+                    />
+                  </h4>
+                  <p className="text-gray-400 text-sm">
+                    <Highlighter
+                      autoEscape={true}
+                      textToHighlight={restrictLength(user.email, 30)}
+                      searchWords={[search]}
+                      highlightClassName="bg-blue-500/0 text-blue-500"
+                    />
+                  </p>
+                </div>
+                <input
+                  id="default-checkbox"
+                  type="checkbox"
+                  checked={members.some(
+                    (member: User) => member._id === user._id
+                  )}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      updateMembers({
+                        type: 'ADD',
+                        payload: user,
+                      });
+                    } else {
+                      updateMembers({
+                        type: 'REMOVE',
+                        payload: user._id,
+                      });
+                    }
+                  }}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+              </li>
             ))
           )}
         </ul>
@@ -263,7 +264,7 @@ const ProjectAssignModal: React.FC<{
             );
           }}
         >
-          {loading && method.update ? <ThreeDotsLoader /> : "Save"}
+          {loading && method.update ? <ThreeDotsLoader /> : 'Save'}
         </button>
       </div>
     </Modal>

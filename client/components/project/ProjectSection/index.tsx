@@ -11,12 +11,16 @@ interface ProjectSectionProps {
   projects: Project[];
   loading: boolean;
   method: {};
+  search: string;
+  setSearch: any;
 }
 
 const ProjectSection: React.FC<ProjectSectionProps> = ({
   projects,
   loading,
   method,
+  search,
+  setSearch,
 }) => {
   const [projectsPerPage] = useState(4);
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,7 +48,7 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
           </h3>
 
           <div className="hidden lg:block">
-            <ProjectSearch />
+            <ProjectSearch search={search} setSearch={setSearch} />
           </div>
 
           <button
@@ -59,12 +63,13 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
           <Tooltip anchorId="create-project" content="Create Project" />
         </header>
         <div className="lg:hidden">
-          <ProjectSearch />
+          <ProjectSearch search={search} setSearch={setSearch} />
         </div>
         <ProjectsGrid
           projects={currentProjects}
           loading={loading}
           method={method}
+          search={search}
         />
       </div>
       <Paginate

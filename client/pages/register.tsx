@@ -1,31 +1,31 @@
-import React, { FormEvent, useEffect, useState } from "react";
-import Link from "next/link";
-import { useSpring, a } from "@react-spring/web";
-import { ThreeDotsLoader } from "../components/loader";
+import React, { FormEvent, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useSpring, a } from '@react-spring/web';
+import { ThreeDotsLoader } from '../components/loader';
 import {
   validateName,
   validateEmail,
   validatePassword,
   validateConfirmPassword,
-} from "../utils/formValidation";
-import { useSelector } from "react-redux";
-import store, { storeType } from "../redux/configureStore";
-import { toast } from "react-toastify";
-import { useRouter } from "next/router";
-import { register } from "../redux/actions/userActions";
-import Head from "next/head";
-import Compressor from "compressorjs";
-import { toBase64 } from "../utils/imageHelper";
+} from '../utils/formValidation';
+import { useSelector } from 'react-redux';
+import store, { storeType } from '../redux/configureStore';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
+import { register } from '../redux/actions/userActions';
+import Head from 'next/head';
+import Compressor from 'compressorjs';
+import { toBase64 } from '../utils/imageHelper';
 
 const Register = () => {
   const router = useRouter();
 
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [image, setImage] = useState<File | Blob | null>(null);
-  const [base64Image, setBase64Image] = useState<string>("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
+  const [base64Image, setBase64Image] = useState<string>('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState<string>('');
 
   const [nameError, setNameError] = useState<null | string>(null);
   const [emailError, setEmailError] = useState<null | string>(null);
@@ -62,8 +62,8 @@ const Register = () => {
       toast.error(registerStore.error.message);
     }
     if (currentUser?.user) {
-      router.replace("/");
-      toast.success("Signed Up successfully");
+      router.replace('/');
+      toast.success('Signed Up successfully');
     }
   }, [registerStore, currentUser]);
 
@@ -71,13 +71,13 @@ const Register = () => {
     if (error) setProcessing(false);
 
     // Throw error
-    if (type === "name") {
+    if (type === 'name') {
       setNameError(error);
-    } else if (type === "email") {
+    } else if (type === 'email') {
       setEmailError(error);
-    } else if (type === "password") {
+    } else if (type === 'password') {
       setPasswordError(error);
-    } else if (type === "passwordConfirmation") {
+    } else if (type === 'passwordConfirmation') {
       setPasswordConfirmationError(error);
     }
   };
@@ -92,22 +92,22 @@ const Register = () => {
 
     // Validate name
     let nameValidationError = validateName(name);
-    throwError(nameValidationError, "name");
+    throwError(nameValidationError, 'name');
 
     // Validate email
     let emailValidationError = validateEmail(email);
-    throwError(emailValidationError, "email");
+    throwError(emailValidationError, 'email');
 
     // Validate password
     let passwordValidationError = validatePassword(password);
-    throwError(passwordValidationError, "password");
+    throwError(passwordValidationError, 'password');
 
     // Validate password confirmation
     let passwordConfirmationValidationError = validateConfirmPassword(
       password,
       passwordConfirmation
     );
-    throwError(passwordConfirmationValidationError, "passwordConfirmation");
+    throwError(passwordConfirmationValidationError, 'passwordConfirmation');
 
     // If errors exist, return
     if (
@@ -130,7 +130,7 @@ const Register = () => {
         const imageFile = await toBase64(image as File | Blob);
         setBase64Image(imageFile as string);
       } else {
-        setBase64Image("");
+        setBase64Image('');
       }
     }
     convertImage();
@@ -161,12 +161,12 @@ const Register = () => {
             <label
               htmlFor="name"
               className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
-                nameError && "text-red-300"
+                nameError && 'text-red-300'
               }`}
             >
               Full Name {nameError && <span className="text-red-300"> - </span>}
               <span className="capitalize font-normal italic text-red-300">
-                {nameError ? `${nameError}` : ""}
+                {nameError ? `${nameError}` : ''}
               </span>
             </label>
             <input
@@ -185,12 +185,12 @@ const Register = () => {
             <label
               htmlFor="email"
               className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
-                emailError && "text-red-300"
+                emailError && 'text-red-300'
               }`}
             >
               Email {emailError && <span className="text-red-300"> - </span>}
               <span className="capitalize font-normal italic text-red-300">
-                {emailError ? `${emailError}` : ""}
+                {emailError ? `${emailError}` : ''}
               </span>
             </label>
             <input
@@ -209,13 +209,13 @@ const Register = () => {
             <label
               htmlFor="password"
               className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
-                passwordError && "text-red-300"
+                passwordError && 'text-red-300'
               }`}
             >
-              Password{" "}
+              Password{' '}
               {passwordError && <span className="text-red-300">-</span>}
               <span className="capitalize font-normal italic text-red-300">
-                {passwordError ? `${passwordError}` : ""}
+                {passwordError ? `${passwordError}` : ''}
               </span>
             </label>
             <input
@@ -234,17 +234,17 @@ const Register = () => {
             <label
               htmlFor="passwordConfirmation"
               className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
-                passwordConfirmationError && "text-red-300"
+                passwordConfirmationError && 'text-red-300'
               }`}
             >
-              Confirm Password{" "}
+              Confirm Password{' '}
               {passwordConfirmationError && (
                 <span className="text-red-300">-</span>
               )}
               <span className="capitalize font-normal italic text-red-300">
                 {passwordConfirmationError
                   ? `${passwordConfirmationError}`
-                  : ""}
+                  : ''}
               </span>
             </label>
             <input
@@ -282,7 +282,6 @@ const Register = () => {
                     maxWidth: 100,
                     quality: 0.8,
                     success(result) {
-                      console.log("compressed image", result.size);
                       setImage(result);
                     },
                   });
@@ -297,11 +296,11 @@ const Register = () => {
             className="font-open font-semibold p-3 text-ss mt-6 bg-blue-600 text-white rounded hover:bg-blue-700 hover:text-blue-100 disabled:opacity-80 disabled:cursor-not-allowed  transition flex justify-center"
             disabled={processing}
           >
-            {processing ? <ThreeDotsLoader /> : "Continue"}
+            {processing ? <ThreeDotsLoader /> : 'Continue'}
           </button>
 
           <p className="text-ss text-gray-400 mt-4">
-            Already have an account?{" "}
+            Already have an account?{' '}
             <Link href="/login" className="text-blue-500 hover:underline">
               Login
             </Link>

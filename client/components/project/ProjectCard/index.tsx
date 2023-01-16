@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useEffect, useState } from "react";
+import React, { KeyboardEvent, useEffect, useState } from 'react';
 import {
   BsFillPencilFill,
   BsFillPersonCheckFill,
@@ -6,29 +6,31 @@ import {
   BsPersonDashFill,
   BsPersonPlusFill,
   BsThreeDots,
-} from "react-icons/bs";
-import { AiFillClockCircle } from "react-icons/ai";
-import { Tooltip } from "react-tooltip";
-import { IoTicket } from "react-icons/io5";
-import Image from "next/image";
-import moment from "moment";
-import Pluralize from "react-pluralize";
-import { Project } from "../../../redux/reducers/projects/types";
-import { useSelector } from "react-redux";
-import store, { storeType } from "../../../redux/configureStore";
+} from 'react-icons/bs';
+import { AiFillClockCircle } from 'react-icons/ai';
+import { Tooltip } from 'react-tooltip';
+import { IoTicket } from 'react-icons/io5';
+import moment from 'moment';
+import Pluralize from 'react-pluralize';
+import { Project } from '../../../redux/reducers/projects/types';
+import { useSelector } from 'react-redux';
+import store, { storeType } from '../../../redux/configureStore';
 import {
   getProjectTeamIds,
   updateProject,
-} from "../../../redux/actions/projectActions";
-import ProjectDeleteModal from "../../modals/projectDelete";
-import { restrictLength } from "../../../utils/stringHelper";
-import ProjectAssignModal from "../../modals/projectAssign";
-import ProjectOptionsPopup from "./Options";
-import ProjectCardMembers from "./Members";
+} from '../../../redux/actions/projectActions';
+import ProjectDeleteModal from '../../modals/projectDelete';
+import { restrictLength } from '../../../utils/stringHelper';
+import ProjectAssignModal from '../../modals/projectAssign';
+import ProjectOptionsPopup from './Options';
+import ProjectCardMembers from './Members';
+import Highlighter from 'react-highlight-words';
+import Link from 'next/link';
 
 interface projectProps {
   project: Project;
   loading: boolean;
+  search: string;
   method: {
     [key: string]: any;
   };
@@ -39,6 +41,7 @@ interface projectProps {
 const ProjectCard: React.FC<projectProps> = ({
   project,
   loading,
+  search,
   method,
   currentEdit,
   setCurrentEdit,
@@ -75,13 +78,13 @@ const ProjectCard: React.FC<projectProps> = ({
           id: project._id,
           project: {
             team: previousTeam.filter(
-              (id: string) => id !== currentUser?.user._id
+              (id: string) => id !== currentUser.user?._id
             ),
           },
         })
       );
     } else {
-      if (previousTeam.includes(currentUser?.user._id as string)) {
+      if (previousTeam.includes(currentUser.user?._id as string)) {
         store.dispatch(
           updateProject({
             id: project._id,
@@ -95,7 +98,7 @@ const ProjectCard: React.FC<projectProps> = ({
           updateProject({
             id: project._id,
             project: {
-              team: [...previousTeam, currentUser?.user._id],
+              team: [...previousTeam, currentUser.user?._id],
             },
           })
         );
@@ -123,7 +126,7 @@ const ProjectCard: React.FC<projectProps> = ({
 
   const isInTeam = (project: any) => {
     return !!project.team.filter(
-      (member: any) => member._id === currentUser?.user._id
+      (member: any) => member._id === currentUser.user?._id
     ).length;
   };
 
@@ -132,14 +135,20 @@ const ProjectCard: React.FC<projectProps> = ({
       key={project._id}
       className="project flex flex-col bg-gray-850 p-4 group hover:bg-gray-900 rounded relative"
     >
-      <h4
-        className={`font-bold text-gray-200 font-noto text-xl mb-2 ${
-          editMode ? "hidden" : ""
+      <Link
+        href={`/projects/${project._id}`}
+        className={`font-bold text-gray-200 font-noto text-xl group-hover:underline cursor-pointer mb-2 ${
+          editMode ? 'hidden' : ''
         }`}
       >
-        {restrictLength(project.title, 25)}
-      </h4>
-      <div className={`relative mb-2 ${editMode ? "" : "hidden"}`}>
+        <Highlighter
+          autoEscape={true}
+          textToHighlight={restrictLength(project.title, 25)}
+          searchWords={[search]}
+          highlightClassName="bg-orange-500/75 text-white"
+        />
+      </Link>
+      <div className={`relative mb-2 ${editMode ? '' : 'hidden'}`}>
         <input
           type="text"
           ref={editInputRef}
@@ -149,17 +158,17 @@ const ProjectCard: React.FC<projectProps> = ({
             setEditTitle(e.target.value);
           }}
           onKeyDown={(event: KeyboardEvent) => {
-            if (event.key === "Enter") {
+            if (event.key === 'Enter') {
               editProject(project._id, { title: editTitle });
               setEditMode(false);
             }
-            if (event.key === "Escape") {
+            if (event.key === 'Escape') {
               setEditMode(false);
             }
           }}
         />
         <div className="helper text-xsm hidden lg:block">
-          escape to{" "}
+          escape to{' '}
           <span
             className="text-blue-500 hover:underline cursor-pointer"
             onClick={() => {
@@ -167,8 +176,8 @@ const ProjectCard: React.FC<projectProps> = ({
             }}
           >
             cancel
-          </span>{" "}
-          • enter to{" "}
+          </span>{' '}
+          • enter to{' '}
           <span
             className="text-blue-500 hover:underline cursor-pointer"
             onClick={() => {
@@ -202,8 +211,8 @@ const ProjectCard: React.FC<projectProps> = ({
           {moment(project.createdAt).fromNow()}
         </p>
         <p className="text-gray-500 uppercase text-xsm flex items-center gap-2">
-          <IoTicket className="text-orange-400" />{" "}
-          <Pluralize singular={"ticket"} count={project.tickets.length} />
+          <IoTicket className="text-orange-400" />{' '}
+          <Pluralize singular={'ticket'} count={project.tickets.length} />
         </p>
         <p className="uppercase lg:ml-auto text-orange-500/90 text-xsm font-semibold">
           By {project.author.name}
@@ -211,7 +220,7 @@ const ProjectCard: React.FC<projectProps> = ({
       </div>
       <div
         className={`options flex bg-gray-800 absolute rounded bottom-4 lg:top-4 right-4 h-8 hover:shadow-lg overflow-hidden transition-all lg:opacity-0 lg:pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto w-fit self-end ${
-          editMode ? "hidden" : ""
+          editMode ? 'hidden' : ''
         }`}
       >
         <button
@@ -224,7 +233,7 @@ const ProjectCard: React.FC<projectProps> = ({
           {isInTeam(project) ? <BsPersonDashFill /> : <BsPersonPlusFill />}
         </button>
 
-        {currentUser?.user._id === project.author._id && (
+        {currentUser.user?._id === project.author._id && (
           <>
             <button
               id={`assign-project-${project._id}`}
@@ -274,7 +283,7 @@ const ProjectCard: React.FC<projectProps> = ({
       <Tooltip anchorId={`edit-project-${project._id}`} content="Edit" />
       <Tooltip
         anchorId={`assign-self-${project._id}`}
-        content={isInTeam(project) ? "Remove Yourself" : "Assign Yourself"}
+        content={isInTeam(project) ? 'Remove Yourself' : 'Assign Yourself'}
       />
       <Tooltip
         anchorId={`assign-project-${project._id}`}

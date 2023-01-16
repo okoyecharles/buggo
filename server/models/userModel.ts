@@ -20,10 +20,8 @@ const UserSchema = new mongoose.Schema(
 export type UserType = InferSchemaType<typeof UserSchema>;
 
 // Delete associated projects and tickets when user is removed from db
-UserSchema.pre("remove", { document: true }, async function (next) {
+UserSchema.pre('remove', { document: true }, async function (next) {
   const user: any = this;
-
-  console.log('Deleting associated projects and tickets... for user: ', user.name);
 
   await Project.deleteMany({ author: user._id });
   await Ticket.deleteMany({ author: user._id });

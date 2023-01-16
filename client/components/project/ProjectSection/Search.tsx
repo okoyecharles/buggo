@@ -1,10 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FaSearch } from "react-icons/fa";
-import { MdOutlineClose } from "react-icons/md";
+import React, { useEffect, useRef, useState } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { MdOutlineClose } from 'react-icons/md';
 
-const ProjectSearch = () => {
+interface ProjectSearchProps {
+  search: string;
+  setSearch: any;
+}
+
+const ProjectSearch: React.FC<ProjectSearchProps> = ({ search, setSearch }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [search, setSearch] = useState<string>("");
   const [showClose, setShowClose] = useState<boolean>(false);
 
   useEffect(() => {
@@ -24,8 +28,8 @@ const ProjectSearch = () => {
       <FaSearch
         className={`search-icon text-gray-500 cursor-pointer absolute top-1/2 -translate-y-1/2 right-3 lg:right-2 hover:text-gray-400 transition ${
           showClose
-            ? "opacity-0 pointer-events-none rotate-90"
-            : "opacity-100 pointer-events-auto rotate-0"
+            ? 'opacity-0 pointer-events-none rotate-90'
+            : 'opacity-100 pointer-events-auto rotate-0'
         }`}
         onClick={() => {
           inputRef.current?.focus();
@@ -35,11 +39,11 @@ const ProjectSearch = () => {
       <MdOutlineClose
         className={`close-icon text-xl text-gray-500 cursor-pointer absolute top-1/2 -translate-y-1/2 right-3 lg:right-2 hover:text-gray-400 transition ${
           showClose
-            ? "opacity-100 pointer-events-auto rotate-0"
-            : "opacity-0 pointer-events-none -rotate-90"
+            ? 'opacity-100 pointer-events-auto rotate-0'
+            : 'opacity-0 pointer-events-none -rotate-90'
         }`}
         onClick={() => {
-          setSearch("");
+          setSearch('');
           inputRef.current?.focus();
         }}
         onMouseDown={(e) => e.preventDefault()}

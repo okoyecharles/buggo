@@ -1,6 +1,6 @@
-import React from "react";
-import { Project } from "../../../redux/reducers/projects/types";
-import Image from "next/image";
+import React from 'react';
+import { Project } from '../../../redux/reducers/projects/types';
+import Image from 'next/image';
 
 interface ProjectCardMembersProps {
   project: Project;
@@ -25,6 +25,7 @@ const ProjectCardMembers: React.FC<ProjectCardMembersProps> = ({
           <>
             {project.team.slice(0, 3).map((member) => (
               <Image
+                key={member._id}
                 src={member.image}
                 alt={member.name}
                 width={28}
@@ -37,7 +38,7 @@ const ProjectCardMembers: React.FC<ProjectCardMembersProps> = ({
                 +{project.team.length - 3} more
               </p>
             ) : (
-              ""
+              ''
             )}
           </>
         ) : (
@@ -55,7 +56,7 @@ const ProjectCardMembers: React.FC<ProjectCardMembersProps> = ({
             Assign Yourself?
           </button>
         ) : (
-          ""
+          ''
         )
       }
     </div>

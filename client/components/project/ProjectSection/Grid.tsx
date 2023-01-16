@@ -4,6 +4,7 @@ import { Project } from '../../../redux/reducers/projects/types';
 interface ProjectsGridType {
   projects: Project[];
   loading: boolean;
+  search: string;
   method: {
     [key: string]: any;
   };
@@ -13,6 +14,7 @@ const ProjectsGrid: React.FC<ProjectsGridType> = ({
   projects,
   loading,
   method,
+  search,
 }) => {
   const [currentEdit, setCurrentEdit] = React.useState<string>('');
 
@@ -25,6 +27,7 @@ const ProjectsGrid: React.FC<ProjectsGridType> = ({
             project={project}
             loading={loading}
             method={method}
+            search={search}
             currentEdit={currentEdit}
             setCurrentEdit={setCurrentEdit}
           />
