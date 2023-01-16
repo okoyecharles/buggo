@@ -101,7 +101,7 @@ const Login = () => {
             Welcome back!
           </h2>
           <span className="self-center text-ss">
-            {router.query.redirect
+            {router.query.redirected
               ? "Please login to continue"
               : "We're so excited to see you again!"}
           </span>
@@ -168,12 +168,12 @@ const Login = () => {
             {processing ? <ThreeDotsLoader /> : "Log In"}
           </button>
 
-          <p className="text-ss text-gray-400 mt-4">
+          <div className="text-ss text-gray-400 mt-4">
             Need an account?{" "}
             <Link href="/register" className="text-blue-500 hover:underline">
               Register
             </Link>
-          </p>
+          </div>
         </a.form>
       </div>
     </>

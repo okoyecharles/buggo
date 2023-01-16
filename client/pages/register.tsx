@@ -299,12 +299,12 @@ const Register = () => {
             {processing ? <ThreeDotsLoader /> : 'Continue'}
           </button>
 
-          <p className="text-ss text-gray-400 mt-4">
+          <div className="text-ss text-gray-400 mt-4">
             Already have an account?{' '}
             <Link href="/login" className="text-blue-500 hover:underline">
               Login
             </Link>
-          </p>
+          </div>
         </a.form>
       </div>
     </>

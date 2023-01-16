@@ -3,6 +3,7 @@ import * as types from '../constants/userConstants';
 import axios, { AxiosRequestConfig } from 'axios';
 import { DispatchType } from '../types';
 import { storeType } from '../configureStore';
+import generateConfig from './config/axios';
 
 const login =
   (email: string, password: string) => async (dispatch: DispatchType) => {
@@ -11,15 +12,10 @@ const login =
         type: types.USER_LOGIN_REQUEST,
       });
 
-      const config: AxiosRequestConfig<any> = {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
       const { data } = await axios.post(
         `${BACKEND_URL}/users/signin`,
         { email, password },
-        config
+        generateConfig()
       );
 
       dispatch({
@@ -39,15 +35,10 @@ const register = (formData: any) => async (dispatch: DispatchType) => {
     dispatch({
       type: types.USER_REGISTER_REQUEST,
     });
-    const config: AxiosRequestConfig<any> = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
     const { data } = await axios.post(
       `${BACKEND_URL}/users/signup`,
       formData,
-      config
+      generateConfig()
     );
 
     dispatch({
@@ -62,10 +53,35 @@ const register = (formData: any) => async (dispatch: DispatchType) => {
   }
 };
 
-const logout = () => (dispatch: DispatchType) => {
+const logout = () => async (dispatch: DispatchType) => {
   dispatch({
     type: types.USER_LOGOUT,
   });
+  await axios.post(`${BACKEND_URL}/users/signout`, {}, generateConfig());
+};
+
+const validateUserSession = () => async (dispatch: DispatchType) => {
+  try {
+    dispatch({
+      type: types.USER_VALIDATE_REQUEST,
+    });
+  
+    const { data } = await axios.post(
+      `${BACKEND_URL}/users/validate`,
+      {},
+      generateConfig()
+    );
+
+    dispatch({
+      type: types.USER_VALIDATE_SUCCESS,
+      payload: data,
+    });
+  } catch (error: any) {
+    dispatch({
+      type: types.USER_VALIDATE_FAIL,
+    });
+    logout();
+  }
 };
 
 const updateUser = (formData: {
@@ -77,18 +93,10 @@ const updateUser = (formData: {
       type: types.USER_PROFILE_UPDATE_REQUEST,
     });
     const currentUser = getState().currentUser;
-
-    const config: AxiosRequestConfig<any> = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${currentUser.token}`,
-      },
-    };
-
     const { data } = await axios.put(
       `${BACKEND_URL}/users/${currentUser.user?._id}`,
       formData,
-      config
+      generateConfig()
     );
 
     dispatch({
@@ -104,17 +112,11 @@ const updateUser = (formData: {
 };
 
 const getUsers = async () => {
-  const config: AxiosRequestConfig<any> = {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-
-  const { data } = await axios.get(`${BACKEND_URL}/users`, config);
+  const { data } = await axios.get(`${BACKEND_URL}/users`, generateConfig());
 
   return data;
 };
 
 
 
-export { login, register, logout, updateUser, getUsers };
+export { validateUserSession, login, register, logout, updateUser, getUsers };

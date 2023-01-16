@@ -3,30 +3,28 @@ import AuthorizedRequest from '../types/request';
 import jwt from 'jsonwebtoken';
 
 const secret = process.env.JWT_SECRET || '';
+const tokenName = "bug-tracker-token";
+
 const protect = async (
   req: AuthorizedRequest<any>,
   res: Response,
   next: NextFunction
 ) => {
-  const requestToken = req.headers.authorization;
-  let token = '';
+  const requestToken = req.cookies[tokenName];
 
-  if (requestToken && requestToken.startsWith('Bearer')) {
+  if (requestToken) {
     try {
-      token = requestToken.split(' ')[1];
-
-      const decoded: any = jwt.verify(token, secret);
+      const decoded: any = jwt.verify(requestToken, secret);
 
       req.user = decoded.id;
 
       next();
-    } catch (err) {
-      return res.status(401).json({ message: 'Not authorized' });
+    } catch (err: any) {
+      res.clearCookie(tokenName);
+      return res.status(400).json({ message: 'Not authorized' });
     }
-  }
-
-  if (!token) {
-    res.status(400).json({ message: 'Not authorized, no token' });
+  } else {
+    res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
 

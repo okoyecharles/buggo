@@ -4,18 +4,18 @@ import User from './types';
 
 type State = {
   user: User | null,
-  token: string | null,
   loading: boolean,
   method: {
     update: boolean;
+    validate: boolean;
   };
 };
 const initialState: State = {
   user: null,
-  token: null,
   loading: false,
   method: {
-    update: false
+    update: false,
+    validate: false
   }
 };
 
@@ -29,13 +29,13 @@ const currentUserReducer = (
       return {
         ...payload,
         loading: false,
-        method: { update: false }
+        method: { ...state.method, update: false }
       };
     case types.USER_REGISTER_SUCCESS:
       return {
         ...payload,
         loading: false,
-        method: { update: false }
+        method: { ...state.method, update: false }
       };
     case types.USER_LOGOUT:
       return initialState;
@@ -44,14 +44,33 @@ const currentUserReducer = (
       return {
         ...state,
         loading: true,
-        method: { update: true }
+        method: { ...state.method, update: true }
       };
 
     case types.USER_PROFILE_UPDATE_FAIL:
       return {
         ...state,
         loading: false,
-        method: { update: false }
+        method: { ...state.method, update: false }
+      };
+    
+    case types.USER_VALIDATE_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        method: { ...state.method, validate: true }
+      };
+    case types.USER_VALIDATE_SUCCESS:
+      return {
+        ...payload,
+        loading: false,
+        method: { ...state.method, validate: false }
+      };
+    case types.USER_VALIDATE_FAIL:
+      return {
+        ...state,
+        loading: false,
+        method: { ...state.method, validate: false }
       };
     default:
       return state;

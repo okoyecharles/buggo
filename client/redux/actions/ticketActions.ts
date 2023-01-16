@@ -3,6 +3,7 @@ import BACKEND_URL from '../../config/Backend';
 import * as types from './../constants/ticketConstants';
 import axios, { AxiosRequestConfig } from 'axios';
 import { DispatchType } from '../types';
+import generateConfig from './config/axios';
 
 export const fetchTickets = () => async (dispatch: DispatchType, getState: () => storeType) => {
   try {
@@ -10,14 +11,10 @@ export const fetchTickets = () => async (dispatch: DispatchType, getState: () =>
       type: types.TICKET_LIST_REQUEST,
     });
     const currentUser = getState().currentUser;
-
-    const config: AxiosRequestConfig<any> = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${currentUser?.token}`,
-      },
-    };
-    const { data } = await axios.get(`${BACKEND_URL}/tickets`, config);
+    const { data } = await axios.get(
+      `${BACKEND_URL}/tickets`,
+      generateConfig()
+    );
 
     dispatch({
       type: types.TICKET_LIST_SUCCESS,
@@ -37,14 +34,10 @@ export const fetchTicketById = (id: string) => async (dispatch: DispatchType, ge
       type: types.TICKET_DETAILS_REQUEST,
     });
     const currentUser = getState().currentUser;
-
-    const config: AxiosRequestConfig<any> = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${currentUser?.token}`,
-      },
-    };
-    const { data } = await axios.get(`${BACKEND_URL}/tickets/${id}`, config);
+    const { data } = await axios.get(
+      `${BACKEND_URL}/tickets/${id}`,
+      generateConfig()
+    );
 
     dispatch({
       type: types.TICKET_DETAILS_SUCCESS,

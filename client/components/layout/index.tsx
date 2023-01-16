@@ -11,7 +11,6 @@ import ProfileDropdown from './ProfileDropdown';
 import navLinks from './data/navLinks';
 import { restrictLength } from '../../utils/stringHelper';
 import EditProfileModal from '../modals/profileEdit';
-import User from '../../redux/reducers/user/types';
 import defaultAvatar from '../../db/avatar/default';
 
 interface LayoutProps {
@@ -26,11 +25,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [editProfile, setEditProfile] = useState(false);
 
   useEffect(() => {
-    if (!currentUser.user) {
-      router.replace('/login/?redirect=true');
-      return;
+    if (
+      !currentUser.user &&
+      !currentUser.loading &&
+      !currentUser.method.validate
+    ) {
+      router.replace("/login?redirected=true")
     }
-  }, [currentUser.user]);
+  }, [currentUser]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -49,7 +51,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             />
             <div className="profile-info flex flex-col h-full justify-start">
               <p className="text-sm font-bold">
-                {restrictLength(currentUser.user?.name, 20)}
+                {restrictLength(currentUser.user?.name, 20) || 'User'}
               </p>
               <p
                 className={`text-xsm ${

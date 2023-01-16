@@ -123,7 +123,7 @@ const ProjectAssignModal: React.FC<{
           )}
           {members.map((member: User) => (
             <>
-              <li className="flex gap-2 bg-gray-950 items-center p-2 rounded-lg group select-none">
+              <li className="flex gap-2 bg-gray-950 items-center p-2 rounded-lg group select-none" key={member._id}>
                 <div className="h-6 w-6 overflow-hidden rounded-full">
                   <Image
                     src={member.image}

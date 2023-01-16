@@ -154,7 +154,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   className="relative flex w-fit rounded-full"
                 >
                   <Image
-                    src={base64Image}
+                    src={base64Image || defaultAvatar}
                     alt="Profile image"
                     width={75}
                     height={75}

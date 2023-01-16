@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { logout } from "../../redux/actions/userActions";
 import store from "../../redux/configureStore";
 import { MdLogout } from "react-icons/md";
+import { useRouter } from "next/router";
 
 const ProfileDropdown: React.FC<{
   open: boolean;
@@ -54,8 +55,8 @@ const ProfileDropdown: React.FC<{
         <button
           className="p-2 group text-red-500 hover:bg-red-500 hover:text-red-50 flex justify-between items-center transition-colors rounded-sm"
           onClick={() => {
-            toast.success("Logged out successfully");
             store.dispatch(logout());
+            setOpen(false);
           }}
         >
           Logout

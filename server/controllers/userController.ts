@@ -5,7 +5,8 @@ import { Request, Response } from 'express';
 import AuthorizedRequest from '../types/request';
 
 const secret = process.env.JWT_SECRET || '';
-const tokenExpiration = process.env.NODE_ENV === 'development' ? '1d' : '1hr';
+const tokenExpiration = process.env.NODE_ENV === 'development' ? '1d' : '7d';
+const tokenName = "bug-tracker-token";
 
 /* 
  * @route   GET /users
@@ -73,7 +74,10 @@ export const register = async (
       image,
     });
 
-    res.status(200).json({ user, token: generateToken(user._id) });
+    const token = generateToken(user._id);
+    res.status(200)
+      .cookie(tokenName, token, { httpOnly: true })
+      .json({ user });
   } catch (error) {
     res
       .status(500)
@@ -107,14 +111,26 @@ export const login = async (
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    const token = generateToken(userExists._id);
     res
       .status(200)
-      .json({ user: userExists, token: generateToken(userExists._id) });
+      .cookie(tokenName, token, { httpOnly: true })
+      .json({ user: userExists });
   } catch (error) {
     res
       .status(500)
       .json({ message: 'Something went wrong... Please try again' });
   }
+};
+
+/*
+ * @route   POST /users/signout
+  * @desc    Logout a user
+  * @access  Public
+  */
+
+export const logout = async (req: Request, res: Response) => {
+  res.clearCookie(tokenName, { httpOnly: true }).send('Logged out');
 };
 
 /*
@@ -146,14 +162,37 @@ export const updateUser = async (
 
     const updatedUser = await userExists.save();
     res.status(200).json({
-      user: updatedUser,
-      token: generateToken(updatedUser._id),
+      user: updatedUser
     });
   } catch (error) {
     res
       .status(500)
       .json({ message: 'Something went wrong... Please try again' });
   }
+};
+
+/*
+  * @route   POST /users/validate
+  * @desc    Validate a user
+  * @access  Public
+*/
+export const validateUser = async (req: Request, res: Response) => {
+  const token = req.cookies[tokenName];
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as {
+    id: string;
+  };
+
+  const user = await User.findById(decodedToken.id);
+
+  if (!user) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  res.status(200).json({ user });
 };
 
 
@@ -168,7 +207,7 @@ export const googleSignIn = async (
     if (userExists) {
       return res
         .status(200)
-        .json({ user: userExists, token: generateToken(userExists._id) });
+        .json({ user: userExists });
     }
 
     const user = await User.create({
@@ -177,7 +216,7 @@ export const googleSignIn = async (
       googleId,
     });
 
-    res.status(200).json({ user, token: generateToken(user._id) });
+    res.status(200).json({ user });
   } catch (error) {
     res
       .status(500)

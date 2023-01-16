@@ -206,14 +206,14 @@ const ProjectCard: React.FC<projectProps> = ({
         method={method}
       />
       <div className="flex flex-col mt-4 lg:flex-row lg:mt-0  lg:gap-4">
-        <p className="text-gray-500 uppercase text-xsm flex items-center gap-2">
+        <div className="text-gray-500 uppercase text-xsm flex items-center gap-2">
           <AiFillClockCircle className="text-orange-400" />
           {moment(project.createdAt).fromNow()}
-        </p>
-        <p className="text-gray-500 uppercase text-xsm flex items-center gap-2">
+        </div>
+        <div className="text-gray-500 uppercase text-xsm flex items-center gap-2">
           <IoTicket className="text-orange-400" />{' '}
           <Pluralize singular={'ticket'} count={project.tickets.length} />
-        </p>
+        </div>
         <p className="uppercase lg:ml-auto text-orange-500/90 text-xsm font-semibold">
           By {project.author.name}
         </p>
