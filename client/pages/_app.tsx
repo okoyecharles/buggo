@@ -9,12 +9,14 @@ import "react-tooltip/dist/react-tooltip.css";
 import Layout from "../components/layout/index";
 import { validateUserSession } from "../redux/actions/userActions";
 
-store.dispatch(validateUserSession());
-
 export default function App({ Component, pageProps, ...appProps }: AppProps) {
   const isLayoutNeeded =
     Component.name !== "Login" && Component.name !== "Register";
   const LayoutComponent = isLayoutNeeded ? Layout : React.Fragment;
+
+  useEffect(() => {
+    store.dispatch(validateUserSession());
+  }, []);
 
   return (
     <>

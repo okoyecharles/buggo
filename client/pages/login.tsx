@@ -46,11 +46,14 @@ const Login = () => {
     if (loginStore.error) {
       toast.error(loginStore.error.message);
     }
-    if (currentUser?.user) {
+  }, [loginStore, currentUser]);
+
+  useEffect(() => {
+    if (currentUser.user && !currentUser.loading) {
       router.replace("/");
       toast.success("Logged In successfully");
     }
-  }, [loginStore, currentUser]);
+  }, [currentUser.user]);
 
   const throwError = (error: string | null, type: string) => {
     if (error) setProcessing(false);

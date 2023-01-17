@@ -24,15 +24,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [expandNav, setExpandNav] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
 
+  const [pageLoaded, setPageLoaded] = useState(false);
+
   useEffect(() => {
     if (
       !currentUser.user &&
       !currentUser.loading &&
-      !currentUser.method.validate
+      !currentUser.method.validate &&
+      pageLoaded
     ) {
       router.replace("/login?redirected=true")
     }
-  }, [currentUser]);
+    setPageLoaded(true);
+  }, [currentUser.user]);
 
   return (
     <div className="flex flex-col min-h-screen">
