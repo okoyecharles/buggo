@@ -136,7 +136,7 @@ const ProjectCard: React.FC<projectProps> = ({
       className="project flex flex-col bg-gray-850 p-4 group hover:bg-gray-900 rounded relative"
     >
       <Link
-        href={`/projects/${project._id}`}
+        href={`/project/${project._id}`}
         className={`font-bold text-gray-200 font-noto text-xl group-hover:underline cursor-pointer mb-2 ${
           editMode ? 'hidden' : ''
         }`}

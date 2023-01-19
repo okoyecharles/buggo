@@ -33,10 +33,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       !currentUser.method.validate &&
       pageLoaded
     ) {
-      router.replace("/login?redirected=true")
+      router.replace('/login?redirected=true');
     }
     setPageLoaded(true);
-  }, [currentUser.user]);
+  }, [currentUser]);
 
   return (
     <div className="flex flex-col min-h-screen">
