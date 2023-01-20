@@ -12,7 +12,6 @@ export const fetchProjects =
       dispatch({
         type: types.PROJECT_LIST_REQUEST,
       });
-      const currentUser = getState().currentUser;
 
       const { data } = await axios.get(
         `${BACKEND_URL}/projects`,
@@ -37,7 +36,6 @@ export const fetchProjectById =
       dispatch({
         type: types.PROJECT_DETAILS_REQUEST,
       });
-      const currentUser = getState().currentUser;
 
       const { data } = await axios.get(`${BACKEND_URL}/projects/${id}`, generateConfig());
 
@@ -60,7 +58,6 @@ export const createProject =
         dispatch({
           type: types.PROJECT_CREATE_REQUEST,
         });
-        const currentUser = getState().currentUser;
         const { data } = await axios.post(
           `${BACKEND_URL}/projects`,
           project,
@@ -86,7 +83,6 @@ export const updateProject =
         dispatch({
           type: types.PROJECT_UPDATE_REQUEST,
         });
-        const currentUser = getState().currentUser;
         const { data } = await axios.put(
           `${BACKEND_URL}/projects/${id}`,
           project,
@@ -121,7 +117,6 @@ export const deleteProject =
       dispatch({
         type: types.PROJECT_DELETE_REQUEST,
       });
-      const currentUser = getState().currentUser;
       await axios.delete(`${BACKEND_URL}/projects/${id}`, generateConfig());
 
       dispatch({

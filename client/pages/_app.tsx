@@ -20,7 +20,7 @@ export default function App({ Component, pageProps, ...appProps }: AppProps) {
 
   return (
     <>
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position={'bottom-right'} />
       <Provider store={store}>
         <LayoutComponent>
           <Component {...pageProps} />

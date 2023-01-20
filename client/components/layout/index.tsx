@@ -30,12 +30,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     if (
       !currentUser.user &&
       !currentUser.loading &&
-      !currentUser.method.validate &&
-      pageLoaded
+      !currentUser.method.validate
     ) {
       router.replace('/login?redirected=true');
     }
-    setPageLoaded(true);
   }, [currentUser]);
 
   return (

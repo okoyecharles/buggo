@@ -1,18 +1,24 @@
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useEffect } from 'react';
+import store, { storeType } from '../../redux/configureStore';
 import { useSelector } from 'react-redux';
-import { storeType } from '../../redux/configureStore';
+import { fetchProjectById } from '../../redux/actions/projectActions';
 
 const ProjectDetails: React.FC = () => {
-  const projects = useSelector((store: storeType) => store.projects);
   const router = useRouter();
   const { id } = router.query;
-  const project = projects.projects.find((project) => project._id === id);
-  console.log(project);
+  const project = useSelector((store: storeType) => store.project);
+
+  useEffect(() => {
+    if (!project.loading && id) {
+      store.dispatch(fetchProjectById(id as string));
+    }
+  }, []);
 
   return (
     <div>
-      <h2>Project details for the ID</h2>
+      <h2>Project details, ID: {id}</h2>
+      <h3>Project Name: {project.project?.title}</h3>
     </div>
   );
 };
