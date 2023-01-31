@@ -8,6 +8,7 @@ type Ticket = {
   time_estimate: number;
   project: string;
   comments: string[] | {}[];
+  createdAt: string;
 };
 
 export default Ticket;

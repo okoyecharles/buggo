@@ -94,7 +94,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </header>
       <div className="flex-1 flex flex-col lg:flex-row-reverse lg:relative">
         <main
-          className={`text-gray-300 font-open flex-1 p-4 ${
+          className={`text-gray-300 font-open flex-1 ${
             expandNav ? 'lg:ml-36' : 'lg:ml-[60px]'
           } transition-all`}
         >

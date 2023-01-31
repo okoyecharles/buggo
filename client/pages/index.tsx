@@ -25,9 +25,9 @@ export default function Home() {
     // Fetch projects if user state updates
     if (!projects.loading && !projects.method.list)
       store.dispatch(fetchProjects());
-    
+
     if (pageLoaded) return;
-  
+
     // Fetch tickets on initial load
     if (!tickets.loading) store.dispatch(fetchTickets());
 
@@ -41,19 +41,15 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <header className="mb-4">
-        <h2 className="text-lg lg:text-xl font-semibold text-orange-400">
-          {currentUser.user && (
-            <>
-              {getGreeting()},{" "}
-              <span className="text-gray-200 whitespace-nowrap">
-                {currentUser.user?.name}!
-              </span>
-            </>
-          )}
+      <header className="m-4">
+        <h2 className="text-lg lg:text-xl font-noto flex flex-col">
+          <span className="text-gray-200 text-ss">{getGreeting()}</span>
+          <div className="text-orange-400 font-semibold leading-5">
+            Welcome Back!
+          </div>
         </h2>
       </header>
-      <div className="grid gap-16 xl:gap-4 xl:grid-cols-4">
+      <div className="grid gap-16 xl:gap-4 xl:grid-cols-4 m-4">
         <ProjectSection
           projects={searchProjectByName(projectSearch, projects.projects)}
           loading={projects.loading}
