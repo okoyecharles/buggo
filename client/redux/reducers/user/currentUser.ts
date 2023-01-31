@@ -38,7 +38,10 @@ const currentUserReducer = (
         method: { ...state.method, update: false }
       };
     case types.USER_LOGOUT:
-      return initialState;
+      return {
+        ...initialState,
+        method: { ...state.method, validate: false }
+      };
 
     case types.USER_PROFILE_UPDATE_REQUEST:
       return {

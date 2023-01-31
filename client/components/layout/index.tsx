@@ -1,17 +1,17 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
-import { storeType } from '../../redux/configureStore';
-import { useSelector } from 'react-redux';
-import { RiArrowRightSLine } from 'react-icons/ri';
-import { MdOutlineArrowDropDown } from 'react-icons/md';
-import { useRouter } from 'next/router';
-import { Tooltip } from 'react-tooltip';
-import ProfileDropdown from './ProfileDropdown';
-import navLinks from './data/navLinks';
-import { restrictLength } from '../../utils/stringHelper';
-import EditProfileModal from '../modals/profileEdit';
-import defaultAvatar from '../../db/avatar/default';
+import Image from "next/image";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { storeType } from "../../redux/configureStore";
+import { useSelector } from "react-redux";
+import { RiArrowRightSLine } from "react-icons/ri";
+import { MdOutlineArrowDropDown } from "react-icons/md";
+import { useRouter } from "next/router";
+import { Tooltip } from "react-tooltip";
+import ProfileDropdown from "./ProfileDropdown";
+import navLinks from "./data/navLinks";
+import { restrictLength } from "../../utils/stringHelper";
+import EditProfileModal from "../modals/profileEdit";
+import defaultAvatar from "../../db/avatar/default";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -24,15 +24,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [expandNav, setExpandNav] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
 
-  const [pageLoaded, setPageLoaded] = useState(false);
-
   useEffect(() => {
+    console.log(currentUser);
     if (
       !currentUser.user &&
       !currentUser.loading &&
       !currentUser.method.validate
     ) {
-      router.replace('/login?redirected=true');
+      router.replace("/login?redirected=true");
     }
   }, [currentUser]);
 
@@ -53,29 +52,29 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             />
             <div className="profile-info flex flex-col h-full justify-start">
               <p className="text-sm font-bold">
-                {restrictLength(currentUser.user?.name, 20) || 'User'}
+                {restrictLength(currentUser.user?.name, 20) || "User"}
               </p>
               <p
                 className={`text-xsm ${
                   currentUser.user?.admin
-                    ? 'text-blue-500/90'
-                    : 'text-orange-500/90'
+                    ? "text-blue-500/90"
+                    : "text-orange-500/90"
                 } uppercase font-bold`}
               >
-                {currentUser.user?.admin ? 'admin' : 'dev'}
+                {currentUser.user?.admin ? "admin" : "dev"}
               </p>
             </div>
             <MdOutlineArrowDropDown
               id="account-toggle"
               className={`text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none ${
-                openDropdown && 'rotate-180 bg-gray-700 text-gray-200'
+                openDropdown && "rotate-180 bg-gray-700 text-gray-200"
               }`}
               onClick={() => setOpenDropdown((state) => !state)}
             />
             <Tooltip
               anchorId="account-toggle"
               content="Account"
-              className={openDropdown ? 'hidden' : ''}
+              className={openDropdown ? "hidden" : ""}
             />
             <ProfileDropdown
               open={openDropdown}
@@ -95,14 +94,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div className="flex-1 flex flex-col lg:flex-row-reverse lg:relative">
         <main
           className={`text-gray-300 font-open flex-1 ${
-            expandNav ? 'lg:ml-36' : 'lg:ml-[60px]'
+            expandNav ? "lg:ml-36" : "lg:ml-[60px]"
           } transition-all`}
         >
           {children}
         </main>
         <aside
           className={`bg-gray-900 px-2 py-2 flex gap-3 w-screen sticky bottom-0 lg:flex-col lg:py-10 lg:fixed lg:left-0 lg:top-0 ${
-            expandNav ? 'lg:w-36' : 'lg:w-[60px]'
+            expandNav ? "lg:w-36" : "lg:w-[60px]"
           } lg:transition-all`}
         >
           <ul
@@ -114,10 +113,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 key={link.name}
                 className={` w-20 items-center group hover:rounded active:bg-orange-700/90  hover:bg-orange-600/90 transition-all overflow-hidden ${
                   link.href === router.pathname
-                    ? 'bg-orange-600/90 rounded'
-                    : 'bg-gray-850 rounded-lg'
+                    ? "bg-orange-600/90 rounded"
+                    : "bg-gray-850 rounded-lg"
                 } ${
-                  expandNav ? 'lg:rounded-xl' : 'lg:rounded-full'
+                  expandNav ? "lg:rounded-xl" : "lg:rounded-full"
                 } lg:cursor-pointer lg:height-auto lg:hover:rounded-xl lg:transition lg:w-full`}
               >
                 <Link
@@ -127,17 +126,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   {link.icon(
                     `text-2xl group-hover:text-white transition ${
                       link.href === router.pathname
-                        ? 'text-white'
-                        : 'text-orange-500/90'
+                        ? "text-white"
+                        : "text-orange-500/90"
                     } lg:text-xl`
                   )}
                   <span
                     className={`text-sm group-hover:text-white transition ${
                       link.href === router.pathname
-                        ? 'text-white'
-                        : 'text-gray-300'
+                        ? "text-white"
+                        : "text-gray-300"
                     } ${
-                      expandNav ? 'lg:opacity-100 lg:delay-75' : 'lg:opacity-0'
+                      expandNav ? "lg:opacity-100 lg:delay-75" : "lg:opacity-0"
                     } lg:w-0 lg:transition lg:uppercase lg:font-semibold`}
                   >
                     <span className="hidden lg:inline">&nbsp;&nbsp;</span>
@@ -155,13 +154,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             >
               <RiArrowRightSLine
                 className={`text-orange-500 text-2xl transition ${
-                  expandNav ? 'rotate-180' : 'rotate-0'
+                  expandNav ? "rotate-180" : "rotate-0"
                 }`}
               />
             </button>
             <Tooltip
               anchorId="expand"
-              content={expandNav ? 'Collapse' : 'Expand'}
+              content={expandNav ? "Collapse" : "Expand"}
               place="right"
             />
           </div>
