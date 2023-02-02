@@ -12,16 +12,16 @@ import { Tooltip } from 'react-tooltip';
 import { IoTicket } from 'react-icons/io5';
 import moment from 'moment';
 import Pluralize from 'react-pluralize';
-import { Project } from '../../../redux/reducers/projects/types';
+import { Project } from '../../../../../redux/reducers/projects/types';
 import { useSelector } from 'react-redux';
-import store, { storeType } from '../../../redux/configureStore';
+import store, { storeType } from '../../../../../redux/configureStore';
 import {
   getProjectTeamIds,
   updateProject,
-} from '../../../redux/actions/projectActions';
-import ProjectDeleteModal from '../../modals/projectDelete';
-import { restrictLength } from '../../../utils/stringHelper';
-import ProjectAssignModal from '../../modals/projectAssign';
+} from '../../../../../redux/actions/projectActions';
+import ProjectDeleteModal from '../../../../modals/projectDelete';
+import { restrictLength } from '../../../../../utils/stringHelper';
+import ProjectAssignModal from '../../../../modals/projectAssign';
 import ProjectOptionsPopup from './Options';
 import ProjectCardMembers from './Members';
 import Highlighter from 'react-highlight-words';

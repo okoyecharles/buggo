@@ -3,9 +3,9 @@ import ProjectSearch from './Search';
 import { BsPlusLg } from 'react-icons/bs';
 import { Tooltip } from 'react-tooltip';
 import ProjectsGrid from './Grid';
-import Paginate from '../Pagination/Paginate';
-import { Project } from '../../../redux/reducers/projects/types';
-import CreateProjectModal from '../../modals/projectCreate';
+import Paginate from '../Pagination';
+import { Project } from '../../../../redux/reducers/projects/types';
+import CreateProjectModal from '../../../modals/projectCreate';
 
 interface ProjectSectionProps {
   projects: Project[];

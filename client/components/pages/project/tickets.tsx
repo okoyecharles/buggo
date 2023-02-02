@@ -4,6 +4,9 @@ import { BsPlusLg } from "react-icons/bs";
 import { BiComment } from "react-icons/bi";
 import { Tooltip } from "react-tooltip";
 import moment from "moment";
+import { FaCommentAlt } from "react-icons/fa";
+import { AiFillClockCircle } from "react-icons/ai";
+import Pluralize from "react-pluralize";
 
 interface TicketsSectionProps {
   tickets: Ticket[] | undefined;
@@ -12,30 +15,30 @@ interface TicketsSectionProps {
 const getTicketPriority = (priority: string) => {
   switch (priority.toLowerCase()) {
     case "low":
-      return "bg-blue-500 text-blue-50";
+      return "bg-blue-500 text-blue-50 ring-blue-500/30";
     case "medium":
-      return "bg-orange-500 text-orange-50";
+      return "bg-orange-500 text-orange-50 ring-orange-500/30";
     case "high":
-      return "bg-red-500 text-red-50";
+      return "bg-red-500 text-red-50 ring-red-500/30";
     default:
-      return "bg-gray-500 text-gray-50";
+      return "bg-gray-500 text-gray-50 ring-gray-500/30";
   }
 };
 
 const getTicketStatus = (status: string) => {
   switch (status.toLowerCase()) {
     case "new":
-      return "bg-blue-500 text-blue-50";
+      return "bg-blue-500 text-blue-50 ring-blue-500/30";
     case "open":
-      return "bg-blue-500 text-blue-50";
+      return "bg-blue-500 text-blue-50 ring-blue-500/30";
     case "in progress":
-      return "bg-orange-500 text-orange-50";
+      return "bg-orange-500 text-orange-50 ring-orange-500/30";
     case "resolved":
-      return "bg-green-500 text-green-50";
+      return "bg-green-500 text-green-50 ring-green-500/30";
     case "closed":
-      return "bg-red-500 text-red-50";
+      return "bg-red-500 text-red-50 ring-red-500/30";
     default:
-      return "bg-gray-500 text-gray-50";
+      return "bg-gray-500 text-gray-50 ring-gray-500/30";
   }
 };
 
@@ -82,28 +85,34 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({ tickets }) => {
                   <h3 className="font-semibold font-noto text-gray-100">
                     {ticket.title}
                   </h3>
-                  <span className="text-white text-sm flex items-center gap-1">
-                    <BiComment className="text-base text-orange-500" />
-                    {ticket.comments.length}
-                  </span>
+                  <div className="flex gap-4">
+                    <span className="text-gray-200 text-sm font-semibold flex items-center gap-1">
+                      <FaCommentAlt className="text-base text-orange-500/80" />
+                      {ticket.comments.length}
+                    </span>
+                    <span className="text-gray-200 text-sm font-semibold flex items-center gap-1">
+                      <AiFillClockCircle className="text-base text-orange-500/80" />
+                      <Pluralize singular="hr" count={ticket.time_estimate} />
+                    </span>
+                  </div>
                 </header>
                 <div className="flex items-center">
-                  <span
+                  <button
                     className={`${getTicketPriority(
                       ticket.priority
-                    )} bg-red-500 text-white rounded p-2 py-1 text-center w-24 font-semibold text-ss font-noto`}
+                    )} bg-red-500 text-white rounded p-2 py-1 text-center w-24 font-semibold text-ss font-noto focus:ring-4 transition-all`}
                   >
                     {ticket.priority}
-                  </span>
+                  </button>
                 </div>
                 <div className="flex items-center">
-                  <span
+                  <button
                     className={`${getTicketStatus(
                       ticket.status
-                    )} bg-red-500 text-white rounded p-2 py-1 text-center w-24 font-semibold text-ss font-noto`}
+                    )} bg-red-500 text-white rounded p-2 py-1 text-center w-24 font-semibold text-ss font-noto focus:ring-4 transition-all`}
                   >
                     {ticket.status}
-                  </span>
+                  </button>
                 </div>
                 <div className="flex items-center">
                   <span className="text-ss text-orange-400 font-semibold font-noto">

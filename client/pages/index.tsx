@@ -8,7 +8,7 @@ import { getGreeting } from "../utils/InterfaceHelper";
 import { Tooltip } from "react-tooltip";
 import TicketStats from "../components/charts/Tickets/TicketStats";
 import { AiFillQuestionCircle } from "react-icons/ai";
-import ProjectSection from "../components/project/ProjectSection";
+import ProjectSection from "../components/pages/dashboard/projects";
 import { searchProjectByName } from "../utils/searchHelper";
 
 export default function Home() {

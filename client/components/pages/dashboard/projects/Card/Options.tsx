@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
-import { Project } from "../../../redux/reducers/projects/types";
-import { storeType } from "../../../redux/configureStore";
+import { Project } from "../../../../../redux/reducers/projects/types";
+import { storeType } from "../../../../../redux/configureStore";
 import { useSpring, a } from "@react-spring/web";
 import { BsFillPencilFill, BsFillPersonCheckFill, BsFillTrashFill, BsPersonDashFill, BsPersonPlusFill } from "react-icons/bs";
 

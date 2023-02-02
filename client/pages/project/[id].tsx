@@ -3,8 +3,8 @@ import React, { useEffect } from "react";
 import store, { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
 import { fetchProjectById } from "../../redux/actions/projectActions";
-import ProjectDetailsBar from "../../components/project/ProjectDetails";
-import TicketsSection from "../../components/project/ProjectDetails/TicketsSection";
+import ProjectDetailsBar from "../../components/pages/project/details";
+import TicketsSection from "../../components/pages/project/tickets";
 
 const ProjectDetails: React.FC = () => {
   const router = useRouter();
