@@ -19,9 +19,9 @@ import {
   getProjectTeamIds,
   updateProject,
 } from '../../../../../redux/actions/projectActions';
-import ProjectDeleteModal from '../../../../modals/projectDelete';
+import ProjectDeleteModal from '../Modals/projectDelete';
 import { restrictLength } from '../../../../../utils/stringHelper';
-import ProjectAssignModal from '../../../../modals/projectAssign';
+import ProjectAssignModal from '../Modals/projectAssign';
 import ProjectOptionsPopup from './Options';
 import ProjectCardMembers from './Members';
 import Highlighter from 'react-highlight-words';

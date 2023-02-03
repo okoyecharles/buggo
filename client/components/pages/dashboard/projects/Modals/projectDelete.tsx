@@ -1,11 +1,11 @@
 import { toast } from "react-toastify";
-import { deleteProject } from "../../redux/actions/projectActions";
-import store from "../../redux/configureStore";
-import { Project } from "../../redux/reducers/projects/types";
+import { deleteProject } from "../../../../../redux/actions/projectActions";
+import store from "../../../../../redux/configureStore";
+import { Project } from "../../../../../redux/reducers/projects/types";
 import { useEffect } from "react";
-import Modal from ".";
+import Modal from "../../../../modal";
 import moment from "moment";
-import { ThreeDotsLoader } from "../loader";
+import { ThreeDotsLoader } from "../../../../loader";
 
 const ProjectDeleteModal: React.FC<{
   open: boolean;

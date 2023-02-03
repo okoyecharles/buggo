@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import User from "../../redux/reducers/user/types";
-import Modal from ".";
+import Modal from "../modal";
 import Image from "next/image";
 import Compressor from "compressorjs";
 import { toBase64 } from "../../utils/imageHelper";

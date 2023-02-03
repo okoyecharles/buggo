@@ -5,7 +5,7 @@ import { Tooltip } from 'react-tooltip';
 import ProjectsGrid from './Grid';
 import Paginate from '../Pagination';
 import { Project } from '../../../../redux/reducers/projects/types';
-import CreateProjectModal from '../../../modals/projectCreate';
+import CreateProjectModal from './Modals/projectCreate';
 
 interface ProjectSectionProps {
   projects: Project[];

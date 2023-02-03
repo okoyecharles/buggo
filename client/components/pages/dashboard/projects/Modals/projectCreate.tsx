@@ -1,10 +1,10 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { createProject } from "../../redux/actions/projectActions";
-import store from "../../redux/configureStore";
+import { createProject } from "../../../../../redux/actions/projectActions";
+import store from "../../../../../redux/configureStore";
 import { toast } from "react-toastify";
-import Modal from ".";
+import Modal from "../../../../modal";
 import { IoMdClose } from "react-icons/io";
-import { ThreeDotsLoader } from "../loader";
+import { ThreeDotsLoader } from "../../../../loader";
 
 const CreateProjectModal = ({
   open,

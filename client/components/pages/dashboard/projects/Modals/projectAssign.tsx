@@ -1,18 +1,18 @@
 import { IoMdClose, IoMdReturnRight } from 'react-icons/io';
-import Modal from '.';
-import { Project } from '../../redux/reducers/projects/types';
+import Modal from '../../../../modal';
+import { Project } from '../../../../../redux/reducers/projects/types';
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { MdOutlineClose } from 'react-icons/md';
-import { TailSpinLoader, ThreeDotsLoader } from '../loader';
-import User from '../../redux/reducers/user/types';
-import { getUsers } from '../../redux/actions/userActions';
-import { searchByNameOrEmail } from '../../utils/searchHelper';
+import { TailSpinLoader, ThreeDotsLoader } from '../../../../loader';
+import User from '../../../../../redux/reducers/user/types';
+import { getUsers } from '../../../../../redux/actions/userActions';
+import { searchByNameOrEmail } from '../../../../../utils/searchHelper';
 import Image from 'next/image';
-import { restrictLength } from '../../utils/stringHelper';
+import { restrictLength } from '../../../../../utils/stringHelper';
 import Highlighter from 'react-highlight-words';
-import store from '../../redux/configureStore';
-import { updateProject } from '../../redux/actions/projectActions';
+import store from '../../../../../redux/configureStore';
+import { updateProject } from '../../../../../redux/actions/projectActions';
 import { toast } from 'react-toastify';
 
 const projectMembersReducer = (state: User[], action: any) => {

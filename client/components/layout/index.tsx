@@ -8,9 +8,9 @@ import { MdOutlineArrowDropDown } from "react-icons/md";
 import { useRouter } from "next/router";
 import { Tooltip } from "react-tooltip";
 import ProfileDropdown from "./ProfileDropdown";
-import navLinks from "./data/navLinks";
+import navLinks from "./data/navigation";
 import { restrictLength } from "../../utils/stringHelper";
-import EditProfileModal from "../modals/profileEdit";
+import EditProfileModal from "./profileEdit";
 import defaultAvatar from "../../db/avatar/default";
 
 interface LayoutProps {
@@ -36,8 +36,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, [currentUser]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="flex flex-col sticky top-0 z-50">
+    <div className="flex flex-col min-h-screen isolate">
+      <header className="flex flex-col sticky top-0 z-40">
         <nav className="flex items-center shadow-sm shadow-gray-950 bg-gray-800 justify-between p-3 text-gray-100 font-open md:px-8">
           <div className="logo font-bold">
             <Link href="/">Bug Tracker</Link>
