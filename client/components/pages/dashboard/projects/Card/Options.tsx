@@ -14,7 +14,6 @@ const ProjectOptionsPopup: React.FC<{
   handleEditMode: any;
   handleAssign: any;
   setProjectAssign: any;
-  pos: number;
 }> = ({
   open,
   project,
@@ -22,7 +21,6 @@ const ProjectOptionsPopup: React.FC<{
   method,
   setOpen,
   handleAssign,
-  pos,
   handleEditMode,
   setProjectDeleteConfirm,
   setProjectAssign,

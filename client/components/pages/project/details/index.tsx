@@ -1,10 +1,15 @@
 import moment from "moment";
 import React, { useState } from "react";
 import { BsPlus, BsThreeDots, BsThreeDotsVertical } from "react-icons/bs";
-import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import { Project } from "../../../redux/reducers/projects/types";
+import {
+  MdOutlineKeyboardArrowDown,
+  MdOutlineKeyboardArrowRight,
+} from "react-icons/md";
+import { Project } from "../../../../redux/reducers/projects/types";
 import Image from "next/image";
 import { Tooltip } from "react-tooltip";
+import { IoMdClose } from "react-icons/io";
+import ProjectDetailsOptionsPopup from "./Options";
 
 interface ProjectDetailsBarProps {
   project: Project | null;
@@ -12,20 +17,35 @@ interface ProjectDetailsBarProps {
 
 const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({ project }) => {
   const [membersOpen, setMembersOpen] = useState(true);
+  const [optionsOpen, setOptionsOpen] = useState(false);
 
   return (
-    <aside className="project- w-full lg:w-56 bg-gray-850">
+    <aside className="project- w-full lg:w-56 bg-gray-850 relative">
       {/* Project details header */}
       <header
         className="
         p-3 px-6 h-16 lg:px-3 flex justify-between items-center shadow-sm shadow-gray-950 font-semibold text-gray-300 cursor-pointer transition-colors
         hover:bg-gray-825 hover:text-gray-100
         "
+        onClick={() => {
+          setOptionsOpen(!optionsOpen);
+        }}
       >
         <span className="truncate text-white text-lg capitalize">
           {project?.title}
         </span>
-        <BsThreeDotsVertical className="text-lg" />
+        <div className="relative w-6 h-6">
+          <MdOutlineKeyboardArrowDown
+            className={`text-2xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
+              optionsOpen ? "rotate-180 opacity-0" : "rotate-0 opacity-1"
+            } transition-all`}
+          />
+          <IoMdClose
+            className={`text-xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
+              optionsOpen ? "rotate-0 opacity-1" : "-rotate-180 opacity-0"
+            } transition-all`}
+          />
+        </div>
       </header>
 
       {/* Project details content */}
@@ -84,6 +104,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({ project }) => {
           )}
         </div>
       </div>
+      <ProjectDetailsOptionsPopup open={optionsOpen} setOpen={setOptionsOpen} />
     </aside>
   );
 };
