@@ -11,22 +11,19 @@ import CreateTicketModal from "./Modals/ticketCreate";
 
 interface TicketsSectionProps {
   tickets: Ticket[] | undefined;
+  loading: boolean;
+  method: any;
 }
 
 const getTicketPriority = (priority: string) => {
-  console.log(priority);
   switch (priority.toLowerCase()) {
     case "low":
-      console.log("blue");
       return "bg-blue-500 text-blue-50 ring-blue-500/30";
     case "medium":
-      console.log("orange");
       return "bg-orange-500 text-orange-50 ring-orange-500/30";
     case "high":
-      console.log("red");
       return "bg-red-500 text-red-50 ring-red-500/30";
     default:
-      console.log("gray");
       return "bg-gray-500 text-gray-50 ring-gray-500/30";
   }
 };
@@ -48,7 +45,7 @@ const getTicketStatus = (status: string) => {
   }
 };
 
-const TicketsSection: React.FC<TicketsSectionProps> = ({ tickets }) => {
+const TicketsSection: React.FC<TicketsSectionProps> = ({ tickets, loading, method }) => {
   const [ticketCreateOpen, setTicketCreateOpen] = useState<boolean>(false);
   return (
     <section>
@@ -114,7 +111,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({ tickets }) => {
                     <button
                       className={`${getTicketPriority(
                         ticket.priority
-                      )} rounded p-2 py-1 text-center w-24 font-semibold text-sm xl:text-ss font-noto focus:ring-4 transition-all`}
+                      )} capitalize rounded p-2 py-1 text-center w-24 font-semibold text-sm xl:text-ss font-noto focus:ring-4 transition-all`}
                     >
                       {ticket.priority}
                     </button>
@@ -123,13 +120,13 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({ tickets }) => {
                     <button
                       className={`${getTicketStatus(
                         ticket.status
-                      )} rounded p-2 py-1 text-center w-24 font-semibold text-sm xl:text-ss font-noto focus:ring-4 transition-all`}
+                      )} capitalize rounded p-2 py-1 text-center w-24 font-semibold text-sm xl:text-ss font-noto focus:ring-4 transition-all`}
                     >
                       {ticket.status}
                     </button>
                   </div>
                   <div className="flex items-center px-1">
-                    <span className="text-sm xl:text-ss text-orange-400 font-semibold font-noto">
+                    <span className="capitalize text-sm xl:text-ss text-orange-400 font-semibold font-noto">
                       {ticket.type}
                     </span>
                   </div>
@@ -162,6 +159,8 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({ tickets }) => {
       <CreateTicketModal
         open={ticketCreateOpen}
         setOpen={setTicketCreateOpen}
+        loading={loading}
+        method={method}
       />
     </section>
   );

@@ -22,7 +22,11 @@ const ProjectDetails: React.FC = () => {
     <div className="flex flex-col lg:flex-row h-full">
       <ProjectDetailsBar project={project.project} />
       <div className="project-tickets flex-1">
-        <TicketsSection tickets={project.project?.tickets} />
+        <TicketsSection
+          tickets={project.project?.tickets}
+          loading={project.loading}
+          method={project.method}
+        />
         <div className="ticket-comments"></div>
       </div>
     </div>

@@ -50,3 +50,26 @@ export const fetchTicketById = (id: string) => async (dispatch: DispatchType, ge
     });
   }
 };
+
+export const createTicket = (ticket: any, projectId: string) => async (dispatch: DispatchType) => {
+  try {
+    dispatch({
+      type: types.TICKET_CREATE_REQUEST,
+    });
+    const { data } = await axios.post(
+      `${BACKEND_URL}/projects/${projectId}/tickets`,
+      ticket,
+      generateConfig()
+    );
+
+    dispatch({
+      type: types.TICKET_CREATE_SUCCESS,
+      payload: data,
+    });
+  } catch (error: any) {
+    dispatch({
+      type: types.TICKET_CREATE_FAIL,
+      payload: error.response?.data ? error.response.data : error.error,
+    });
+  }
+};

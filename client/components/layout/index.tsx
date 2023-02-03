@@ -25,7 +25,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [editProfile, setEditProfile] = useState(false);
 
   useEffect(() => {
-    console.log(currentUser);
     if (
       !currentUser.user &&
       !currentUser.loading &&

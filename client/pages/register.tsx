@@ -7,7 +7,7 @@ import {
   validateEmail,
   validatePassword,
   validateConfirmPassword,
-} from '../utils/formValidation';
+} from '../utils/forms/register';
 import { useSelector } from 'react-redux';
 import store, { storeType } from '../redux/configureStore';
 import { toast } from 'react-toastify';

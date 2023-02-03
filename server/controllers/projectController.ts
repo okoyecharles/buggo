@@ -75,7 +75,7 @@ export const getProjectTeam = async (req: Request, res: Response) => {
     const { id } = req.params;
     const project = await Project.findById(id);
 
-    res.status(200).json({ team: project?.team || []  });
+    res.status(200).json({ team: project?.team || [] });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
@@ -157,28 +157,28 @@ export const createTicket = async (
     req.body;
   const { id } = req.params;
 
-  // Get ticket's project and author
-  const ticketProject = await Project.findById(id);
-  const ticketAuthor: any = req.user;
-
-  let ticket = new Ticket({
-    priority,
-    status,
-    type,
-    time_estimate,
-    title,
-    description,
-  });
-
   try {
+    // Get ticket's project and author
+    const ticketProject = await Project.findById(id);
+    const ticketAuthor: any = req.user;
+
+    let ticket = new Ticket({
+      priority,
+      status,
+      type,
+      time_estimate,
+      title,
+      description,
+    });
+
     // Assign project and author to tickets relationship
     ticket.project = ticketProject?.id;
     ticket.author = ticketAuthor;
 
     ticket = await ticket.save();
 
-    // Assign ticket to projects relationship
-    ticketProject?.tickets.push(ticket._id);
+    // Assign ticket to project's relationship
+    ticketProject?.tickets.unshift(ticket._id);
     await ticketProject?.save();
 
     res.status(200).json({ ticket });

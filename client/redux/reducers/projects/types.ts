@@ -5,6 +5,6 @@ export type Project = {
   title: string;
   author: User;
   team: User[];
-  tickets: [];
+  tickets: any[];
   createdAt: Date;
 };
