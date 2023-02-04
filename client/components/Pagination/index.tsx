@@ -6,8 +6,8 @@ import Pluralize from "react-pluralize";
 interface PaginateProps {
   pageCount: number;
   handlePageChange: (data: any) => void;
-  indexOfFirstProject: number;
-  indexOfLastProject: number;
+  indexOfFirstItem: number;
+  indexOfLastItem: number;
   totalItems: number;
   itemName: string;
 }
@@ -15,8 +15,8 @@ interface PaginateProps {
 const Paginate: React.FC<PaginateProps> = ({
   pageCount,
   handlePageChange,
-  indexOfFirstProject,
-  indexOfLastProject,
+  indexOfFirstItem,
+  indexOfLastItem,
   totalItems,
   itemName,
 }) => {
@@ -25,9 +25,8 @@ const Paginate: React.FC<PaginateProps> = ({
   return (
     <nav className="flex flex-col lg:flex-row items-center gap-4 lg:w-fit lg:self-end mt-4">
       <p className="font-semibold text-ss text-gray-400">
-        Showing {indexOfFirstProject + 1} -{" "}
-        {Math.min(totalItems, indexOfLastProject)} of{" "}
-        <Pluralize singular={itemName} count={totalItems} />
+        Showing {indexOfFirstItem + 1} - {Math.min(totalItems, indexOfLastItem)}{" "}
+        of <Pluralize singular={itemName} count={totalItems} />
       </p>
       <ReactPaginate
         ref={paginateRef}

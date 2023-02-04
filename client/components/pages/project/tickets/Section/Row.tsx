@@ -4,7 +4,6 @@ import { AiFillClockCircle } from "react-icons/ai";
 import { FaCommentAlt } from "react-icons/fa";
 import moment from "moment";
 import Pluralize from "react-pluralize";
-import Link from "next/link";
 
 const getTicketPriority = (priority: string) => {
   switch (priority.toLowerCase()) {

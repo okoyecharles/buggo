@@ -61,13 +61,13 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
       </header>
 
       {/* Project details content */}
-      <div className="project-info p-3 px-1 text-gray-300 text-sm flex flex-col gap-2">
-        <p className="text-gray-400 px-2">
+      <div className="project-info p-3 px-1 text-gray-300 flex flex-col gap-2">
+        <p className="text-gray-400 px-2 text-sm">
           {moment(project?.createdAt).format("[Created on] MMMM D, YYYY")}
         </p>
 
         <div className="members-drop font-noto">
-          <div className="text-sm flex items-center gap-0 cursor-pointer group transition-all select-none relative h-8">
+          <div className=" flex items-center gap-0 cursor-pointer group transition-all select-none relative h-8">
             <MdOutlineKeyboardArrowRight
               className={`text-lg group-hover:text-gray-100 transition ${
                 membersOpen ? "rotate-90" : "rotate-0"
@@ -75,7 +75,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
               onClick={() => setMembersOpen(!membersOpen)}
             />
             <span
-              className="flex-1 group-hover:text-gray-100 text-white uppercase font-semibold"
+              className="flex-1 group-hover:text-gray-100 text-white text-sm uppercase font-semibold"
               onClick={() => setMembersOpen(!membersOpen)}
             >
               Members
@@ -83,7 +83,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
             {currentUser.user?._id === project?.author._id && (
               <>
                 <BsPlus
-                  className="text-2xl bg-orange-400 text-white hover:bg-orange-500 rounded-full transition-colors"
+                  className="text-2xl bg-orange-500 text-white hover:bg-orange-600 rounded-full transition-colors"
                   id="assign-members"
                   onClick={() => {
                     if (project) setAssignOpen(true);

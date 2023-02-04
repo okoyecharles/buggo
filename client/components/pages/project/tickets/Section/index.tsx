@@ -5,6 +5,7 @@ import { Tooltip } from "react-tooltip";
 import CreateTicketModal from "../Modals/ticketCreate";
 import TicketRow from "./Row";
 import TicketDetailsBar from "./details";
+import Paginate from "../../../../Pagination";
 
 interface TicketsSectionProps {
   tickets: Ticket[] | undefined;
@@ -21,6 +22,18 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
 
   const [ticketDetailsOpen, setTicketDetailsOpen] = useState<boolean>(false);
   const [ticketDetails, setTicketDetails] = useState<Ticket | null>(null);
+
+  const [ticketsPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const indexOfLastTicket = currentPage * ticketsPerPage;
+  const indexOfFirstTicket = indexOfLastTicket - ticketsPerPage;
+  const currentTickets = tickets?.slice(indexOfFirstTicket, indexOfLastTicket)!;
+
+  const ticketPageCount = Math.ceil((tickets?.length || 0) / ticketsPerPage);
+  const handleTicketPageChange = (data: any) => {
+    setCurrentPage(data.selected + 1);
+  };
 
   return (
     <section className="relative">
@@ -66,7 +79,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
               </div>
             </header>
             <ul className="px-4 flex flex-col">
-              {tickets.map((ticket) => (
+              {currentTickets.map((ticket) => (
                 <TicketRow
                   ticket={ticket}
                   showTicketDetails={setTicketDetailsOpen}
@@ -87,6 +100,18 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
           </li>
         )}
       </div>
+      {tickets?.length && (
+        <div className="p-3 px-6 flex justify-center lg:justify-end">
+          <Paginate
+            pageCount={ticketPageCount}
+            handlePageChange={handleTicketPageChange}
+            indexOfFirstItem={indexOfFirstTicket}
+            indexOfLastItem={indexOfLastTicket}
+            totalItems={tickets?.length || 0}
+            itemName="ticket"
+          />
+        </div>
+      )}
       <CreateTicketModal
         open={ticketCreateOpen}
         setOpen={setTicketCreateOpen}

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import ProjectSearch from './Search';
-import { BsPlusLg } from 'react-icons/bs';
-import { Tooltip } from 'react-tooltip';
-import ProjectsGrid from './Grid';
-import Paginate from '../Pagination';
-import { Project } from '../../../../redux/reducers/projects/types';
-import CreateProjectModal from './Modals/projectCreate';
+import React, { useState } from "react";
+import ProjectSearch from "./Search";
+import { BsPlusLg } from "react-icons/bs";
+import { Tooltip } from "react-tooltip";
+import ProjectsGrid from "./Grid";
+import Paginate from "../../../Pagination";
+import { Project } from "../../../../redux/reducers/projects/types";
+import CreateProjectModal from "./Modals/projectCreate";
 
 interface ProjectSectionProps {
   projects: Project[];
@@ -75,10 +75,10 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
       <Paginate
         pageCount={projectPageCount}
         handlePageChange={handleProjectPageChange}
-        indexOfFirstProject={indexOfFirstProject}
-        indexOfLastProject={indexOfLastProject}
+        indexOfFirstItem={indexOfFirstProject}
+        indexOfLastItem={indexOfLastProject}
         totalItems={projects.length}
-        itemName={'project'}
+        itemName={"project"}
       />
       <CreateProjectModal
         open={createModalOpen}
