@@ -4,13 +4,12 @@ import store, { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
 import { fetchProjectById } from "../../redux/actions/projectActions";
 import ProjectDetailsBar from "../../components/pages/project/details";
-import TicketsSection from "../../components/pages/project/tickets";
+import TicketsSection from "../../components/pages/project/tickets/Section";
 
 const ProjectDetails: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
   const project = useSelector((store: storeType) => store.project);
-  const tickets = useSelector((store: storeType) => store.tickets);
 
   useEffect(() => {
     if (!project.loading && id) {
@@ -20,7 +19,11 @@ const ProjectDetails: React.FC = () => {
 
   return (
     <div className="flex flex-col lg:flex-row h-full">
-      <ProjectDetailsBar project={project.project} />
+      <ProjectDetailsBar
+        project={project.project}
+        loading={project.loading}
+        method={project.method}
+      />
       <div className="project-tickets flex-1">
         <TicketsSection
           tickets={project.project?.tickets}

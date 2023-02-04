@@ -1,6 +1,6 @@
 import moment from "moment";
 import React, { useState } from "react";
-import { BsPlus, BsThreeDots, BsThreeDotsVertical } from "react-icons/bs";
+import { BsPlus } from "react-icons/bs";
 import {
   MdOutlineKeyboardArrowDown,
   MdOutlineKeyboardArrowRight,
@@ -10,14 +10,26 @@ import Image from "next/image";
 import { Tooltip } from "react-tooltip";
 import { IoMdClose } from "react-icons/io";
 import ProjectDetailsOptionsPopup from "./Options";
+import ProjectAssignModal from "../../dashboard/projects/Modals/projectAssign";
+import { useSelector } from "react-redux";
+import { storeType } from "../../../../redux/configureStore";
 
 interface ProjectDetailsBarProps {
   project: Project | null;
+  loading: boolean;
+  method: any;
 }
 
-const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({ project }) => {
+const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
+  project,
+  loading,
+  method,
+}) => {
   const [membersOpen, setMembersOpen] = useState(true);
   const [optionsOpen, setOptionsOpen] = useState(false);
+  const [assignOpen, setAssignOpen] = useState(false);
+
+  const currentUser = useSelector((store: storeType) => store.currentUser);
 
   return (
     <aside className="project- w-full lg:w-56 bg-gray-850 relative">
@@ -49,13 +61,13 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({ project }) => {
       </header>
 
       {/* Project details content */}
-      <div className="project-info p-3 px-1 text-gray-300 text-sm flex flex-col gap-1">
+      <div className="project-info p-3 px-1 text-gray-300 text-sm flex flex-col gap-2">
         <p className="text-gray-400 px-2">
           {moment(project?.createdAt).format("[Created on] MMMM D, YYYY")}
         </p>
 
         <div className="members-drop font-noto">
-          <div className="text-sm flex items-center gap-0 cursor-pointer group transition-all select-none relative">
+          <div className="text-sm flex items-center gap-0 cursor-pointer group transition-all select-none relative h-8">
             <MdOutlineKeyboardArrowRight
               className={`text-lg group-hover:text-gray-100 transition ${
                 membersOpen ? "rotate-90" : "rotate-0"
@@ -68,11 +80,18 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({ project }) => {
             >
               Members
             </span>
-            <BsPlus
-              className="text-2xl text-orange-400 hover:text-orange-500 hover:bg-gray-800 rounded-full transition-colors"
-              id="assign-members"
-            />
-            <Tooltip anchorId="assign-members" content="Assign Members" />
+            {currentUser.user?._id === project?.author._id && (
+              <>
+                <BsPlus
+                  className="text-2xl bg-orange-400 text-white hover:bg-orange-500 rounded-full transition-colors"
+                  id="assign-members"
+                  onClick={() => {
+                    if (project) setAssignOpen(true);
+                  }}
+                />
+                <Tooltip anchorId="assign-members" content="Assign Members" />
+              </>
+            )}
           </div>
           <ul
             className={`font-noto text-sm text-gray-200 flex flex-col gap-2 ${
@@ -105,6 +124,15 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({ project }) => {
         </div>
       </div>
       <ProjectDetailsOptionsPopup open={optionsOpen} setOpen={setOptionsOpen} />
+      {project && (
+        <ProjectAssignModal
+          open={assignOpen}
+          setOpen={setAssignOpen}
+          project={project}
+          loading={loading}
+          method={method}
+        />
+      )}
     </aside>
   );
 };

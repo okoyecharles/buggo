@@ -110,7 +110,8 @@ export const updateProject = async (
       const updatedProject = await project.save();
       const returnProject = await Project.findById(updatedProject.id)
         .populate('author', 'name')
-        .populate('team', 'name email image');
+        .populate('tickets')
+        .populate('team', 'name image email');
       res.status(200).json({ project: returnProject });
     }
   } catch (error: any) {

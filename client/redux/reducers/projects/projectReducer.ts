@@ -10,6 +10,8 @@ type ProjectsState = {
   error: { messsage: string } | null;
   method: {
     createTicket: boolean;
+    details: boolean;
+    update: boolean;
   };
 };
 
@@ -19,6 +21,8 @@ const initialState = {
   error: null,
   method: {
     createTicket: false,
+    details: false,
+    update: false,
   },
 };
 
@@ -28,11 +32,11 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
   switch (type) {
     // Get details of a project
     case types.PROJECT_DETAILS_REQUEST:
-      return { ...initialState, loading: true };
+      return { ...initialState, loading: true, method: { ...state.method, details: true } };
     case types.PROJECT_DETAILS_SUCCESS:
-      return { ...state, loading: false, ...payload };
+      return { ...state, loading: false, method: { ...state.method, details: false }, ...payload };
     case types.PROJECT_DETAILS_FAIL:
-      return { ...state, loading: false, error: payload };
+      return { ...state, loading: false, error: payload, method: { ...state.method, details: false } };
 
     // Delete a project
     case types.PROJECT_DELETE_REQUEST:
@@ -45,11 +49,11 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
     // Update a project
     // Assign team members to a project and Change title of a project
     case types.PROJECT_UPDATE_REQUEST:
-      return { ...state, loading: true, error: null };
+      return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
     case types.PROJECT_UPDATE_SUCCESS:
-      return { ...state, loading: false, ...payload, error: null };
+      return { ...state, loading: false, ...payload, error: null, method: { ...state.method, update: false } };
     case types.PROJECT_UPDATE_FAIL:
-      return { ...state, loading: false, error: payload };
+      return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
 
     // Create a ticket
     case ticketTypes.TICKET_CREATE_REQUEST:

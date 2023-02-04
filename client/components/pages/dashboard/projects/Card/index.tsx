@@ -296,7 +296,6 @@ const ProjectCard: React.FC<projectProps> = ({
         loading={loading}
         method={method}
         setOpen={setOptionsOpen}
-        pos={optionsPos}
         setProjectDeleteConfirm={setProjectDeleteConfirm}
         handleEditMode={handleEditMode}
         handleAssign={handleAssign}
