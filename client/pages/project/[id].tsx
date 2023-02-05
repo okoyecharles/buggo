@@ -24,14 +24,11 @@ const ProjectDetails: React.FC = () => {
         loading={project.loading}
         method={project.method}
       />
-      <div className="project-tickets flex-1">
-        <TicketsSection
-          tickets={project.project?.tickets}
-          loading={project.loading}
-          method={project.method}
-        />
-        <div className="ticket-comments"></div>
-      </div>
+      <TicketsSection
+        tickets={project.project?.tickets}
+        loading={project.loading}
+        method={project.method}
+      />
     </div>
   );
 };

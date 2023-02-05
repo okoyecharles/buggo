@@ -73,3 +73,26 @@ export const createTicket = (ticket: any, projectId: string) => async (dispatch:
     });
   }
 };
+
+export const updateTicket = (id: string, ticket: any) => async (dispatch: DispatchType) => {
+  try {
+    dispatch({
+      type: types.TICKET_UPDATE_REQUEST,
+    });
+    const { data } = await axios.put(
+      `${BACKEND_URL}/tickets/${id}`,
+      ticket,
+      generateConfig()
+    );
+
+    dispatch({
+      type: types.TICKET_UPDATE_SUCCESS,
+      payload: data,
+    });
+  } catch (error: any) {
+    dispatch({
+      type: types.TICKET_UPDATE_FAIL,
+      payload: error.response?.data ? error.response.data : error.error,
+    });
+  }
+};

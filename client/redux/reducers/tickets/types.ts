@@ -1,3 +1,5 @@
+import User from "../user/types";
+
 type Ticket = {
   _id: string;
   title: string;
@@ -9,6 +11,7 @@ type Ticket = {
   project: string;
   comments: string[] | {}[];
   createdAt: string;
+  author: User;
 };
 
 export default Ticket;

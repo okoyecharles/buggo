@@ -68,6 +68,22 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
       };
     case ticketTypes.TICKET_CREATE_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, createTicket: false } };
+    
+    case ticketTypes.TICKET_UPDATE_SUCCESS:
+      if (!state.project) return state;
+
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          tickets: state.project.tickets.map(ticket => {
+            if (ticket._id === payload.ticket._id) {
+              return payload.ticket;
+            }
+            return ticket;
+          })
+        }
+      }
 
     case userTypes.USER_LOGOUT:
       return initialState;

@@ -43,7 +43,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
           setOptionsOpen(!optionsOpen);
         }}
       >
-        <span className="truncate text-white text-lg capitalize">
+        <span className="truncate font-bold text-gray-100 text-lg">
           {project?.title}
         </span>
         <div className="relative w-6 h-6">

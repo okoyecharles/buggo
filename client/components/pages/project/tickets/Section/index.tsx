@@ -36,7 +36,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
   };
 
   return (
-    <section className="relative">
+    <section className="project-tickets flex-1 relative">
       <header className="p-3 px-6 h-16 lg:px-3 shadow-sm items-center shadow-gray-950 flex justify-between">
         <h1 className="font-bold text-gray-100 text-lg">Tickets</h1>
         <button
@@ -84,6 +84,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
                   ticket={ticket}
                   showTicketDetails={setTicketDetailsOpen}
                   setTicketDetails={setTicketDetails}
+                  ticketDetails={ticketDetails}
                 />
               ))}
             </ul>

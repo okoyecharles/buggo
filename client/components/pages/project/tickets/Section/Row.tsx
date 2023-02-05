@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Ticket from "../../../../../redux/reducers/tickets/types";
 import { AiFillClockCircle } from "react-icons/ai";
 import { FaCommentAlt } from "react-icons/fa";
@@ -37,15 +37,22 @@ const getTicketStatus = (status: string) => {
 
 interface TicketRowProps {
   ticket: Ticket;
+  ticketDetails: Ticket | null;
   showTicketDetails: any;
   setTicketDetails: any;
 }
 
 const TicketRow: React.FC<TicketRowProps> = ({
   ticket,
+  ticketDetails,
   showTicketDetails,
   setTicketDetails,
 }) => {
+  useEffect(() => {
+    if (ticket._id === ticketDetails?._id) {
+      setTicketDetails(ticket);
+    }
+  }, [ticket]);
   return (
     <li className="ticket-row grid gap-2 grid-cols-6 lg:grid-cols-7 pt-2 pb-4 border-b border-gray-600 hover:bg-gray-825 transition-all">
       <header className="flex flex-col gap-1 lg:col-span-2 px-1 pl-2 select-none">

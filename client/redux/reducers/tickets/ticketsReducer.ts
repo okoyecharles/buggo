@@ -1,5 +1,5 @@
 import { ActionType } from "../../types";
-import { TICKET_LIST_FAIL, TICKET_LIST_REQUEST, TICKET_LIST_SUCCESS } from "../../constants/ticketConstants";
+import * as types from "../../constants/ticketConstants";
 import * as userTypes from "../../constants/userConstants"
 import Ticket from "./types";
 
@@ -19,12 +19,24 @@ const ticketsReducer = (state: TicketsState = initialState, action: ActionType):
   const { type, payload } = action;
 
   switch (type) {
-    case TICKET_LIST_REQUEST:
+    case types.TICKET_LIST_REQUEST:
       return { ...state, loading: true, error: null };
-    case TICKET_LIST_SUCCESS:
+    case types.TICKET_LIST_SUCCESS:
       return { ...state, loading: false, ...payload, error: null };
-    case TICKET_LIST_FAIL:
+    case types.TICKET_LIST_FAIL:
       return { ...state, loading: false, error: payload };
+
+    case types.TICKET_UPDATE_SUCCESS:
+      return {
+        ...state,
+        tickets: state.tickets.map((ticket) => {
+          if (ticket._id === payload.ticket._id) {
+            return payload.ticket;
+          }
+          return ticket;
+        }),
+      };
+
     case userTypes.USER_LOGOUT:
       return initialState;
     default:
