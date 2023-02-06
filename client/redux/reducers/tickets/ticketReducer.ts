@@ -2,7 +2,7 @@
 import { ActionType } from "../../types";
 import * as types from "../../constants/ticketConstants";
 import * as userTypes from "../../constants/userConstants";
-import Ticket from "./types";
+import Ticket from "../../../types/Ticket";
 
 interface TicketState {
   ticket: Ticket | null;

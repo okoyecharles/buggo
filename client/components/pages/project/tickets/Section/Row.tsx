@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import Ticket from "../../../../../redux/reducers/tickets/types";
 import { AiFillClockCircle } from "react-icons/ai";
 import { FaCommentAlt } from "react-icons/fa";
-import moment from "moment";
 import Pluralize from "react-pluralize";
+import getDate from "../../../../../utils/dateHelper";
+import { Ticket } from "../../../../../types/models";
 
 const getTicketPriority = (priority: string) => {
   switch (priority.toLowerCase()) {
@@ -101,7 +101,7 @@ const TicketRow: React.FC<TicketRowProps> = ({
       </div>
       <div className="flex items-center px-1">
         <span className="text-sm xl:text-ss text-gray-200 font-noto">
-          {moment(ticket?.createdAt).format("L")}
+          {getDate(ticket?.createdAt, { format: 'L' })}
         </span>
       </div>
       <div className="flex items-center px-1">

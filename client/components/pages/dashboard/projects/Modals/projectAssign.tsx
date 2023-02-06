@@ -1,11 +1,11 @@
 import { IoMdClose, IoMdReturnRight } from 'react-icons/io';
 import Modal from '../../../../modal';
-import { Project } from '../../../../../redux/reducers/projects/types';
+import { Project } from '../../../../../types/models';
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { MdOutlineClose } from 'react-icons/md';
 import { TailSpinLoader, ThreeDotsLoader } from '../../../../loader';
-import User from '../../../../../redux/reducers/user/types';
+import User from '../../../../../types/types';
 import { getUsers } from '../../../../../redux/actions/userActions';
 import { searchByNameOrEmail } from '../../../../../utils/searchHelper';
 import Image from 'next/image';

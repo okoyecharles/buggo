@@ -2,7 +2,7 @@ import { ActionType } from "../../types";
 import * as types from "../../constants/projectConstants";
 import * as userTypes from "../../constants/userConstants";
 import * as ticketTypes from "../../constants/ticketConstants";
-import { Project } from "./types";
+import Project from "../../../types/models";
 
 type ProjectsState = {
   project: Project | null;

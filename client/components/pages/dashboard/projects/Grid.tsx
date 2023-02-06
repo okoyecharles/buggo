@@ -1,6 +1,6 @@
 import React from 'react';
 import ProjectCard from './Card';
-import { Project } from '../../../../redux/reducers/projects/types';
+import { Project } from '../../../../types/models';
 interface ProjectsGridType {
   projects: Project[];
   loading: boolean;

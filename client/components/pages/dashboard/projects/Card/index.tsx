@@ -12,7 +12,7 @@ import { Tooltip } from 'react-tooltip';
 import { IoTicket } from 'react-icons/io5';
 import moment from 'moment';
 import Pluralize from 'react-pluralize';
-import { Project } from '../../../../../redux/reducers/projects/types';
+import { Project } from '../../../../../types/models';
 import { useSelector } from 'react-redux';
 import store, { storeType } from '../../../../../redux/configureStore';
 import {
@@ -26,6 +26,7 @@ import ProjectOptionsPopup from './Options';
 import ProjectCardMembers from './Members';
 import Highlighter from 'react-highlight-words';
 import Link from 'next/link';
+import getDate from '../../../../../utils/dateHelper';
 
 interface projectProps {
   project: Project;
@@ -208,7 +209,7 @@ const ProjectCard: React.FC<projectProps> = ({
       <div className="flex flex-col mt-4 lg:flex-row lg:mt-0  lg:gap-4">
         <div className="text-gray-500 uppercase text-xsm flex items-center gap-2">
           <AiFillClockCircle className="text-orange-400" />
-          {moment(project.createdAt).fromNow()}
+          {getDate(project.createdAt, { format: 'from now'})}
         </div>
         <div className="text-gray-500 uppercase text-xsm flex items-center gap-2">
           <IoTicket className="text-orange-400" />{' '}

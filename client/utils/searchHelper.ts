@@ -1,5 +1,5 @@
-import { Project } from '../redux/reducers/projects/types';
-import User from '../redux/reducers/user/types';
+import { Project } from '../types/models';
+import User from '../types/types';
 
 const searchByNameOrEmail = (search: string, users: User[]) => {
   const searchRegex = new RegExp(search, 'i');

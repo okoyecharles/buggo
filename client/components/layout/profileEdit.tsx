@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import User from "../../redux/reducers/user/types";
+import User from "../../types/types";
 import Modal from "../modal";
 import Image from "next/image";
 import Compressor from "compressorjs";

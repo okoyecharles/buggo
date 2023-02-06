@@ -1,5 +1,5 @@
 import React from 'react';
-import { Project } from '../../../../../redux/reducers/projects/types';
+import { Project } from '../../../../../types/models';
 import Image from 'next/image';
 
 interface ProjectCardMembersProps {

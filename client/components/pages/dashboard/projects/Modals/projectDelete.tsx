@@ -1,11 +1,12 @@
 import { toast } from "react-toastify";
 import { deleteProject } from "../../../../../redux/actions/projectActions";
 import store from "../../../../../redux/configureStore";
-import { Project } from "../../../../../redux/reducers/projects/types";
+import { Project } from "../../../../../types/models";
 import { useEffect } from "react";
 import Modal from "../../../../modal";
 import moment from "moment";
 import { ThreeDotsLoader } from "../../../../loader";
+import getDate from "../../../../../utils/dateHelper";
 
 const ProjectDeleteModal: React.FC<{
   open: boolean;
@@ -37,7 +38,9 @@ const ProjectDeleteModal: React.FC<{
           </p>
         </header>
         <div className="shadow-lg gap-2 bg-gray-700 p-2 rounded mb-2">
-          <p className="text-sm text-blue-500">{moment(project.createdAt).calendar()}</p>
+          <p className="text-sm text-blue-500 capitalize">
+            {getDate(project.createdAt)}
+          </p>
           <p className="font-semibold text-gray-100">{project.title}</p>
         </div>
         <p className="text-gray-400 text-xsm mb-2">

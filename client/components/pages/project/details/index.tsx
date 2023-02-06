@@ -5,7 +5,7 @@ import {
   MdOutlineKeyboardArrowDown,
   MdOutlineKeyboardArrowRight,
 } from "react-icons/md";
-import { Project } from "../../../../redux/reducers/projects/types";
+import { Project } from "../../../../types/models";
 import Image from "next/image";
 import { Tooltip } from "react-tooltip";
 import { IoMdClose } from "react-icons/io";
@@ -13,6 +13,7 @@ import ProjectDetailsOptionsPopup from "./Options";
 import ProjectAssignModal from "../../dashboard/projects/Modals/projectAssign";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
+import getDate from "../../../../utils/dateHelper";
 
 interface ProjectDetailsBarProps {
   project: Project | null;
@@ -63,7 +64,9 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
       {/* Project details content */}
       <div className="project-info p-3 px-1 text-gray-300 flex flex-col gap-2">
         <p className="text-gray-400 px-2 text-sm">
-          {moment(project?.createdAt).format("[Created on] MMMM D, YYYY")}
+          {`Created ${getDate(project?.createdAt, {
+            format: "on calendar",
+          })}`}
         </p>
 
         <div className="members-drop font-noto">

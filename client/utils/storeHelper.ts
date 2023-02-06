@@ -1,4 +1,4 @@
-import User from '../redux/reducers/user/types';
+import User from '../types/types';
 
 const storeKey = '15267827792022-bug-tracker-user';
 

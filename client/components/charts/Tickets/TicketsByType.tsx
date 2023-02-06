@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, useEffect, useState } from "react";
-import Ticket from "../../../redux/reducers/tickets/types";
+import Ticket from "../../../types/Ticket";
 import { Cell, Pie, PieChart, Tooltip as ChartTooltip } from "recharts";
 import { AiFillInfoCircle } from "react-icons/ai";
 import { Tooltip } from "react-tooltip";

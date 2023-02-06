@@ -1,4 +1,4 @@
-import { Project } from './../reducers/projects/types';
+import { Project } from '../../types/models';
 import store, { storeType } from './../configureStore';
 import BACKEND_URL from '../../config/Backend';
 import * as types from '../constants/projectConstants';

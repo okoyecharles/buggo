@@ -1,6 +1,6 @@
 import * as types from '../../constants/userConstants';
 import { ActionType } from '../../types';
-import User from './types';
+import User from '../../../types/types';
 
 type State = {
   user: User | null,

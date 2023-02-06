@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Ticket from "../../../../../redux/reducers/tickets/types";
+import Ticket from "../../../../../types/Ticket";
 import { BsPlusLg } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
 import CreateTicketModal from "../Modals/ticketCreate";
