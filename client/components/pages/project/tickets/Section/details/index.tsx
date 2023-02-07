@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import moment from "moment";
 import store, { storeType } from "../../../../../../redux/configureStore";
@@ -28,11 +28,22 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   const ticketDetails = useSelector((store: storeType) => store.ticket);
   const [showAllDescription, setShowAllDescription] = useState(false);
 
+  const commentsRef = useRef(null);
+
   useEffect(() => {
     if (ticket) {
       store.dispatch(fetchTicketById(ticket._id));
     }
   }, [ticket]);
+
+  useEffect(() => {
+    const commentSection = commentsRef?.current as HTMLDivElement | null;
+    if (commentSection) {
+      // Scroll to bottom of comments section
+      commentSection.scrollTop = commentSection.scrollHeight;
+    }
+  }, [ticketDetails.ticket?.comments]);
+
   return (
     <aside
       className={`bg-gray-850 fixed lg:absolute top-16 lg:top-0 w-screen lg:w-72 right-0 bottom-[66px] lg:h-full lg:border-l border-gray-700 ${
@@ -82,7 +93,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
             </div>
           </div>
         ) : (
-          <div className="text-ss text-gray-100 gap-2 flex-1 flex flex-col">
+          <div className="text-ss text-gray-100 flex-1 flex flex-col">
             <div className="ticket-content p-3 border-b border-gray-700">
               {/* Time estimate */}
               <h3 className="font-semibold text-sm text-gray-300 mb-4">
@@ -117,238 +128,30 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
               </p>
             </div>
 
-            <div className="ticket-comments pt-3 flex flex-col gap-2 flex-1 mb-[62px]">
-              <header className="mx-3">
+            <div className="ticket-comments flex flex-col gap-2 flex-1 mb-[62px] relative isolate">
+              <header className="h-12 px-3 flex items-center bg-gray-900 z-50">
                 <h3 className="font-semibold">Comments</h3>
               </header>
-              <div className="flex-1 relative">
-                <TicketComments
-                  comments={[
-                    {
-                      _id: "1",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "1",
-                        name: "John Doe",
-                        email: "johndoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "2",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "2",
-                        name: "Alice Doe",
-                        email: "alicedoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "3",
-                      text: "This is the comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "2",
-                        name: "Alice Doe",
-                        email: "alicedoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "4",
-                      text: "This is another comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "2",
-                        name: "Alice Doe",
-                        email: "alicedoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "3",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "63bf16cf57fbdc0fde8b193e",
-                        name: "Okoye Charles",
-                        email: "okoyecharles509@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "4",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:02:00.000Z",
-                      author: {
-                        _id: "63bf16cf57fbdc0fde8b193e",
-                        name: "Okoye Charles",
-                        email: "okoyecharles509@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "1",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "1",
-                        name: "John Doe",
-                        email: "johndoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "2",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "2",
-                        name: "Alice Doe",
-                        email: "alicedoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "3",
-                      text: "This is the comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "2",
-                        name: "Alice Doe",
-                        email: "alicedoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "4",
-                      text: "This is another comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "2",
-                        name: "Alice Doe",
-                        email: "alicedoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "3",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "63bf16cf57fbdc0fde8b193e",
-                        name: "Okoye Charles",
-                        email: "okoyecharles509@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "4",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:02:00.000Z",
-                      author: {
-                        _id: "63bf16cf57fbdc0fde8b193e",
-                        name: "Okoye Charles",
-                        email: "okoyecharles509@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "1",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "1",
-                        name: "John Doe",
-                        email: "johndoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "2",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "2",
-                        name: "Alice Doe",
-                        email: "alicedoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "3",
-                      text: "This is the comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "2",
-                        name: "Alice Doe",
-                        email: "alicedoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "4",
-                      text: "This is another comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "2",
-                        name: "Alice Doe",
-                        email: "alicedoe@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "3",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:00:00.000Z",
-                      author: {
-                        _id: "63bf16cf57fbdc0fde8b193e",
-                        name: "Okoye Charles",
-                        email: "okoyecharles509@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                    {
-                      _id: "4",
-                      text: "This is a comment",
-                      createdAt: "2021-09-01T12:02:00.000Z",
-                      author: {
-                        _id: "63bf16cf57fbdc0fde8b193e",
-                        name: "Okoye Charles",
-                        email: "okoyecharles509@gmail.com",
-                        admin: true,
-                        image: "https://picsum.photos/200",
-                      },
-                    },
-                  ]}
+              <div className="absolute top-12 left-0 w-full bottom-0 z-10">
+                <div
+                  className="comments-container relative flex flex-col h-full overflow-y-scroll"
+                  ref={commentsRef}
+                >
+                  <TicketComments
+                    comments={ticketDetails.ticket?.comments || []}
+                  />
+                </div>
+                <input
+                  className="absolute bottom-2 w-[calc(100%-1.5rem)] left-3 rounded-sm bg-gray-900 outline-none px-3 py-2 shadow-sm text-sm text-white font-medium placeholder:text-gray-300 font-noto"
+                  type="text"
+                  placeholder="Comment here"
                 />
-                <input className="absolute bottom-2 w-[calc(100%-1.5rem)] left-3 rounded bg-gray-700 outline-none px-2 py-1 shadow-sm text-sm text-white font-semibold" type="text" placeholder="Comment here" />
               </div>
             </div>
           </div>
         )}
 
-        <div className="buttons p-3 absolute bottom-0 left-0 w-full border-t border-gray-700 flex flex-col gap-2">
+        <div className="buttons p-3 absolute bottom-0 left-0 w-full border-t border-gray-700 flex flex-col gap-2 bg-gray-825">
           <button
             className="bg-blue-500 flex justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-blue-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors"
             disabled={
@@ -359,7 +162,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
             onClick={() => {
               store.dispatch(
                 updateTicket(ticketDetails.ticket?._id!, {
-                  status: "open",
+                  status: "closed",
                 })
               );
             }}

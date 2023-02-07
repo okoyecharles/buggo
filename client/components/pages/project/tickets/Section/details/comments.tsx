@@ -1,8 +1,9 @@
 import React from "react";
 import { Comment } from "../../../../../../types/models";
 import Image from "next/image";
-import defaultAvatar from "../../../../../../db/avatar/default";
 import getDate from "../../../../../../utils/dateHelper";
+import { useSelector } from "react-redux";
+import { storeType } from "../../../../../../redux/configureStore";
 
 interface TicketCommentsProps {
   comments: Comment[];
@@ -23,13 +24,21 @@ const isNextCommentFromSameAuthor = (
 };
 
 const TicketComments: React.FC<TicketCommentsProps> = ({ comments }) => {
+  const currentUser = useSelector((store: storeType) => store.currentUser);
+
+  const isCommentAuthour = (comment: Comment) => {
+    return currentUser.user?._id === comment.author._id;
+  };
+
   return (
-    <div className="ticket-comments-section bg-gray-825 rounded-sm flex flex-col h-full max-h-[10rem] overflow-y-scroll ">
-      <span className="p-3 text-sm text-gray-400 text-center">
-        This is the beginning of this comments.
-      </span>
-      <ul className="ticket-comments-section-container text-sm flex flex-col">
-      {comments.map((comment, index) => (
+    <>
+      <p className="p-3 text-sm text-gray-400 text-center bg-gray-825">
+        {comments.length
+          ? "This is the beginning of this comments."
+          : "No comments yet. Be the first to comment."}
+      </p>
+      <ul className="ticket-comments-section-container text-sm flex-1 flex flex-col bg-gray-825 pb-12">
+        {comments.map((comment, index) => (
           <li
             className={`hover:bg-gray-850 px-3 py-1 flex flex-col gap-2 ${
               isNextCommentFromSameAuthor(comment, comments[index - 1]) &&
@@ -42,17 +51,25 @@ const TicketComments: React.FC<TicketCommentsProps> = ({ comments }) => {
               comment,
               comments[index - 1]
             ) ? null : (
-              <header className="flex gap-2 items-center select-none">
+              <header
+                className={`flex gap-2 items-center select-none ${
+                  isCommentAuthour(comment) ? "justify-end" : ""
+                }`}
+              >
                 <div className="mr-1">
                   <Image
-                    src={defaultAvatar}
+                    src={comment.author.image}
                     alt="comment-author"
                     width={20}
                     height={20}
                     className="h-5 w-5 rounded-full"
                   />
                 </div>
-                <h3 className="font-semibold text-white max-w-[10ch] truncate">
+                <h3
+                  className={`font-semibold max-w-[10ch] truncate ${
+                    isCommentAuthour(comment) ? "text-orange-400" : "text-white"
+                  }`}
+                >
                   {comment.author.name.split(" ")[0]}
                 </h3>
                 <span className="text-xsm text-gray-400 font-semibold">
@@ -60,11 +77,17 @@ const TicketComments: React.FC<TicketCommentsProps> = ({ comments }) => {
                 </span>
               </header>
             )}
-            <p>{comment.text}</p>
+            <p
+              className={`ml-2 font-semibold text-gray-200 font-open ${
+                isCommentAuthour(comment) ? "text-right" : ""
+              }`}
+            >
+              {comment.text}
+            </p>
           </li>
-        ))} 
+        ))}
       </ul>
-    </div>
+    </>
   );
 };
 
