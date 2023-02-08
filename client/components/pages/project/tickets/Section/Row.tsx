@@ -49,10 +49,10 @@ const TicketRow: React.FC<TicketRowProps> = ({
   setTicketDetails,
 }) => {
   useEffect(() => {
-    if (ticket._id === ticketDetails?._id) {
-      setTicketDetails(ticket);
-    }
+    // Set ticket details if the ticket id matches the ticket details id
+    if (ticket._id === ticketDetails?._id) setTicketDetails(ticket);
   }, [ticket]);
+
   return (
     <li className="ticket-row grid gap-2 grid-cols-6 lg:grid-cols-7 pt-2 pb-4 border-b border-gray-600 hover:bg-gray-825 transition-all">
       <header className="flex flex-col gap-1 lg:col-span-2 px-1 pl-2 select-none">
@@ -101,7 +101,7 @@ const TicketRow: React.FC<TicketRowProps> = ({
       </div>
       <div className="flex items-center px-1">
         <span className="text-sm xl:text-ss text-gray-200 font-noto">
-          {getDate(ticket?.createdAt, { format: 'L' })}
+          {getDate(ticket?.createdAt, { format: "L" })}
         </span>
       </div>
       <div className="flex items-center px-1">

@@ -2,7 +2,7 @@
 import { ActionType } from "../../types";
 import * as types from "../../constants/ticketConstants";
 import * as userTypes from "../../constants/userConstants";
-import Ticket from "../../../types/Ticket";
+import { Ticket } from "../../../types/models";
 
 interface TicketState {
   ticket: Ticket | null;
@@ -11,6 +11,7 @@ interface TicketState {
   method: {
     details: boolean;
     update: boolean;
+    comment: boolean;
   }
 };
 
@@ -21,6 +22,7 @@ const initialState = {
   method: {
     details: false,
     update: false,
+    comment: false,
   }
 };
 
@@ -70,6 +72,34 @@ const ticketReducer = (state: TicketState = initialState, action: ActionType): T
         ...state, loading: false, error: payload, method: {
           ...state.method,
           update: false,
+        }
+      };
+    
+    case types.TICKET_COMMENT_REQUEST:
+      return {
+        ...state, loading: true, error: null, method: {
+          ...state.method,
+          comment: true
+        }
+      };
+    case types.TICKET_COMMENT_SUCCESS:
+      if (!state.ticket) return state;
+
+      const createdComment = payload.comment.ticket === state.ticket?._id ? payload.comment : {};
+      return {
+        ...state, loading: false, error: null, method: {
+          ...state.method,
+          comment: false,
+        }, ticket: {
+          ...state.ticket,
+          comments: [...state.ticket.comments, createdComment]
+        }
+      };
+    case types.TICKET_COMMENT_FAIL:
+      return {
+        ...state, loading: false, error: payload, method: {
+          ...state.method,
+          comment: false,
         }
       };
 

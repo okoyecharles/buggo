@@ -2,7 +2,7 @@ import { ActionType } from "../../types";
 import * as types from "../../constants/projectConstants";
 import * as userTypes from "../../constants/userConstants";
 import * as ticketTypes from "../../constants/ticketConstants";
-import Project from "../../../types/models";
+import { Project } from "../../../types/models";
 
 type ProjectsState = {
   project: Project | null;
@@ -68,7 +68,7 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
       };
     case ticketTypes.TICKET_CREATE_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, createTicket: false } };
-    
+
     case ticketTypes.TICKET_UPDATE_SUCCESS:
       if (!state.project) return state;
 
@@ -84,6 +84,25 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
           })
         }
       }
+
+    case ticketTypes.TICKET_COMMENT_SUCCESS:
+      if (!state.project) return state;
+
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          tickets: state.project.tickets.map(ticket => {
+            if (ticket._id === payload.comment.ticket) {
+              return {
+                ...ticket,
+                comments: [payload.comment._id, ...ticket.comments]
+              }
+            }
+            return ticket;
+          })
+        }
+      };
 
     case userTypes.USER_LOGOUT:
       return initialState;

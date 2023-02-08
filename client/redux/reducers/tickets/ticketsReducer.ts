@@ -1,7 +1,7 @@
 import { ActionType } from "../../types";
 import * as types from "../../constants/ticketConstants";
 import * as userTypes from "../../constants/userConstants"
-import Ticket from "../../../types/Ticket";
+import { Ticket } from "../../../types/models";
 
 interface TicketsState {
   tickets: Ticket[];
@@ -32,6 +32,20 @@ const ticketsReducer = (state: TicketsState = initialState, action: ActionType):
         tickets: state.tickets.map((ticket) => {
           if (ticket._id === payload.ticket._id) {
             return payload.ticket;
+          }
+          return ticket;
+        }),
+      };
+    
+    case types.TICKET_COMMENT_SUCCESS:
+      return {
+        ...state,
+        tickets: state.tickets.map((ticket) => {
+          if (ticket._id === payload.comment.ticket) {
+            return {
+              ...ticket,
+              comments: [...ticket.comments, payload.comment._id],
+            };
           }
           return ticket;
         }),

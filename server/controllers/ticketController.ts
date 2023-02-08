@@ -74,7 +74,13 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
           comments
         }
       });
-      const updatedTicket = await Ticket.findById(id);
+      const updatedTicket = await Ticket.findById(id).populate('author', 'name').populate({
+        path: 'comments',
+        populate: {
+          path: 'author',
+          select: 'name image email'
+        }
+      });
       res.status(200).json({ ticket: updatedTicket });
     };
   } catch (error: any) {
@@ -104,7 +110,9 @@ export const createTicketComment = async (req: AuthorizedRequest<CommentType>, r
     commentTicket?.comments.push(comment.id);
     await commentTicket?.save();
 
-    res.status(200).json({ comment });
+    const savedComment = await Comment.findById(comment.id).populate('author', 'name image email');
+
+    res.status(200).json({ comment: savedComment });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }

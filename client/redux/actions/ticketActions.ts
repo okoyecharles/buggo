@@ -96,3 +96,27 @@ export const updateTicket = (id: string, ticket: any) => async (dispatch: Dispat
     });
   }
 };
+
+export const commentOnTicket = (id: string, text: string) => async (dispatch: DispatchType) => {
+  try {
+    dispatch({
+      type: types.TICKET_COMMENT_REQUEST,
+    });
+    const { data } = await axios.post(
+      `${BACKEND_URL}/tickets/${id}/comments`,
+      { text },
+      generateConfig()
+    );
+
+    dispatch({
+      type: types.TICKET_COMMENT_SUCCESS,
+      payload: data,
+    });
+  
+  } catch (error: any) {
+    dispatch({
+      type: types.TICKET_COMMENT_FAIL,
+      payload: error.response?.data ? error.response.data : error.error,
+    });
+  }
+};

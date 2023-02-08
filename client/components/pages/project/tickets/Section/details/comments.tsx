@@ -6,20 +6,20 @@ import { useSelector } from "react-redux";
 import { storeType } from "../../../../../../redux/configureStore";
 
 interface TicketCommentsProps {
-  comments: Comment[];
+  comments: any[];
 }
 
 const isNextCommentFromSameAuthor = (
   currentComment: Comment,
   prevComment: Comment
 ) => {
-  // Check if author of current comment is same as author of previous comment and if the time difference between the two comments is less than 5 minutes
+  // Check if author of current comment is same as author of previous comment and if the time difference between the two comments is less than 2 minutes
   return (
-    currentComment.author._id === prevComment?.author._id &&
+    currentComment?.author._id === prevComment?.author._id &&
     prevComment &&
     new Date(currentComment.createdAt).getTime() -
       new Date(prevComment.createdAt).getTime() <
-      3 * 60 * 1000
+      2 * 60 * 1000
   );
 };
 

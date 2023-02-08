@@ -3,6 +3,7 @@ import { IoMdClose } from "react-icons/io";
 import moment from "moment";
 import store, { storeType } from "../../../../../../redux/configureStore";
 import {
+  commentOnTicket,
   fetchTicketById,
   updateTicket,
 } from "../../../../../../redux/actions/ticketActions";
@@ -28,13 +29,24 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   const ticketDetails = useSelector((store: storeType) => store.ticket);
   const [showAllDescription, setShowAllDescription] = useState(false);
 
+  const [comment, setComment] = useState("");
   const commentsRef = useRef(null);
+
+  const handleCommentSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (comment.trim() && !ticketDetails.method.comment) {
+      store.dispatch(commentOnTicket(ticketDetails.ticket!._id, comment));
+    }
+
+    setComment("");
+  };
 
   useEffect(() => {
     if (ticket) {
       store.dispatch(fetchTicketById(ticket._id));
     }
-  }, [ticket]);
+  }, [ticket?.status]);
 
   useEffect(() => {
     const commentSection = commentsRef?.current as HTMLDivElement | null;
@@ -141,11 +153,17 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
                     comments={ticketDetails.ticket?.comments || []}
                   />
                 </div>
-                <input
-                  className="absolute bottom-2 w-[calc(100%-1.5rem)] left-3 rounded-sm bg-gray-900 outline-none px-3 py-2 shadow-sm text-sm text-white font-medium placeholder:text-gray-300 font-noto"
-                  type="text"
-                  placeholder="Comment here"
-                />
+                <form onSubmit={handleCommentSubmit}>
+                  <input
+                    className="absolute bottom-2 w-[calc(100%-1.5rem)] left-3 rounded-sm bg-gray-900 outline-none px-3 py-2 shadow-sm text-sm text-white font-medium placeholder:text-gray-300 font-noto"
+                    type="text"
+                    value={comment}
+                    onChange={(e) => {
+                      setComment(e.target.value);
+                    }}
+                    placeholder="Comment here"
+                  />
+                </form>
               </div>
             </div>
           </div>
@@ -157,12 +175,12 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
             disabled={
               ticketDetails.loading ||
               ticketDetails.method.update ||
-              ticketDetails.ticket?.status === "closed"
+              ticketDetails.ticket?.status === "open"
             }
             onClick={() => {
               store.dispatch(
                 updateTicket(ticketDetails.ticket?._id!, {
-                  status: "closed",
+                  status: "open",
                 })
               );
             }}
