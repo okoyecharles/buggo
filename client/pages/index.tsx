@@ -28,7 +28,7 @@ export default function Home() {
 
     if (pageLoaded) return;
 
-    // Fetch tickets on initial load
+    // Fetch tickets only on initial load
     if (!tickets.loading) store.dispatch(fetchTickets());
 
     setPageLoaded(true);

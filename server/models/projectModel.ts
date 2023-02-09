@@ -22,13 +22,11 @@ export type ProjectType = InferSchemaType<typeof projectSchema>;
 // Delete associated tickets when project is removed from db
 projectSchema.pre('remove', { document: true }, async function (next) {
   const project: any = this;
-  await Ticket.deleteMany({ project: project._id });
-  next();
-});
-
-projectSchema.pre('deleteMany', async function (next) {
-  const project: any = this;
-  await Ticket.deleteMany({ project: project._id });
+  const tickets = await Ticket.find({ project: project._id });
+  tickets.forEach(async (ticket) => {
+    console.log('ticket removed');
+    await ticket.remove();
+  });
   next();
 });
 

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import moment from "moment";
 import store, { storeType } from "../../../../../../redux/configureStore";
 import {
   commentOnTicket,
   fetchTicketById,
+  socketCommentOnTicket,
   updateTicket,
 } from "../../../../../../redux/actions/ticketActions";
 import { useSelector } from "react-redux";
@@ -14,9 +14,11 @@ import Pluralize from "react-pluralize";
 import TicketComments from "./comments";
 import { Ticket } from "../../../../../../types/models";
 import getDate from "../../../../../../utils/dateHelper";
+import { io } from "socket.io-client";
 
 interface TicketDetailsBarProps {
   ticket: Ticket | null;
+  socket: any;
   open: boolean;
   setOpen: any;
 }
@@ -24,29 +26,34 @@ interface TicketDetailsBarProps {
 const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   open,
   setOpen,
+  socket,
   ticket,
 }) => {
+  const currentUser = useSelector((store: storeType) => store.currentUser);
   const ticketDetails = useSelector((store: storeType) => store.ticket);
-  const [showAllDescription, setShowAllDescription] = useState(false);
 
+  
+  const [showAllDescription, setShowAllDescription] = useState(false);
+  
   const [comment, setComment] = useState("");
   const commentsRef = useRef(null);
 
-  const handleCommentSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (comment.trim() && !ticketDetails.method.comment) {
-      store.dispatch(commentOnTicket(ticketDetails.ticket!._id, comment));
-    }
-
-    setComment("");
-  };
-
   useEffect(() => {
-    if (ticket) {
-      store.dispatch(fetchTicketById(ticket._id));
+    async function refetchTicketDetails(ticket: Ticket) {
+      store.dispatch(fetchTicketById(ticket._id)).then(() => {
+        socket.emit("join-ticket-room", {
+          userId: currentUser.user!._id,
+          ticketId: ticket!._id,
+        });
+
+        socket.on("get-ticket-comment", (comment: any) => {
+          store.dispatch(socketCommentOnTicket(comment));
+        });
+      });
     }
-  }, [ticket?.status]);
+
+    if (ticket) refetchTicketDetails(ticket);
+  }, [ticket?._id]);
 
   useEffect(() => {
     const commentSection = commentsRef?.current as HTMLDivElement | null;
@@ -55,6 +62,28 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
       commentSection.scrollTop = commentSection.scrollHeight;
     }
   }, [ticketDetails.ticket?.comments]);
+
+  const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (comment.trim() && !ticketDetails.method.comment) {
+      const ticket = ticketDetails.ticket!;
+
+      store.dispatch(commentOnTicket(ticket._id, comment)).then(() => {
+        socket.emit("send-ticket-comment", {
+          ticketId: ticket._id,
+          comment: {
+            text: comment,
+            author: currentUser.user,
+            ticket: ticket._id,
+            createdAt: Date.now(),
+          },
+        });
+      });
+    }
+
+    setComment("");
+  };
 
   return (
     <aside

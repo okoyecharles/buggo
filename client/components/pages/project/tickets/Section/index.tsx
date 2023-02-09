@@ -1,19 +1,22 @@
-import React, { useState } from "react";
-import Ticket from "../../../../../types/Ticket";
+import React, { useEffect, useRef, useState } from "react";
 import { BsPlusLg } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
 import CreateTicketModal from "../Modals/ticketCreate";
 import TicketRow from "./Row";
 import TicketDetailsBar from "./details";
 import Paginate from "../../../../Pagination";
+import { Ticket } from "../../../../../types/models";
+import { io } from "socket.io-client";
 
 interface TicketsSectionProps {
+  socket: any;
   tickets: Ticket[] | undefined;
   loading: boolean;
   method: any;
 }
 
 const TicketsSection: React.FC<TicketsSectionProps> = ({
+  socket,
   tickets,
   loading,
   method,
@@ -81,6 +84,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
             <ul className="px-4 flex flex-col">
               {currentTickets.map((ticket) => (
                 <TicketRow
+                  key={ticket._id}
                   ticket={ticket}
                   showTicketDetails={setTicketDetailsOpen}
                   setTicketDetails={setTicketDetails}
@@ -115,11 +119,13 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
       )}
       <CreateTicketModal
         open={ticketCreateOpen}
+        socket={socket}
         setOpen={setTicketCreateOpen}
         loading={loading}
         method={method}
       />
       <TicketDetailsBar
+        socket={socket}
         ticket={ticketDetails}
         open={ticketDetailsOpen}
         setOpen={setTicketDetailsOpen}

@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { ThreeDotsLoader } from "../../../../loader";
 
 interface CreateTicketModalProps {
+  socket: any;
   open: boolean;
   setOpen: any;
   loading: boolean;
@@ -22,6 +23,7 @@ interface CreateTicketModalProps {
 }
 
 const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
+  socket,
   open,
   setOpen,
   loading,
@@ -45,7 +47,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
 
   const { query } = useRouter();
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     setTitleError(null);
@@ -97,7 +99,8 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
           time_estimate: timeEstimate,
           status: "open",
         },
-        query.id as string
+        query.id as string,
+        socket
       )
     );
   };

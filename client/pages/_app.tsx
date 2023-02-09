@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { Provider, useSelector } from "react-redux";
-import store, { storeType } from "../redux/configureStore";
+import { Provider } from "react-redux";
+import store from "../redux/configureStore";
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { ToastContainer } from "react-toastify";
@@ -9,7 +9,7 @@ import "react-tooltip/dist/react-tooltip.css";
 import Layout from "../components/layout/index";
 import { validateUserSession } from "../redux/actions/userActions";
 
-export default function App({ Component, pageProps, ...appProps }: AppProps) {
+export default function App({ Component, pageProps }: AppProps) {
   const isLayoutNeeded =
     Component.name !== "Login" && Component.name !== "Register";
   const LayoutComponent = isLayoutNeeded ? Layout : React.Fragment;
@@ -20,7 +20,7 @@ export default function App({ Component, pageProps, ...appProps }: AppProps) {
 
   return (
     <>
-      <ToastContainer position={'bottom-right'} />
+      <ToastContainer position={"bottom-right"} />
       <Provider store={store}>
         <LayoutComponent>
           <Component {...pageProps} />

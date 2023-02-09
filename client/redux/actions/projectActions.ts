@@ -1,6 +1,6 @@
 import { Project } from '../../types/models';
 import store, { storeType } from './../configureStore';
-import BACKEND_URL from '../../config/Backend';
+import SERVER_URL from '../../config/Backend';
 import * as types from '../constants/projectConstants';
 import axios, { AxiosRequestConfig } from 'axios';
 import { DispatchType } from '../types';
@@ -14,7 +14,7 @@ export const fetchProjects =
       });
 
       const { data } = await axios.get(
-        `${BACKEND_URL}/projects`,
+        `${SERVER_URL}/projects`,
         generateConfig()
       );
 
@@ -37,7 +37,7 @@ export const fetchProjectById =
         type: types.PROJECT_DETAILS_REQUEST,
       });
 
-      const { data } = await axios.get(`${BACKEND_URL}/projects/${id}`, generateConfig());
+      const { data } = await axios.get(`${SERVER_URL}/projects/${id}`, generateConfig());
 
       dispatch({
         type: types.PROJECT_DETAILS_SUCCESS,
@@ -59,7 +59,7 @@ export const createProject =
           type: types.PROJECT_CREATE_REQUEST,
         });
         const { data } = await axios.post(
-          `${BACKEND_URL}/projects`,
+          `${SERVER_URL}/projects`,
           project,
           generateConfig()
         );
@@ -84,7 +84,7 @@ export const updateProject =
           type: types.PROJECT_UPDATE_REQUEST,
         });
         const { data } = await axios.put(
-          `${BACKEND_URL}/projects/${id}`,
+          `${SERVER_URL}/projects/${id}`,
           project,
           generateConfig()
         );
@@ -102,10 +102,8 @@ export const updateProject =
     };
 
 export const getProjectTeamIds = async (project: Project) => {
-  const currentUser = store.getState().currentUser;
-
   const { data } = await axios.get(
-    `${BACKEND_URL}/projects/${project._id}/team`,
+    `${SERVER_URL}/projects/${project._id}/team`,
     generateConfig()
   );
   return data.team;
@@ -117,7 +115,7 @@ export const deleteProject =
       dispatch({
         type: types.PROJECT_DELETE_REQUEST,
       });
-      await axios.delete(`${BACKEND_URL}/projects/${id}`, generateConfig());
+      await axios.delete(`${SERVER_URL}/projects/${id}`, generateConfig());
 
       dispatch({
         type: types.PROJECT_DELETE_SUCCESS,

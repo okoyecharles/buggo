@@ -1,4 +1,4 @@
-import BACKEND_URL from '../../config/Backend';
+import SERVER_URL from '../../config/Backend';
 import * as types from '../constants/userConstants';
 import axios, { AxiosRequestConfig } from 'axios';
 import { DispatchType } from '../types';
@@ -13,7 +13,7 @@ const login =
       });
 
       const { data } = await axios.post(
-        `${BACKEND_URL}/users/signin`,
+        `${SERVER_URL}/users/signin`,
         { email, password },
         generateConfig()
       );
@@ -36,7 +36,7 @@ const register = (formData: any) => async (dispatch: DispatchType) => {
       type: types.USER_REGISTER_REQUEST,
     });
     const { data } = await axios.post(
-      `${BACKEND_URL}/users/signup`,
+      `${SERVER_URL}/users/signup`,
       formData,
       generateConfig()
     );
@@ -57,7 +57,7 @@ const logout = () => async (dispatch: DispatchType) => {
   dispatch({
     type: types.USER_LOGOUT,
   });
-  await axios.post(`${BACKEND_URL}/users/signout`, {}, generateConfig());
+  await axios.post(`${SERVER_URL}/users/signout`, {}, generateConfig());
 };
 
 const validateUserSession = () => async (dispatch: DispatchType) => {
@@ -67,7 +67,7 @@ const validateUserSession = () => async (dispatch: DispatchType) => {
     });
   
     const { data } = await axios.post(
-      `${BACKEND_URL}/users/validate`,
+      `${SERVER_URL}/users/validate`,
       {},
       generateConfig()
     );
@@ -94,7 +94,7 @@ const updateUser = (formData: {
     });
     const currentUser = getState().currentUser;
     const { data } = await axios.put(
-      `${BACKEND_URL}/users/${currentUser.user?._id}`,
+      `${SERVER_URL}/users/${currentUser.user?._id}`,
       formData,
       generateConfig()
     );
@@ -112,7 +112,7 @@ const updateUser = (formData: {
 };
 
 const getUsers = async () => {
-  const { data } = await axios.get(`${BACKEND_URL}/users`, generateConfig());
+  const { data } = await axios.get(`${SERVER_URL}/users`, generateConfig());
 
   return data;
 };

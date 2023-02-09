@@ -25,7 +25,6 @@ const isNextCommentFromSameAuthor = (
 
 const TicketComments: React.FC<TicketCommentsProps> = ({ comments }) => {
   const currentUser = useSelector((store: storeType) => store.currentUser);
-
   const isCommentAuthour = (comment: Comment) => {
     return currentUser.user?._id === comment.author._id;
   };
@@ -46,6 +45,7 @@ const TicketComments: React.FC<TicketCommentsProps> = ({ comments }) => {
                 ? ""
                 : "mt-2"
             }`}
+            key={comment._id}
           >
             {isNextCommentFromSameAuthor(
               comment,

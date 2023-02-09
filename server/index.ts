@@ -26,14 +26,14 @@ app.use('/users', userRouter);
 app.use('/projects', projectRouter);
 app.use('/tickets', ticketRouter);
 
-const PORT = process.env.PORT || 8080;
+const PORT = +process.env.PORT!;
 const CONNECTION_URI = process.env.MONGO_URI || '';
 
 mongoose.set('strictQuery', false);
 mongoose.connect(CONNECTION_URI)
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`Server running on ${PORT}`);
+      console.log('Server running on port', PORT);
     })
   }).catch((err) => {
     console.log(`Connection error: ${err}`);
