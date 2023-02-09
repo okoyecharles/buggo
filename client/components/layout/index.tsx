@@ -99,7 +99,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {children}
         </main>
         <aside
-          className={`bg-gray-900 px-2 py-2 flex gap-3 w-screen sticky bottom-0 lg:flex-col lg:py-10 lg:fixed lg:left-0 lg:top-0 ${
+          className={`bg-gray-950 border-t lg:border-none border-t-gray-700 px-2 py-1 flex gap-3 w-screen sticky bottom-0 lg:flex-col lg:py-10 lg:fixed lg:left-0 lg:top-0 ${
             expandNav ? "lg:w-36" : "lg:w-[60px]"
           } lg:transition-all`}
         >
@@ -110,10 +110,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {navLinks.map((link) => (
               <li
                 key={link.name}
-                className={` w-20 items-center group hover:rounded active:bg-orange-700/90  hover:bg-orange-600/90 transition-all overflow-hidden ${
+                className={`w-20 items-center rounded-full group lg:active:bg-orange-700/90  lg:hover:bg-orange-600/90 transition-all overflow-hidden ${
                   link.href === router.pathname
-                    ? "bg-orange-600/90 rounded"
-                    : "bg-gray-850 rounded-lg"
+                    ? "lg:bg-orange-600/90"
+                    : "lg:bg-gray-900"
                 } ${
                   expandNav ? "lg:rounded-xl" : "lg:rounded-full"
                 } lg:cursor-pointer lg:height-auto lg:hover:rounded-xl lg:transition lg:w-full`}
@@ -122,15 +122,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   href={link.href}
                   className={`p-1 flex flex-col justify-center items-center lg:p-3 lg:justify-start lg:flex-row`}
                 >
-                  {link.icon(
-                    `text-2xl group-hover:text-white transition ${
+                  {link.icon({
+                    className: `text-2xl group-hover:text-white transition ${
                       link.href === router.pathname
                         ? "text-white"
-                        : "text-orange-500/90"
-                    } lg:text-xl`
-                  )}
+                        : "text-white lg:text-orange-500/90"
+                    } lg:text-xl`,
+                    active: link.href === router.pathname,
+                  } as any)}
                   <span
-                    className={`text-sm group-hover:text-white transition ${
+                    className={`text-xsm group-hover:text-white transition ${
                       link.href === router.pathname
                         ? "text-white"
                         : "text-gray-300"
