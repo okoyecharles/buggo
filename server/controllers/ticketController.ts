@@ -1,6 +1,7 @@
 import { CommentType } from './../models/commentModel';
 import { Response } from 'express';
 import Ticket, { TicketType } from '../models/ticketModel';
+import Project from '../models/projectModel';
 import AuthorizedRequest from '../types/request';
 import Comment from '../models/commentModel';
 
@@ -87,6 +88,34 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
     res.status(400).json({ message: error.message });
   }
 }
+
+/*
+* @route    DELETE /tickets/:id
+* @desc     Delete a ticket
+* @access   Private
+*/
+export const deleteTicket = async (req: AuthorizedRequest<TicketType>, res: Response) => {
+  try {
+    const { id } = req.params;
+    const ticket = await Ticket.findById(id).populate('author', 'name');
+    const project = await Project.findById(ticket?.project);
+
+    if (ticket?.author._id.toString() !== req.user) {
+      return res.status(401).json({ message: 'User not authorized' });
+    }
+
+    if (ticket && project) {
+      await ticket.remove();
+      // Remove ticket reference from the project without using pull
+      project.tickets = project.tickets.filter((ticketId) => ticketId.toString() !== id);
+      await project?.save();
+
+      res.status(200).json({ message: 'Ticket removed' });
+    }
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 /*
 * @route    POST /tickets/:id/comments

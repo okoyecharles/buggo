@@ -6,17 +6,14 @@ import TicketRow from "./Row";
 import TicketDetailsBar from "./details";
 import Paginate from "../../../../Pagination";
 import { Ticket } from "../../../../../types/models";
-import { io } from "socket.io-client";
 
 interface TicketsSectionProps {
-  socket: any;
   tickets: Ticket[] | undefined;
   loading: boolean;
   method: any;
 }
 
 const TicketsSection: React.FC<TicketsSectionProps> = ({
-  socket,
   tickets,
   loading,
   method,
@@ -105,7 +102,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
           </li>
         )}
       </div>
-      {tickets?.length && (
+      {tickets?.length ? (
         <div className="p-3 px-6 flex justify-center lg:justify-end">
           <Paginate
             pageCount={ticketPageCount}
@@ -116,16 +113,14 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
             itemName="ticket"
           />
         </div>
-      )}
+      ) : null}
       <CreateTicketModal
         open={ticketCreateOpen}
-        socket={socket}
         setOpen={setTicketCreateOpen}
         loading={loading}
         method={method}
       />
       <TicketDetailsBar
-        socket={socket}
         ticket={ticketDetails}
         open={ticketDetailsOpen}
         setOpen={setTicketDetailsOpen}

@@ -104,6 +104,17 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
         }
       };
 
+    case ticketTypes.TICKET_DELETE_SUCCESS:
+      if (!state.project) return state;
+
+      return {
+        ...state,
+        project: {
+          ...state.project,
+          tickets: state.project.tickets.filter(ticket => ticket._id !== payload.ticketId)
+        }
+      };
+
     case userTypes.USER_LOGOUT:
       return initialState;
     default:

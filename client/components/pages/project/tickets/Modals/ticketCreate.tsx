@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useContext, useEffect, useReducer, useState } from "react";
 import Modal from "../../../../modal";
 import { IoMdClose } from "react-icons/io";
 import {
@@ -13,9 +13,9 @@ import { createTicket } from "../../../../../redux/actions/ticketActions";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { ThreeDotsLoader } from "../../../../loader";
+import SocketContext from "../../../../context/SocketContext";
 
 interface CreateTicketModalProps {
-  socket: any;
   open: boolean;
   setOpen: any;
   loading: boolean;
@@ -23,7 +23,6 @@ interface CreateTicketModalProps {
 }
 
 const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
-  socket,
   open,
   setOpen,
   loading,
@@ -44,8 +43,9 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   );
 
   const [processing, setProcessing] = useState<boolean>(false);
-
   const { query } = useRouter();
+
+  const socket = useContext(SocketContext);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

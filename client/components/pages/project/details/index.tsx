@@ -120,7 +120,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
             ))}
           </ul>
           {!project?.team.length && (
-            <p className="p-1 px-2 rounded flex font-normal items-center gap-2 select-none cursor-default">
+            <p className="p-1 px-2 rounded text-sm flex font-normal items-center gap-2 select-none cursor-default">
               No team members assigned
             </p>
           )}

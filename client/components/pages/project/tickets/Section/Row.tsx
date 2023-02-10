@@ -5,7 +5,9 @@ import Pluralize from "react-pluralize";
 import getDate from "../../../../../utils/dateHelper";
 import { Ticket } from "../../../../../types/models";
 
-const getTicketPriority = (priority: string) => {
+const getTicketPriority = (priority: string | undefined) => {
+  if (!priority) return '';
+
   switch (priority.toLowerCase()) {
     case "low":
       return "bg-blue-500 text-blue-50 ring-blue-500/30";
@@ -18,7 +20,9 @@ const getTicketPriority = (priority: string) => {
   }
 };
 
-const getTicketStatus = (status: string) => {
+const getTicketStatus = (status: string | undefined) => {
+  if (!status) return '';
+
   switch (status.toLowerCase()) {
     case "new":
       return "bg-blue-500 text-blue-50 ring-blue-500/30";
@@ -36,7 +40,7 @@ const getTicketStatus = (status: string) => {
 };
 
 interface TicketRowProps {
-  ticket: Ticket;
+  ticket: Ticket | undefined;
   ticketDetails: Ticket | null;
   showTicketDetails: any;
   setTicketDetails: any;
@@ -50,7 +54,7 @@ const TicketRow: React.FC<TicketRowProps> = ({
 }) => {
   useEffect(() => {
     // Set ticket details if the ticket id matches the ticket details id
-    if (ticket._id === ticketDetails?._id) setTicketDetails(ticket);
+    if (ticket?._id === ticketDetails?._id) setTicketDetails(ticket);
   }, [ticket]);
 
   return (
@@ -63,40 +67,40 @@ const TicketRow: React.FC<TicketRowProps> = ({
             setTicketDetails(ticket);
           }}
         >
-          {ticket.title}
+          {ticket?.title}
         </h3>
         <div className="flex gap-4">
           <span className="text-gray-200 text-sm font-semibold flex items-center gap-1">
             <FaCommentAlt className="text-base text-orange-500/80" />
-            {ticket.comments.length}
+            {ticket?.comments.length}
           </span>
           <span className="text-gray-200 text-sm font-semibold flex items-center gap-1">
             <AiFillClockCircle className="text-base text-orange-500/80" />
-            <Pluralize singular="hr" count={ticket.time_estimate} />
+            <Pluralize singular="hr" count={ticket?.time_estimate} />
           </span>
         </div>
       </header>
       <div className="flex items-center px-1">
         <button
           className={`${getTicketPriority(
-            ticket.priority
+            ticket?.priority
           )} capitalize rounded p-2 py-1 text-center w-24 font-semibold text-sm xl:text-ss font-noto focus:ring-4 transition-all`}
         >
-          {ticket.priority}
+          {ticket?.priority}
         </button>
       </div>
       <div className="flex items-center px-1">
         <button
           className={`${getTicketStatus(
-            ticket.status
+            ticket?.status
           )} capitalize rounded p-2 py-1 text-center w-24 font-semibold text-sm xl:text-ss font-noto focus:ring-4 transition-all`}
         >
-          {ticket.status}
+          {ticket?.status}
         </button>
       </div>
       <div className="flex items-center px-1">
         <span className="capitalize text-sm xl:text-ss text-orange-400 font-semibold font-noto">
-          {ticket.type}
+          {ticket?.type}
         </span>
       </div>
       <div className="flex items-center px-1">

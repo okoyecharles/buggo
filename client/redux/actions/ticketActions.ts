@@ -63,7 +63,7 @@ export const createTicket = (ticket: any, projectId: string, socket: any) => asy
       generateConfig()
     );
 
-    socket.emit('create-project-ticket', {
+    socket?.emit('create-project-ticket', {
       projectId,
       ticket: data.ticket,
     });
@@ -111,7 +111,7 @@ export const updateTicket = (id: string, ticket: any) => async (dispatch: Dispat
   }
 };
 
-export const commentOnTicket = (id: string, text: string) => async (dispatch: DispatchType) => {
+export const commentOnTicket = (id: string, text: string, socket: any) => async (dispatch: DispatchType) => {
   try {
     dispatch({
       type: types.TICKET_COMMENT_REQUEST,
@@ -121,6 +121,11 @@ export const commentOnTicket = (id: string, text: string) => async (dispatch: Di
       { text },
       generateConfig()
     );
+
+    socket?.emit("send-ticket-comment", {
+      ticketId: id,
+      comment: data.comment,
+    });
 
     dispatch({
       type: types.TICKET_COMMENT_SUCCESS,
@@ -142,3 +147,38 @@ export const socketCommentOnTicket = (comment: Comment) => {
   };
 }
 
+export const deleteTicket = (id: string, projectId: any, socket: any) => async (dispatch: DispatchType) => {
+  try {
+    dispatch({
+      type: types.TICKET_DELETE_REQUEST,
+    });
+    await axios.delete(
+      `${SERVER_URL}/tickets/${id}`,
+      generateConfig()
+    );
+
+    socket?.emit("delete-project-ticket", {
+      projectId,
+      ticketId: id,
+    });
+
+    dispatch({
+      type: types.TICKET_DELETE_SUCCESS,
+      payload: {
+        ticketId: id
+      },
+    });
+  } catch (error: any) {
+    dispatch({
+      type: types.TICKET_DELETE_FAIL,
+      payload: error.response?.data ? error.response.data : error.error,
+    });
+  }
+};
+
+export const socketDeleteTicket = (ticketId: string) => {
+  return {
+    type: types.TICKET_DELETE_SUCCESS,
+    payload: { ticketId },
+  };
+}

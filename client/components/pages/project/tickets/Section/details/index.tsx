@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import store, { storeType } from "../../../../../../redux/configureStore";
 import {
@@ -14,11 +14,11 @@ import Pluralize from "react-pluralize";
 import TicketComments from "./comments";
 import { Ticket } from "../../../../../../types/models";
 import getDate from "../../../../../../utils/dateHelper";
-import { io } from "socket.io-client";
+import TicketDeleteModal from "../../Modals/ticketDelete";
+import SocketContext from "../../../../../context/SocketContext";
 
 interface TicketDetailsBarProps {
   ticket: Ticket | null;
-  socket: any;
   open: boolean;
   setOpen: any;
 }
@@ -26,30 +26,35 @@ interface TicketDetailsBarProps {
 const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   open,
   setOpen,
-  socket,
   ticket,
 }) => {
   const currentUser = useSelector((store: storeType) => store.currentUser);
   const ticketDetails = useSelector((store: storeType) => store.ticket);
 
-  
   const [showAllDescription, setShowAllDescription] = useState(false);
-  
+  const [projectDeleteModalOpen, setProjectDeleteModalOpen] = useState(false);
+
   const [comment, setComment] = useState("");
   const commentsRef = useRef(null);
 
+  const socket = useContext(SocketContext);
+
+  useEffect(() => {
+    socket?.emit("join-ticket-room", {
+      userId: currentUser.user!._id,
+      ticketId: ticket?._id,
+    });
+  }, [ticket?._id])
+
+  useEffect(() => {
+    if (!ticketDetails.loading && !ticketDetails.ticket) {
+      setOpen(false);
+    }
+  }, [ticketDetails.ticket])
+
   useEffect(() => {
     async function refetchTicketDetails(ticket: Ticket) {
-      store.dispatch(fetchTicketById(ticket._id)).then(() => {
-        socket.emit("join-ticket-room", {
-          userId: currentUser.user!._id,
-          ticketId: ticket!._id,
-        });
-
-        socket.on("get-ticket-comment", (comment: any) => {
-          store.dispatch(socketCommentOnTicket(comment));
-        });
-      });
+      store.dispatch(fetchTicketById(ticket._id));
     }
 
     if (ticket) refetchTicketDetails(ticket);
@@ -68,26 +73,14 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
 
     if (comment.trim() && !ticketDetails.method.comment) {
       const ticket = ticketDetails.ticket!;
-
-      store.dispatch(commentOnTicket(ticket._id, comment)).then(() => {
-        socket.emit("send-ticket-comment", {
-          ticketId: ticket._id,
-          comment: {
-            text: comment,
-            author: currentUser.user,
-            ticket: ticket._id,
-            createdAt: Date.now(),
-          },
-        });
-      });
+      store.dispatch(commentOnTicket(ticket._id, comment, socket));
+      setComment("");
     }
-
-    setComment("");
   };
 
   return (
     <aside
-      className={`bg-gray-850 fixed lg:absolute top-16 lg:top-0 w-screen lg:w-72 right-0 bottom-[66px] lg:h-full lg:border-l border-gray-700 ${
+      className={`bg-gray-850 fixed top-16 w-screen right-0 bottom-[58px] border-gray-700 lg:absolute lg:top-0 lg:w-72 lg:h-full lg:border-l ${
         open ? "translate-x-0" : "translate-x-full"
       } transition-all`}
     >
@@ -198,18 +191,18 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           </div>
         )}
 
-        <div className="buttons p-3 absolute bottom-0 left-0 w-full border-t border-gray-700 flex flex-col gap-2 bg-gray-825">
+        <div className="buttons p-3 absolute bottom-0 left-0 w-full border-t border-gray-700 flex gap-2 bg-gray-825">
           <button
-            className="bg-blue-500 flex justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-blue-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors"
+            className="bg-blue-500 flex justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-blue-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors flex-1"
             disabled={
               ticketDetails.loading ||
               ticketDetails.method.update ||
-              ticketDetails.ticket?.status === "open"
+              ticketDetails.ticket?.status === "closed"
             }
             onClick={() => {
               store.dispatch(
                 updateTicket(ticketDetails.ticket?._id!, {
-                  status: "open",
+                  status: "closed",
                 })
               );
             }}
@@ -220,8 +213,35 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
               "Close Ticket"
             )}
           </button>
+          <button
+            className={`bg-red-500 justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-red-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors flex-1 ${
+              ticketDetails.ticket?.author._id !== currentUser.user?._id
+                ? "hidden"
+                : "flex"
+            }`}
+            disabled={ticketDetails.loading || ticketDetails.method.delete}
+            onClick={() => {
+              setProjectDeleteModalOpen(true);
+            }}
+          >
+            {ticketDetails.loading && ticketDetails.method.delete ? (
+              <ThreeDotsLoader />
+            ) : (
+              "Delete Ticket"
+            )}
+          </button>
         </div>
       </div>
+      {ticketDetails.ticket && (
+        <TicketDeleteModal
+          open={projectDeleteModalOpen}
+          setOpen={setProjectDeleteModalOpen}
+          ticket={ticketDetails.ticket!}
+          loading={ticketDetails.loading}
+          method={ticketDetails.method}
+          socket={socket}
+        />
+      )}
     </aside>
   );
 };

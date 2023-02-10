@@ -1,47 +1,45 @@
 import { useRouter } from "next/router";
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import store, { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
 import { fetchProjectById } from "../../redux/actions/projectActions";
 import ProjectDetailsBar from "../../components/pages/project/details";
 import TicketsSection from "../../components/pages/project/tickets/Section";
-import { io } from "socket.io-client";
-import { SOCKET_URL } from "../../config/Backend";
-import { socketCreateTicket } from "../../redux/actions/ticketActions";
+import {
+  socketCommentOnTicket,
+  socketCreateTicket,
+  socketDeleteTicket,
+} from "../../redux/actions/ticketActions";
+import SocketContext from "../../components/context/SocketContext";
 
 const ProjectDetails: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
 
   const project = useSelector((store: storeType) => store.project);
-  const currentUser = useSelector((store: storeType) => store.currentUser);
-
-  const socket = useRef<any>(null);
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
     if (!project.loading && id) {
-      store.dispatch(fetchProjectById(id as string));
+      store.dispatch(fetchProjectById(id as string, socket));
     }
   }, []);
 
   useEffect(() => {
     if (project.project?._id) {
-      socket.current = io(SOCKET_URL);
-
-      socket.current.emit("join-project-room", {
-        projectId: project.project._id,
-        userId: currentUser.user?._id,
-      });
-
-      socket.current.on("get-project-ticket", (ticket: any) => {
+      socket?.on("get-project-ticket", (ticket: any) => {
         store.dispatch(socketCreateTicket(ticket));
       });
-    }
 
-    return () => {
-      if (socket.current) socket.current.disconnect();
+      socket?.on("get-project-ticket-delete", (ticketId: any) => {
+        store.dispatch(socketDeleteTicket(ticketId));
+      });
+
+      socket?.on("get-ticket-comment", (comment: any) => {
+        store.dispatch(socketCommentOnTicket(comment));
+      });
     }
-  }, [project.project?._id])
+  }, [project.project?._id]);
 
   return (
     <div className="flex flex-col lg:flex-row h-full">
@@ -51,7 +49,6 @@ const ProjectDetails: React.FC = () => {
         method={project.method}
       />
       <TicketsSection
-        socket={socket.current}
         tickets={project.project?.tickets}
         loading={project.loading}
         method={project.method}

@@ -12,6 +12,7 @@ interface TicketState {
     details: boolean;
     update: boolean;
     comment: boolean;
+    delete: boolean;
   }
 };
 
@@ -23,6 +24,7 @@ const initialState = {
     details: false,
     update: false,
     comment: false,
+    delete: false,
   }
 };
 
@@ -74,7 +76,7 @@ const ticketReducer = (state: TicketState = initialState, action: ActionType): T
           update: false,
         }
       };
-    
+
     case types.TICKET_COMMENT_REQUEST:
       return {
         ...state, loading: true, error: null, method: {
@@ -100,6 +102,23 @@ const ticketReducer = (state: TicketState = initialState, action: ActionType): T
         ...state, loading: false, error: payload, method: {
           ...state.method,
           comment: false,
+        }
+      };
+
+    case types.TICKET_DELETE_REQUEST:
+      return {
+        ...state, loading: true, error: null, method: {
+          ...state.method,
+          delete: true
+        }
+      };
+    case types.TICKET_DELETE_SUCCESS:
+      return initialState;
+    case types.TICKET_DELETE_FAIL:
+      return {
+        ...state, loading: false, error: payload, method: {
+          ...state.method,
+          delete: false,
         }
       };
 

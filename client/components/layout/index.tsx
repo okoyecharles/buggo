@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
 import { RiArrowRightSLine } from "react-icons/ri";
@@ -12,6 +12,9 @@ import navLinks from "./data/navigation";
 import { restrictLength } from "../../utils/stringHelper";
 import EditProfileModal from "./profileEdit";
 import defaultAvatar from "../../db/avatar/default";
+import { io } from "socket.io-client";
+import { SOCKET_URL } from "../../config/Backend";
+import SocketContext from "../context/SocketContext";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -24,6 +27,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [expandNav, setExpandNav] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
 
+  const socket = useRef<any>(null);
+
   useEffect(() => {
     if (
       !currentUser.user &&
@@ -33,6 +38,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       router.replace("/login?redirected=true");
     }
   }, [currentUser]);
+
+  // Reconnect to socket if user is logged in
+  useEffect(() => {
+    if (currentUser.user?._id && !currentUser.loading)
+      socket.current = io(SOCKET_URL);
+  }, [currentUser.user?._id]);
 
   return (
     <div className="flex flex-col min-h-screen isolate">
@@ -96,7 +107,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             expandNav ? "lg:ml-36" : "lg:ml-[60px]"
           } transition-all`}
         >
-          {children}
+          <SocketContext.Provider value={socket.current}>
+            {children}
+          </SocketContext.Provider>
         </main>
         <aside
           className={`bg-gray-950 border-t lg:border-none border-t-gray-700 px-2 py-1 flex gap-3 w-screen sticky bottom-0 lg:flex-col lg:py-10 lg:fixed lg:left-0 lg:top-0 ${

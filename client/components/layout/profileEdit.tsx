@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import User from "../../types/types";
 import Modal from "../modal";
 import Image from "next/image";
 import Compressor from "compressorjs";
@@ -8,6 +7,7 @@ import defaultAvatar from "../../db/avatar/default";
 import store from "../../redux/configureStore";
 import { updateUser } from "../../redux/actions/userActions";
 import { ThreeDotsLoader } from "../loader";
+import { User } from "../../types/models";
 
 interface EditProfileModalProps {
   open: boolean;
@@ -71,7 +71,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   const openImageSelector = (event: any) => {
     event.preventDefault();
-    nameInputRef.current?.click();
+    imageInputRef.current?.click();
   };
 
   useEffect(() => {
