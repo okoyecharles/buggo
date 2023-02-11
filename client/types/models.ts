@@ -21,12 +21,12 @@ export type Project = {
 export type Ticket = {
   _id: string;
   title: string;
-  description: string; 
+  description: string;
   status: string;
   priority: string;
   type: string;
   time_estimate: number;
-  project: string;
+  project: string | Project;
   comments: string[] | {}[];
   author: User;
   createdAt: string;
