@@ -26,7 +26,7 @@ export type Ticket = {
   priority: string;
   type: string;
   time_estimate: number;
-  project: string | Project;
+  project: Project;
   comments: string[] | {}[];
   author: User;
   createdAt: string;

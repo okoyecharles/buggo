@@ -12,7 +12,7 @@ import Comment from '../models/commentModel';
 */
 export const getUserTickets = async (req: AuthorizedRequest<TicketType>, res: Response) => {
   try {
-    const tickets = await Ticket.find({ author: req.user });
+    const tickets = await Ticket.find({ author: req.user }).populate('project', 'title');
     res.status(200).json({ tickets });
   } catch (error: any) {
     res.status(200).json({ message: error.message });

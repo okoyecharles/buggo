@@ -13,3 +13,9 @@ export const returnWithLineBreaks = (str: string = "") => {
     </>
   ));
 };
+
+export const returnWithTwoDigitsOrMore = (str: string | number) => {
+  str = str.toString();
+  const appendStr = str.length < 2 ? "0" : "";
+  return appendStr + str;
+}

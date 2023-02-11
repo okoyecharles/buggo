@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import MyTicketsSearch from "./search";
 import { Ticket } from "../../../../types/models";
+import MyTicketsProjects from "./projects";
 
 interface MyTicketsDetailsBarProps {
   tickets: Ticket[];
@@ -9,34 +10,20 @@ interface MyTicketsDetailsBarProps {
 const MyTicketsDetailsBar: React.FC<MyTicketsDetailsBarProps> = ({
   tickets,
 }) => {
-  const getTicketsProjects = (tickets: Ticket[]) => {
-    const projects: {
-      _id: string;
-      title: string;
-    }[] = [];
-
-    tickets.forEach((ticket) => {
-      if (!projects.some((project) => project._id === ticket.project._id)) {
-        projects.push({
-          _id: ticket.project._id,
-          title: ticket.project.title,
-        });
-      }
-    });
-
-    return projects;
-  };
+  const [search, setSearch] = useState<string>("");
 
   return (
-    <aside className="my-tickets-details-bar w-full lg:w-56 bg-gray-850 relative">
+    <aside className="my-tickets-details-bar w-full lg:w-60 bg-gray-850 relative">
       <header
         className="
-        p-3 px-6 h-16 lg:px-3 flex justify-between items-center shadow-sm shadow-gray-950 font-semibold text-gray-300 cursor-pointer transition-colors
-        hover:bg-gray-825 hover:text-gray-100
+        p-2 px-2 h-16 flex shadow-sm shadow-gray-950
         "
       >
-        <MyTicketsSearch />
+        <MyTicketsSearch search={search} setSearch={setSearch} />
       </header>
+      <div className="py-2 pl-2 h-full overflow-y-auto">
+        <MyTicketsProjects tickets={tickets} />
+      </div>
     </aside>
   );
 };

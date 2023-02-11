@@ -37,7 +37,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   const currentUser = useSelector((store: storeType) => store.currentUser);
 
   return (
-    <aside className="project-details-bar w-full lg:w-56 bg-gray-850 relative">
+    <aside className="project-details-bar w-full lg:w-60 bg-gray-850 relative">
       {/* Project details header */}
       <header
         className="
