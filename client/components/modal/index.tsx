@@ -34,9 +34,10 @@ const Modal: React.FC<ModalProps> = ({ open, setOpen, children, style }) => {
           }}
         >
           <animated.div
-            className="content z-50 bg-gray-800 ring-1 ring-gray-600 sm:ring-0 w-full sm:w-96 p-3 sm:rounded overflow-hidden"
+            className="modal-content z-50 bg-gray-800 w-full sm:w-96 p-3 pt-5 sm:pt-3 rounded-t-lg sm:rounded overflow-hidden relative"
             style={{ ...spring, ...style }}
           >
+            <span className="rounded h-1 sm:hidden bg-gray-500 w-16 absolute top-3 left-1/2 -translate-x-1/2" />
             {children}
           </animated.div>
         </div>

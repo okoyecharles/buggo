@@ -58,7 +58,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               width="200"
               height="200"
               alt="profile__image"
-              className="rounded-full h-10 w-10 object-center object-cover bg-gray-700"
+              className="rounded-full h-8 w-8 lg:h-10 lg:w-10 object-center object-cover bg-gray-700"
             />
             <div className="profile-info flex flex-col h-full justify-start">
               <p className="text-sm font-bold">

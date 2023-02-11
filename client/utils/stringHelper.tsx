@@ -4,3 +4,12 @@ export const restrictLength = (str: string = "", length: number) => {
   }
   return str;
 };
+
+export const returnWithLineBreaks = (str: string = "") => {
+  return str.split("\n").map((line: string, index: number) => (
+    <>
+      <span key={index}>{line}</span>
+      <br />
+    </>
+  ));
+};

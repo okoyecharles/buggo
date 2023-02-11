@@ -4,12 +4,14 @@ import store, { storeType } from "../../../../../../redux/configureStore";
 import {
   commentOnTicket,
   fetchTicketById,
-  socketCommentOnTicket,
   updateTicket,
 } from "../../../../../../redux/actions/ticketActions";
 import { useSelector } from "react-redux";
 import { TailSpinLoader, ThreeDotsLoader } from "../../../../../loader";
-import { restrictLength } from "../../../../../../utils/stringHelper";
+import {
+  restrictLength,
+  returnWithLineBreaks,
+} from "../../../../../../utils/stringHelper";
 import Pluralize from "react-pluralize";
 import TicketComments from "./comments";
 import { Ticket } from "../../../../../../types/models";
@@ -44,13 +46,13 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
       userId: currentUser.user!._id,
       ticketId: ticket?._id,
     });
-  }, [ticket?._id])
+  }, [ticket?._id]);
 
   useEffect(() => {
     if (!ticketDetails.loading && !ticketDetails.ticket) {
       setOpen(false);
     }
-  }, [ticketDetails.ticket])
+  }, [ticketDetails.ticket]);
 
   useEffect(() => {
     async function refetchTicketDetails(ticket: Ticket) {
@@ -146,9 +148,11 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
                 Description
               </h3>
               <p>
-                {showAllDescription
-                  ? ticketDetails.ticket?.description
-                  : restrictLength(ticketDetails.ticket?.description, 200)}
+                {returnWithLineBreaks(
+                  showAllDescription
+                    ? ticketDetails.ticket?.description
+                    : restrictLength(ticketDetails.ticket?.description, 200)
+                )}
                 {(ticketDetails.ticket?.description?.length || 0) > 200 && (
                   <button
                     className="text-orange-400 ml-1"
