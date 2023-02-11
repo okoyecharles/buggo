@@ -4,7 +4,7 @@ import { storeType } from "../../../redux/configureStore";
 import TicketsByStatus from "./TicketsByStatus";
 import TicketsByPriority from "./TicketsByPriority";
 import TicketStatsLoader from "./Loader";
-import { useTransition, a, useTrail } from "@react-spring/web";
+import { a, useTrail } from "@react-spring/web";
 
 interface Props {
   ticketStore: storeType["tickets"];

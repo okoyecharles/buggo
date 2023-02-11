@@ -1,5 +1,4 @@
-import { Project } from '../types/models';
-import User from '../types/types';
+import { Project, User } from '../types/models';
 
 const searchByNameOrEmail = (search: string, users: User[]) => {
   const searchRegex = new RegExp(search, 'i');

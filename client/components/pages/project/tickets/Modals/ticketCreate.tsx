@@ -109,7 +109,6 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
     setProcessing(loading && method.createTicket);
 
     if (open && !method.createTicket && !loading) {
-      toast.success("Ticket created successfully");
       setOpen(false);
     }
   }, [loading, method]);
@@ -122,7 +121,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
       setType("");
       setTimeEstimate("");
     }
-  }, [open])
+  }, [open]);
 
   return (
     <Modal open={open} setOpen={setOpen}>
@@ -162,7 +161,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
           />
         </div>
 
-        <div className="flex flex-col mt-2">
+        <div className="flex flex-col mt-2 relative">
           <label
             htmlFor="description"
             className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
@@ -184,6 +183,13 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
             rows={4}
             onChange={(event) => setDescription(event.target.value)}
           />
+          <span
+            className={`${
+              description.length > 500 ? "text-red-400" : "text-blue-500"
+            } text-sm font-bold absolute bottom-1 right-1 opacity-85`}
+          >
+            {description.length}/500
+          </span>
         </div>
 
         <div className="flex gap-2 mt-2">

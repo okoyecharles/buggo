@@ -53,9 +53,8 @@ const CreateProjectModal = ({
       setOpen(false);
       setTitle('');
       setTitleError(null);
-      toast.success('Project created successfully');
     }
-  }, [loading, method]);
+  }, [method.create]);
 
   useEffect(() => {
     if (open) {

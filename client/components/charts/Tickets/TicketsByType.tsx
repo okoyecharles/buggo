@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, useEffect, useState } from "react";
-import Ticket from "../../../types/Ticket";
+import { Ticket } from "../../../types/models";
 import { Cell, Pie, PieChart, Tooltip as ChartTooltip } from "recharts";
 import { AiFillInfoCircle } from "react-icons/ai";
 import { Tooltip } from "react-tooltip";

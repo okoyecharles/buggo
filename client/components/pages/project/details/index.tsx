@@ -19,12 +19,16 @@ interface ProjectDetailsBarProps {
   project: Project | null;
   loading: boolean;
   method: any;
+  setTicketCreateOpen: any;
+  setProjectDeleteOpen: any;
 }
 
 const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   project,
   loading,
   method,
+  setTicketCreateOpen,
+  setProjectDeleteOpen,
 }) => {
   const [membersOpen, setMembersOpen] = useState(true);
   const [optionsOpen, setOptionsOpen] = useState(false);
@@ -41,6 +45,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
         hover:bg-gray-825 hover:text-gray-100
         "
         onClick={() => {
+          if (!project) return;
           setOptionsOpen(!optionsOpen);
         }}
       >
@@ -126,15 +131,26 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
           )}
         </div>
       </div>
-      <ProjectDetailsOptionsPopup open={optionsOpen} setOpen={setOptionsOpen} />
+
       {project && (
-        <ProjectAssignModal
-          open={assignOpen}
-          setOpen={setAssignOpen}
-          project={project}
-          loading={loading}
-          method={method}
-        />
+        <>
+          <ProjectDetailsOptionsPopup
+            setProjectDeleteOpen={setProjectDeleteOpen}
+            setTicketCreateOpen={setTicketCreateOpen}
+            setProjectAssignOpen={setAssignOpen}
+            open={optionsOpen}
+            setOpen={setOptionsOpen}
+            project={project}
+            method={method}
+          />
+          <ProjectAssignModal
+            open={assignOpen}
+            setOpen={setAssignOpen}
+            project={project}
+            loading={loading}
+            method={method}
+          />
+        </>
       )}
     </aside>
   );

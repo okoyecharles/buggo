@@ -17,7 +17,7 @@ export const validateTicketDescription = (description: string) => {
   };
   // validate description is not longer than 500 characters
   if (description.length > 500) {
-    return 'Description cannot be longer than 500 characters';
+    return 'Description is too long';
   }
   return null;
 }

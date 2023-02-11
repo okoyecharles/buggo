@@ -1,5 +1,11 @@
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useRef } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import store, { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
 import { fetchProjectById } from "../../redux/actions/projectActions";
@@ -11,6 +17,7 @@ import {
   socketDeleteTicket,
 } from "../../redux/actions/ticketActions";
 import SocketContext from "../../components/context/SocketContext";
+import ProjectDeleteModal from "../../components/pages/dashboard/projects/Modals/projectDelete";
 
 const ProjectDetails: React.FC = () => {
   const router = useRouter();
@@ -19,9 +26,14 @@ const ProjectDetails: React.FC = () => {
   const project = useSelector((store: storeType) => store.project);
   const socket = useContext(SocketContext);
 
+  const [ticketCreateOpen, setTicketCreateOpen] = useState<boolean>(false);
+  const [projectDeleteOpen, setProjectDeleteOpen] = useState<boolean>(false);
+
   useEffect(() => {
     if (!project.loading && id) {
       store.dispatch(fetchProjectById(id as string, socket));
+    } else {
+      router.replace("/");
     }
   }, []);
 
@@ -44,14 +56,25 @@ const ProjectDetails: React.FC = () => {
   return (
     <div className="flex flex-col lg:flex-row h-full">
       <ProjectDetailsBar
+        setProjectDeleteOpen={setProjectDeleteOpen}
         project={project.project}
         loading={project.loading}
         method={project.method}
+        setTicketCreateOpen={setTicketCreateOpen}
       />
       <TicketsSection
         tickets={project.project?.tickets}
         loading={project.loading}
         method={project.method}
+        ticketCreateOpen={ticketCreateOpen}
+        setTicketCreateOpen={setTicketCreateOpen}
+      />
+      <ProjectDeleteModal
+        open={projectDeleteOpen}
+        setOpen={setProjectDeleteOpen}
+        loading={project.loading}
+        method={project.method}
+        project={project.project}
       />
     </div>
   );

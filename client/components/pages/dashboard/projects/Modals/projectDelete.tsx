@@ -7,26 +7,30 @@ import Modal from "../../../../modal";
 import moment from "moment";
 import { ThreeDotsLoader } from "../../../../loader";
 import getDate from "../../../../../utils/dateHelper";
+import { useRouter } from "next/router";
 
 const ProjectDeleteModal: React.FC<{
   open: boolean;
   setOpen: any;
-  project: Project;
+  project: Project | null;
   loading: boolean;
   method: {
     [key: string]: any;
   };
 }> = ({ open, setOpen, project, loading, method }) => {
+  const router = useRouter();
+
   const handleDelete = () => {
+    if (!project) return;
     store.dispatch(deleteProject(project._id));
-    toast.success("Project deleted successfully");
   };
 
   useEffect(() => {
     if (open && loading === false && !method.delete) {
       setOpen(false);
+      router.replace("/");
     }
-  }, [loading, method]);
+  }, [method.delete]);
 
   return (
     <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
@@ -39,9 +43,9 @@ const ProjectDeleteModal: React.FC<{
         </header>
         <div className="shadow-lg gap-2 bg-gray-700 p-2 rounded mb-2">
           <p className="text-sm text-blue-500 capitalize">
-            {getDate(project.createdAt)}
+            {getDate(project?.createdAt)}
           </p>
-          <p className="font-semibold text-gray-100">{project.title}</p>
+          <p className="font-semibold text-gray-100">{project?.title}</p>
         </div>
         <p className="text-gray-400 text-xsm mb-2">
           This action will delete all tickets and comments associated with this

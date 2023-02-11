@@ -19,9 +19,8 @@ const TicketDeleteModal: React.FC<{
 }> = ({ open, setOpen, ticket, loading, socket, method }) => {
   const handleDelete = () => {
     store.dispatch(deleteTicket(ticket._id, ticket.project, socket));
-    toast.success("Project deleted successfully");
   };
-
+  
   useEffect(() => {
     if (open && !method.delete) {
       setOpen(false);

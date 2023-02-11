@@ -63,7 +63,6 @@ const Register = () => {
     }
     if (currentUser?.user) {
       router.replace('/');
-      toast.success('Signed Up successfully');
     }
   }, [registerStore, currentUser]);
 

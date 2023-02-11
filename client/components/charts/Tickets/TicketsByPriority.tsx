@@ -1,8 +1,8 @@
-import React, { HTMLAttributes, useEffect, useState } from "react";
-import Ticket from "../../../types/Ticket";
+import React, { useEffect, useState } from "react";
 import { Cell, Pie, PieChart, Tooltip as ChartTooltip } from "recharts";
 import { AiFillInfoCircle } from "react-icons/ai";
 import { Tooltip } from "react-tooltip";
+import { Ticket } from "../../../types/models";
 
 interface Props {
   tickets: Ticket[];

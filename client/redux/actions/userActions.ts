@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import SERVER_URL from '../../config/Backend';
 import * as types from '../constants/userConstants';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -17,6 +18,7 @@ const login =
         { email, password },
         generateConfig()
       );
+      toast.success("Logged In successfully");
 
       dispatch({
         type: types.USER_LOGIN_SUCCESS,
@@ -40,6 +42,7 @@ const register = (formData: any) => async (dispatch: DispatchType) => {
       formData,
       generateConfig()
     );
+    toast.success("Signed Up successfully");
 
     dispatch({
       type: types.USER_REGISTER_SUCCESS,
@@ -58,6 +61,7 @@ const logout = () => async (dispatch: DispatchType) => {
     type: types.USER_LOGOUT,
   });
   await axios.post(`${SERVER_URL}/users/signout`, {}, generateConfig());
+  toast.success("Logged Out successfully");
 };
 
 const validateUserSession = () => async (dispatch: DispatchType) => {
@@ -65,12 +69,13 @@ const validateUserSession = () => async (dispatch: DispatchType) => {
     dispatch({
       type: types.USER_VALIDATE_REQUEST,
     });
-  
+
     const { data } = await axios.post(
       `${SERVER_URL}/users/validate`,
       {},
       generateConfig()
     );
+    toast.success("Logged In successfully");
 
     dispatch({
       type: types.USER_VALIDATE_SUCCESS,
@@ -98,6 +103,7 @@ const updateUser = (formData: {
       formData,
       generateConfig()
     );
+    toast.success("User updated successfully");
 
     dispatch({
       type: types.USER_LOGIN_SUCCESS,

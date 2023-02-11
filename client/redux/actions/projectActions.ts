@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { Project } from '../../types/models';
 import store, { storeType } from './../configureStore';
 import SERVER_URL from '../../config/Backend';
@@ -69,6 +70,7 @@ export const createProject =
           project,
           generateConfig()
         );
+        toast.success('Project created successfully');
 
         dispatch({
           type: types.PROJECT_CREATE_SUCCESS,
@@ -122,6 +124,7 @@ export const deleteProject =
         type: types.PROJECT_DELETE_REQUEST,
       });
       await axios.delete(`${SERVER_URL}/projects/${id}`, generateConfig());
+      toast.success("Project deleted successfully");
 
       dispatch({
         type: types.PROJECT_DELETE_SUCCESS,

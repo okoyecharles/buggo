@@ -1,10 +1,11 @@
 import { storeType } from './../configureStore';
 import SERVER_URL from '../../config/Backend';
 import * as types from './../constants/ticketConstants';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { DispatchType } from '../types';
 import generateConfig from './config/axios';
 import { Comment } from '../../types/models';
+import { toast } from 'react-toastify';
 
 export const fetchTickets = () => async (dispatch: DispatchType, getState: () => storeType) => {
   try {
@@ -34,7 +35,6 @@ export const fetchTicketById = (id: string) => async (dispatch: DispatchType, ge
     dispatch({
       type: types.TICKET_DETAILS_REQUEST,
     });
-    const currentUser = getState().currentUser;
     const { data } = await axios.get(
       `${SERVER_URL}/tickets/${id}`,
       generateConfig()
@@ -62,6 +62,7 @@ export const createTicket = (ticket: any, projectId: string, socket: any) => asy
       ticket,
       generateConfig()
     );
+    toast.success('Ticket created successfully');
 
     socket?.emit('create-project-ticket', {
       projectId,
@@ -156,6 +157,7 @@ export const deleteTicket = (id: string, projectId: any, socket: any) => async (
       `${SERVER_URL}/tickets/${id}`,
       generateConfig()
     );
+    toast.success("Ticket deleted successfully");
 
     socket?.emit("delete-project-ticket", {
       projectId,

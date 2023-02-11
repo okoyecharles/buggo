@@ -11,15 +11,17 @@ interface TicketsSectionProps {
   tickets: Ticket[] | undefined;
   loading: boolean;
   method: any;
+  ticketCreateOpen: boolean;
+  setTicketCreateOpen: any;
 }
 
 const TicketsSection: React.FC<TicketsSectionProps> = ({
+  ticketCreateOpen,
+  setTicketCreateOpen,
   tickets,
   loading,
   method,
 }) => {
-  const [ticketCreateOpen, setTicketCreateOpen] = useState<boolean>(false);
-
   const [ticketDetailsOpen, setTicketDetailsOpen] = useState<boolean>(false);
   const [ticketDetails, setTicketDetails] = useState<Ticket | null>(null);
 

@@ -12,6 +12,7 @@ type ProjectsState = {
     createTicket: boolean;
     details: boolean;
     update: boolean;
+    delete: boolean;
   };
 };
 
@@ -23,6 +24,7 @@ const initialState = {
     createTicket: false,
     details: false,
     update: false,
+    delete: false,
   },
 };
 
@@ -40,11 +42,21 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
 
     // Delete a project
     case types.PROJECT_DELETE_REQUEST:
-      return { ...state, loading: true, error: null };
+      return {
+        ...state, loading: true, error: null, method: {
+          ...state.method,
+          delete: true
+        }
+      };
     case types.PROJECT_DELETE_SUCCESS:
       return { ...initialState };
     case types.PROJECT_DELETE_FAIL:
-      return { ...state, loading: false, error: payload };
+      return {
+        ...state, loading: false, error: payload, method: {
+          ...state.method,
+          delete: false
+        }
+      };
 
     // Update a project
     // Assign team members to a project and Change title of a project

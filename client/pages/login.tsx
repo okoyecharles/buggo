@@ -51,7 +51,6 @@ const Login = () => {
   useEffect(() => {
     if (currentUser.user && !currentUser.loading) {
       router.replace("/");
-      toast.success("Logged In successfully");
     }
   }, [currentUser.user]);
 
