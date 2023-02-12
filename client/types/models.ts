@@ -15,7 +15,7 @@ export type Project = {
   author: User;
   team: User[];
   tickets: any[];
-  createdAt: string;
+  createdAt: any;
 };
 
 export type Ticket = {
@@ -29,13 +29,23 @@ export type Ticket = {
   project: Project;
   comments: string[] | {}[];
   author: User;
-  createdAt: string;
+  createdAt: any;
 };
+
+export type GroupedTickets = {
+  _id: string;
+  title: string;
+  ticketCount: {
+    open: number;
+    closed: number;
+  };
+  tickets: Ticket[];
+}
 
 export type Comment = {
   _id: string;
   text: string;
   author: User;
   ticket?: Ticket;
-  createdAt: string;
+  createdAt: any;
 };

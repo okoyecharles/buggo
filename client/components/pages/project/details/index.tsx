@@ -37,7 +37,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   const currentUser = useSelector((store: storeType) => store.currentUser);
 
   return (
-    <aside className="project-details-bar w-full lg:w-60 bg-gray-850 relative">
+    <aside className="project-details-bar w-full lg:w-60 bg-gray-850 sticky lg:relative">
       {/* Project details header */}
       <header
         className="
@@ -47,7 +47,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
         onClick={() => {
           if (!project) return;
           setOptionsOpen(!optionsOpen);
-        }}
+        }} 
       >
         <span className="truncate font-bold text-gray-100 text-lg">
           {project?.title}

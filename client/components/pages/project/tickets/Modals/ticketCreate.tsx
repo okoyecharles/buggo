@@ -242,7 +242,6 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
               <option value="issue">Issue</option>
               <option value="feature">Feature</option>
               <option value="bug">Bug</option>
-              <option value="error">Error</option>
               <option value="other">Other</option>
             </select>
           </div>
