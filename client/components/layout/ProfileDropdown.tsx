@@ -1,16 +1,16 @@
 import { useSpring, a } from "@react-spring/web";
 import { BsFillPencilFill } from "react-icons/bs";
-import { toast } from "react-toastify";
 import { logout } from "../../redux/actions/userActions";
 import store from "../../redux/configureStore";
 import { MdLogout } from "react-icons/md";
-import { useRouter } from "next/router";
+import { User } from "../../types/models";
 
 const ProfileDropdown: React.FC<{
   open: boolean;
   setOpen: any;
   setEditProfile: any;
-}> = ({ open, setOpen, setEditProfile }) => {
+  user: User | null;
+}> = ({ open, setOpen, setEditProfile, user }) => {
   const spring = useSpring({
     opacity: 0,
     y: -10,
@@ -41,6 +41,11 @@ const ProfileDropdown: React.FC<{
         onClick={() => setOpen(false)}
       />
       <div className="flex flex-col gap-2 p-2 z-10 text-ss">
+        <header className="px-2 text-sm text-gray-500">
+          <h2>Signed in as</h2>
+          <h3 className="text-orange-400/90 font-semibold font-noto">{user?.name}</h3>
+        </header>
+        <hr className="border-gray-800 w-11/12 self-center" />
         <button
           className="p-2 group text-gray-300 hover:bg-blue-600 hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm"
           onClick={() => {

@@ -110,7 +110,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           <div>
             <button
               name="close modal"
-              className="text-3xl lg:text-xl text-white lg:text-gray-500 lg:hover:text-gray-200 transition h-6 w-6 flex items-center justify-center"
+              className="p-1 text-2xl text-gray-500 ring-1 ring-gray-500 hover:text-gray-300 hover:ring-gray-300 rounded-full transition-all focus:outline-none active:bg-gray-700"
               onClick={() => {
                 setOpen(false);
               }}

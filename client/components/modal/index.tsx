@@ -1,5 +1,5 @@
 import { useSpring, animated } from "@react-spring/web";
-import React from "react";
+import React, { useEffect } from "react";
 import Portal from "../portal";
 
 interface ModalProps {
@@ -19,6 +19,16 @@ const Modal: React.FC<ModalProps> = ({ open, setOpen, children, style }) => {
       tension: 300,
     },
   });
+
+  useEffect(() => {
+    // Listen for escape key
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && open) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+  }, [])
 
   return (
     <Portal>

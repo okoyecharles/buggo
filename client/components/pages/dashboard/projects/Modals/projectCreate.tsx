@@ -70,12 +70,15 @@ const CreateProjectModal = ({
         </h3>
         <button
           name="close modal"
-          className="text-2xl text-gray-500 hover:text-gray-200 transition"
+          className="p-1 text-2xl text-gray-400 ring-1 ring-gray-400 hover:text-gray-200 hover:ring-gray-200 rounded-full transition-all focus:outline-none active:bg-gray-700 relative"
           onClick={() => {
             setOpen(false);
           }}
         >
           <IoMdClose />
+          <div className="absolute top-full left-1/2 -translate-x-1/2 text-sm font-bold hidden sm:block pt-1 opacity-50 text-gray-400">
+            ESC
+          </div>
         </button>
       </header>
 

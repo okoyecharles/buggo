@@ -15,6 +15,8 @@ import defaultAvatar from "../../db/avatar/default";
 import { io } from "socket.io-client";
 import { SOCKET_URL } from "../../config/Backend";
 import SocketContext from "../context/SocketContext";
+import { FaBell } from "react-icons/fa";
+import NotificationModal from "./Notifications";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -26,6 +28,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [openDropdown, setOpenDropdown] = useState(false);
   const [expandNav, setExpandNav] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
 
   const socket = useRef<any>(null);
 
@@ -48,10 +51,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen isolate">
       <header className="flex flex-col sticky top-0 z-40">
-        <nav className="flex items-center shadow-sm shadow-gray-950 bg-gray-800 justify-between p-3 text-gray-100 font-open md:px-8">
+        <nav className="flex items-center shadow-sm shadow-gray-950 bg-gray-800 p-3 text-gray-100 font-open md:px-8 gap-4">
           <div className="logo font-bold">
             <Link href="/">Bug Tracker</Link>
           </div>
+          <button
+            className="p-2 notifications ml-auto text-3xl lg:text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none"
+            onClick={() => {
+              setNotificationOpen(true);
+            }}
+          >
+            <FaBell className="text-xl" />
+          </button>
           <div className="profile flex items-center gap-2 relative select-none">
             <Image
               src={currentUser.user?.image || defaultAvatar}
@@ -60,7 +71,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               alt="profile__image"
               className="rounded-full h-8 w-8 object-center object-cover bg-gray-700"
             />
-            <div className="profile-info hidden lg:flex flex-col h-full justify-start">
+            <div className="profile-info hidden sm:flex flex-col h-full justify-start">
               <p className="text-sm font-bold">
                 {restrictLength(currentUser.user?.name, 20) || "User"}
               </p>
@@ -76,7 +87,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
             <MdOutlineArrowDropDown
               id="account-toggle"
-              className={`text-3xl lg:text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none ${
+              role="button"
+              name="account toggle"
+              className={`text-3xl sm:text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none ${
                 openDropdown && "rotate-180 bg-gray-700 text-gray-200"
               }`}
               onClick={() => setOpenDropdown((state) => !state)}
@@ -88,6 +101,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             />
             <ProfileDropdown
               open={openDropdown}
+              user={currentUser.user}
               setOpen={setOpenDropdown}
               setEditProfile={setEditProfile}
             />
@@ -97,6 +111,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               user={currentUser.user}
               loading={currentUser.loading}
               method={currentUser.method}
+            />
+            <NotificationModal
+              open={notificationOpen}
+              setOpen={setNotificationOpen}
+              user={currentUser.user}
             />
           </div>
         </nav>
