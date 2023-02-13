@@ -10,7 +10,7 @@ import Image from "next/image";
 import { Tooltip } from "react-tooltip";
 import { IoMdClose } from "react-icons/io";
 import ProjectDetailsOptionsPopup from "./Options";
-import ProjectAssignModal from "../../dashboard/projects/Modals/projectAssign";
+import ProjectInviteModal from "../../dashboard/projects/Modals/projectInvite";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
 import getDate from "../../../../utils/dateHelper";
@@ -31,13 +31,14 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   setProjectDeleteOpen,
 }) => {
   const [membersOpen, setMembersOpen] = useState(true);
+  const [invitedMembersOpen, setInvitedMembersOpen] = useState(true);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
 
   const currentUser = useSelector((store: storeType) => store.currentUser);
 
   return (
-    <aside className="project-details-bar w-full lg:w-60 bg-gray-850 sticky lg:relative">
+    <aside className="project-details-bar w-full lg:w-60 bg-gray-850 sticky lg:relative z-10">
       {/* Project details header */}
       <header
         className="
@@ -75,7 +76,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
         </p>
 
         <div className="members-drop font-noto">
-          <div className=" flex items-center gap-0 cursor-pointer group transition-all select-none relative h-8">
+          <div className=" flex items-center gap-0 cursor-pointer group transition-all select-none relative h-8 mb-1">
             <MdOutlineKeyboardArrowRight
               className={`text-lg group-hover:text-gray-100 transition ${
                 membersOpen ? "rotate-90" : "rotate-0"
@@ -97,7 +98,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
                     if (project) setAssignOpen(true);
                   }}
                 />
-                <Tooltip anchorId="assign-members" content="Assign Members" />
+                <Tooltip anchorId="assign-members" content="Invite Members" />
               </>
             )}
           </div>
@@ -107,6 +108,50 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
             } transition-all`}
           >
             {project?.team.map((member) => (
+              <li
+                key={member._id}
+                className="p-1 px-2 rounded flex items-center gap-2 bg-gray-825 transition-colors select-none cursor-default capitalize hover:bg-gray-800 mx-2"
+              >
+                <div className="w-6 h-6 rounded overflow-hidden">
+                  <Image
+                    className="h-full object-cover"
+                    src={member.image}
+                    width={30}
+                    height={30}
+                    alt={member.name}
+                  />
+                </div>
+                <span>{member.name}</span>
+              </li>
+            ))}
+          </ul>
+          {!project?.team.length && (
+            <p className="p-1 px-2 rounded text-sm flex font-normal items-center gap-2 select-none cursor-default">
+              No team members assigned
+            </p>
+          )}
+        </div>
+        <div className="invitees-drop font-noto">
+          <div className=" flex items-center gap-0 cursor-pointer group transition-all select-none relative h-8 mb-1">
+            <MdOutlineKeyboardArrowRight
+              className={`text-lg group-hover:text-gray-100 transition ${
+                invitedMembersOpen ? "rotate-90" : "rotate-0"
+              }`}
+              onClick={() => setInvitedMembersOpen(!invitedMembersOpen)}
+            />
+            <span
+              className="flex-1 group-hover:text-gray-100 text-white text-sm uppercase font-semibold"
+              onClick={() => setInvitedMembersOpen(!invitedMembersOpen)}
+            >
+              Invited Members
+            </span>
+          </div>
+          <ul
+            className={`font-noto text-sm text-gray-200 flex flex-col gap-2 ${
+              invitedMembersOpen ? "block" : "hidden"
+            } transition-all`}
+          >
+            {project?.invitees.map((member) => (
               <li
                 key={member._id}
                 className="p-1 px-2 rounded flex items-center gap-2 bg-gray-825 transition-colors select-none cursor-default capitalize hover:bg-gray-800 mx-2"
@@ -143,7 +188,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
             project={project}
             method={method}
           />
-          <ProjectAssignModal
+          <ProjectInviteModal
             open={assignOpen}
             setOpen={setAssignOpen}
             project={project}

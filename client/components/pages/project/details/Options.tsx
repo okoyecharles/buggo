@@ -96,7 +96,7 @@ const ProjectDetailsOptionsPopup: React.FC<{
             setProjectAssignOpen(true);
           }}
         >
-          Assign Members
+          Invite Members
           <BsFillPersonCheckFill />
         </button>
         <button

@@ -58,9 +58,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               width="200"
               height="200"
               alt="profile__image"
-              className="rounded-full h-8 w-8 lg:h-10 lg:w-10 object-center object-cover bg-gray-700"
+              className="rounded-full h-8 w-8 object-center object-cover bg-gray-700"
             />
-            <div className="profile-info flex flex-col h-full justify-start">
+            <div className="profile-info hidden lg:flex flex-col h-full justify-start">
               <p className="text-sm font-bold">
                 {restrictLength(currentUser.user?.name, 20) || "User"}
               </p>
@@ -76,7 +76,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
             <MdOutlineArrowDropDown
               id="account-toggle"
-              className={`text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none ${
+              className={`text-3xl lg:text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none ${
                 openDropdown && "rotate-180 bg-gray-700 text-gray-200"
               }`}
               onClick={() => setOpenDropdown((state) => !state)}

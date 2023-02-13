@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useEffect, useState } from 'react';
+import React, { KeyboardEvent, useEffect, useState } from "react";
 import {
   BsFillPencilFill,
   BsFillPersonCheckFill,
@@ -6,27 +6,27 @@ import {
   BsPersonDashFill,
   BsPersonPlusFill,
   BsThreeDots,
-} from 'react-icons/bs';
-import { AiFillClockCircle } from 'react-icons/ai';
-import { Tooltip } from 'react-tooltip';
-import { IoTicket } from 'react-icons/io5';
-import moment from 'moment';
-import Pluralize from 'react-pluralize';
-import { Project } from '../../../../../types/models';
-import { useSelector } from 'react-redux';
-import store, { storeType } from '../../../../../redux/configureStore';
+} from "react-icons/bs";
+import { AiFillClockCircle } from "react-icons/ai";
+import { Tooltip } from "react-tooltip";
+import { IoTicket } from "react-icons/io5";
+import moment from "moment";
+import Pluralize from "react-pluralize";
+import { Project } from "../../../../../types/models";
+import { useSelector } from "react-redux";
+import store, { storeType } from "../../../../../redux/configureStore";
 import {
   getProjectTeamIds,
   updateProject,
-} from '../../../../../redux/actions/projectActions';
-import ProjectDeleteModal from '../Modals/projectDelete';
-import { restrictLength } from '../../../../../utils/stringHelper';
-import ProjectAssignModal from '../Modals/projectAssign';
-import ProjectOptionsPopup from './Options';
-import ProjectCardMembers from './Members';
-import Highlighter from 'react-highlight-words';
-import Link from 'next/link';
-import getDate from '../../../../../utils/dateHelper';
+} from "../../../../../redux/actions/projectActions";
+import ProjectDeleteModal from "../Modals/projectDelete";
+import { restrictLength } from "../../../../../utils/stringHelper";
+import ProjectInviteModal from "../Modals/projectInvite";
+import ProjectOptionsPopup from "./Options";
+import ProjectCardMembers from "./Members";
+import Highlighter from "react-highlight-words";
+import Link from "next/link";
+import getDate from "../../../../../utils/dateHelper";
 
 interface projectProps {
   project: Project;
@@ -57,7 +57,7 @@ const ProjectCard: React.FC<projectProps> = ({
 
   const [projectDeleteConfirm, setProjectDeleteConfirm] = useState(false);
 
-  const [projectAssign, setProjectAssign] = useState(false);
+  const [projectInvite, setProjectInvite] = useState(false);
 
   // Disable edit while editing another project
   useEffect(() => {
@@ -67,7 +67,7 @@ const ProjectCard: React.FC<projectProps> = ({
   }, [currentEdit]);
 
   const handleAssignMembers = async () => {
-    setProjectAssign(true);
+    setProjectInvite(true);
   };
 
   async function handleAssign() {
@@ -139,7 +139,7 @@ const ProjectCard: React.FC<projectProps> = ({
       <Link
         href={`/project/${project._id}`}
         className={`font-bold text-gray-200 font-noto text-xl group-hover:underline cursor-pointer mb-2 ${
-          editMode ? 'hidden' : ''
+          editMode ? "hidden" : ""
         }`}
       >
         <Highlighter
@@ -149,7 +149,7 @@ const ProjectCard: React.FC<projectProps> = ({
           highlightClassName="bg-orange-500/75 text-white"
         />
       </Link>
-      <div className={`relative mb-2 ${editMode ? '' : 'hidden'}`}>
+      <div className={`relative mb-2 ${editMode ? "" : "hidden"}`}>
         <input
           type="text"
           ref={editInputRef}
@@ -159,17 +159,17 @@ const ProjectCard: React.FC<projectProps> = ({
             setEditTitle(e.target.value);
           }}
           onKeyDown={(event: KeyboardEvent) => {
-            if (event.key === 'Enter') {
+            if (event.key === "Enter") {
               editProject(project._id, { title: editTitle });
               setEditMode(false);
             }
-            if (event.key === 'Escape') {
+            if (event.key === "Escape") {
               setEditMode(false);
             }
           }}
         />
         <div className="helper text-xsm hidden lg:block">
-          escape to{' '}
+          escape to{" "}
           <span
             className="text-blue-500 hover:underline cursor-pointer"
             onClick={() => {
@@ -177,8 +177,8 @@ const ProjectCard: React.FC<projectProps> = ({
             }}
           >
             cancel
-          </span>{' '}
-          • enter to{' '}
+          </span>{" "}
+          • enter to{" "}
           <span
             className="text-blue-500 hover:underline cursor-pointer"
             onClick={() => {
@@ -209,11 +209,11 @@ const ProjectCard: React.FC<projectProps> = ({
       <div className="flex flex-col mt-4 lg:flex-row lg:mt-0  lg:gap-4">
         <div className="text-gray-500 uppercase text-xsm flex items-center gap-2">
           <AiFillClockCircle className="text-orange-400" />
-          {getDate(project.createdAt, { format: 'from now'})}
+          {getDate(project.createdAt, { format: "from now" })}
         </div>
         <div className="text-gray-500 uppercase text-xsm flex items-center gap-2">
-          <IoTicket className="text-orange-400" />{' '}
-          <Pluralize singular={'ticket'} count={project.tickets.length} />
+          <IoTicket className="text-orange-400" />{" "}
+          <Pluralize singular={"ticket"} count={project.tickets.length} />
         </div>
         <p className="uppercase lg:ml-auto text-orange-500/90 text-xsm font-semibold">
           By {project.author.name}
@@ -221,23 +221,22 @@ const ProjectCard: React.FC<projectProps> = ({
       </div>
       <div
         className={`options flex bg-gray-800 absolute rounded bottom-4 lg:top-4 right-4 h-8 hover:shadow-lg overflow-hidden transition-all lg:opacity-0 lg:pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto w-fit self-end ${
-          editMode ? 'hidden' : ''
+          editMode ? "hidden" : ""
         }`}
       >
-        <button
-          id={`assign-self-${project._id}`}
-          className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
-          tabIndex={-1}
-          onClick={handleAssign}
-          disabled={loading && method.update}
-        >
-          {isInTeam(project) ? <BsPersonDashFill /> : <BsPersonPlusFill />}
-        </button>
-
         {currentUser.user?._id === project.author._id && (
           <>
             <button
-              id={`assign-project-${project._id}`}
+              id={`assign-self-${project._id}`}
+              className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
+              tabIndex={-1}
+              onClick={handleAssign}
+              disabled={loading && method.update}
+            >
+              {isInTeam(project) ? <BsPersonDashFill /> : <BsPersonPlusFill />}
+            </button>
+            <button
+              id={`invite-project-${project._id}`}
               className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
               tabIndex={-1}
               onClick={handleAssignMembers}
@@ -245,7 +244,6 @@ const ProjectCard: React.FC<projectProps> = ({
             >
               <BsFillPersonCheckFill />
             </button>
-
             <button
               id={`edit-project-${project._id}`}
               className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
@@ -255,7 +253,6 @@ const ProjectCard: React.FC<projectProps> = ({
             >
               <BsFillPencilFill />
             </button>
-
             <button
               id={`delete-project-${project._id}`}
               className="hidden lg:flex h-full 
@@ -269,26 +266,26 @@ const ProjectCard: React.FC<projectProps> = ({
             >
               <BsFillTrashFill />
             </button>
+            <button
+              className="h-full lg:hidden hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square flex items-center justify-center transition"
+              onClick={(e) => {
+                setOptionsPos(e.clientY);
+                setOptionsOpen(true);
+              }}
+            >
+              <BsThreeDots />
+            </button>
           </>
         )}
-        <button
-          className="h-full lg:hidden hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square flex items-center justify-center transition"
-          onClick={(e) => {
-            setOptionsPos(e.clientY);
-            setOptionsOpen(true);
-          }}
-        >
-          <BsThreeDots />
-        </button>
       </div>
       <Tooltip anchorId={`edit-project-${project._id}`} content="Edit" />
       <Tooltip
         anchorId={`assign-self-${project._id}`}
-        content={isInTeam(project) ? 'Remove Yourself' : 'Assign Yourself'}
+        content={isInTeam(project) ? "Remove Yourself" : "Assign Yourself"}
       />
       <Tooltip
-        anchorId={`assign-project-${project._id}`}
-        content="Assign Members"
+        anchorId={`invite-project-${project._id}`}
+        content="Invite Members"
       />
       <Tooltip anchorId={`delete-project-${project._id}`} content="Delete" />
       <ProjectOptionsPopup
@@ -300,11 +297,11 @@ const ProjectCard: React.FC<projectProps> = ({
         setProjectDeleteConfirm={setProjectDeleteConfirm}
         handleEditMode={handleEditMode}
         handleAssign={handleAssign}
-        setProjectAssign={setProjectAssign}
+        setProjectAssign={setProjectInvite}
       />
-      <ProjectAssignModal
-        open={projectAssign}
-        setOpen={setProjectAssign}
+      <ProjectInviteModal
+        open={projectInvite}
+        setOpen={setProjectInvite}
         project={project}
         loading={loading}
         method={method}

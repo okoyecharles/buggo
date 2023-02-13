@@ -1,6 +1,8 @@
 import React from 'react';
 import { Project } from '../../../../../types/models';
 import Image from 'next/image';
+import { useSelector } from 'react-redux';
+import { storeType } from '../../../../../redux/configureStore';
 
 interface ProjectCardMembersProps {
   project: Project;
@@ -17,6 +19,8 @@ const ProjectCardMembers: React.FC<ProjectCardMembersProps> = ({
   loading,
   method,
 }) => {
+  const currentUser = useSelector((store: storeType) => store.currentUser);
+
   return (
     <div className="flex mb-2 gap-2 lg:items-center text-ss lg:h-7">
       <h4 className="font-bold text-gray-400 flex items-center">MEMBERS:</h4>
@@ -47,7 +51,7 @@ const ProjectCardMembers: React.FC<ProjectCardMembersProps> = ({
       </div>
       {
         // Display button if user does not exist in team
-        !isInTeam(project) ? (
+        !isInTeam(project) && currentUser.user?._id === project.author._id ? (
           <button
             className="hidden lg:flex items-center h-full hover:underline text-orange-500/75 self-start disabled:opacity-75"
             onClick={handleAssign}

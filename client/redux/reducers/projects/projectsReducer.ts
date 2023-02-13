@@ -62,7 +62,6 @@ const projectsReducer = (state: ProjectsState = initialState, action: ActionType
       return { ...state, loading: false, error: payload, method: { ...state.method, delete: false } };
 
     // Update a project
-    // Assign team members to a project and Change title of a project
     case types.PROJECT_UPDATE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
     case types.PROJECT_UPDATE_SUCCESS:
@@ -81,6 +80,25 @@ const projectsReducer = (state: ProjectsState = initialState, action: ActionType
     case types.PROJECT_UPDATE_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
 
+    case types.PROJECT_INVITE_REQUEST:
+      return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
+    case types.PROJECT_INVITE_SUCCESS:
+      return {
+        ...state,
+        error: null,
+        loading: false,
+        projects: state.projects.map((project) => {
+          if (project._id === payload.project._id) {
+            return payload.project;
+          }
+          return project;
+        }),
+        method: { ...state.method, update: false }
+      };
+    case types.PROJECT_INVITE_FAIL:
+      return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
+
+    // Clear state on logout
     case userTypes.USER_LOGOUT:
       return initialState;
     default:

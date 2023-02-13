@@ -1,9 +1,9 @@
 import { toast } from 'react-toastify';
 import { Project } from '../../types/models';
-import store, { storeType } from './../configureStore';
+import { storeType } from './../configureStore';
 import SERVER_URL from '../../config/Backend';
 import * as types from '../constants/projectConstants';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { DispatchType } from '../types';
 import generateConfig from './config/axios';
 
@@ -60,7 +60,7 @@ export const fetchProjectById =
 
 export const createProject =
   (project: any) =>
-    async (dispatch: DispatchType, getState: () => storeType) => {
+    async (dispatch: DispatchType) => {
       try {
         dispatch({
           type: types.PROJECT_CREATE_REQUEST,
@@ -86,7 +86,7 @@ export const createProject =
 
 export const updateProject =
   ({ id, project }: { id: string; project: any }) =>
-    async (dispatch: DispatchType, getState: () => storeType) => {
+    async (dispatch: DispatchType) => {
       try {
         dispatch({
           type: types.PROJECT_UPDATE_REQUEST,
@@ -109,6 +109,7 @@ export const updateProject =
       }
     };
 
+
 export const getProjectTeamIds = async (project: Project) => {
   const { data } = await axios.get(
     `${SERVER_URL}/projects/${project._id}/team`,
@@ -118,7 +119,7 @@ export const getProjectTeamIds = async (project: Project) => {
 };
 
 export const deleteProject =
-  (id: string) => async (dispatch: DispatchType, getState: () => storeType) => {
+  (id: string) => async (dispatch: DispatchType) => {
     try {
       dispatch({
         type: types.PROJECT_DELETE_REQUEST,
@@ -133,6 +134,55 @@ export const deleteProject =
     } catch (error: any) {
       dispatch({
         type: types.PROJECT_DELETE_FAIL,
+        payload: error.response?.data ? error.response.data : error.error,
+      });
+    }
+  };
+
+export const inviteToProject = (id: string, invitees: string[]) =>
+  async (dispatch: DispatchType) => {
+    try {
+      dispatch({
+        type: types.PROJECT_INVITE_REQUEST,
+      });
+      const { data } = await axios.put(
+        `${SERVER_URL}/projects/${id}/invite`,
+        { invitees },
+        generateConfig()
+      );
+      toast.success("Invitation sent successfully");
+
+      dispatch({
+        type: types.PROJECT_INVITE_SUCCESS,
+        payload: data
+      });
+    } catch (error: any) {
+      dispatch({
+        type: types.PROJECT_INVITE_FAIL,
+        payload: error.response?.data ? error.response.data : error.error,
+      });
+    }
+  };
+
+export const acceptInvite = (id: string) =>
+  async (dispatch: DispatchType) => {
+    try {
+      dispatch({
+        type: types.PROJECT_ACCEPT_INVITE_REQUEST,
+      });
+      const { data } = await axios.put(
+        `${SERVER_URL}/projects/${id}/accept-invite`,
+        {},
+        generateConfig()
+      );
+
+      dispatch({
+        type: types.PROJECT_ACCEPT_INVITE_SUCCESS,
+        payload: data
+      });
+    } catch (error: any) {
+      dispatch({
+        type: types.PROJECT_ACCEPT_INVITE_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
     }

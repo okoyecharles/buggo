@@ -22,7 +22,9 @@ export const createProject = async (
     const newProject = await project.save();
     const returnProject = await Project.findById(newProject.id)
       .populate('author', 'name')
-      .populate('team', 'image');
+      .populate('team', 'name email image')
+      .populate('invitees', 'name image email');
+
     res.status(201).json({ project: returnProject });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
@@ -39,6 +41,7 @@ export const getProjects = async (req: Request, res: Response) => {
     const projects = await Project.find()
       .populate('author', 'name')
       .populate('team', 'name email image')
+      .populate('invitees', 'name image email')
       .sort({ createdAt: -1 });
     res.status(200).json({ projects });
   } catch (error: any) {
@@ -57,7 +60,8 @@ export const getProjectById = async (req: Request, res: Response) => {
     const project = await Project.findById(id)
       .populate('author', 'name')
       .populate('tickets')
-      .populate('team', 'name image email');
+      .populate('team', 'name image email')
+      .populate('invitees', 'name image email');
 
     res.status(200).json({ project });
   } catch (error: any) {
@@ -111,8 +115,81 @@ export const updateProject = async (
       const returnProject = await Project.findById(updatedProject.id)
         .populate('author', 'name')
         .populate('tickets')
-        .populate('team', 'name image email');
+        .populate('team', 'name image email')
+        .populate('invitees', 'name image email');
       res.status(200).json({ project: returnProject });
+    }
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+/*
+  * @route   PUT /projects/:id/invite
+  * @desc    Invite users to a project
+  * @access  Private
+*/
+export const inviteToProject = async (
+  req: AuthorizedRequest<ProjectType>,
+  res: Response
+) => {
+  try {
+    const { id } = req.params;
+    const { invitees } = req.body;
+    const project = await Project.findById(id).populate('author', 'name');
+
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    if (project?.author.id.toString() !== req.user) {
+      return res.status(401).json({ message: 'User not authorized' });
+    }
+
+    project.invitees = [...project.invitees, ...invitees];
+
+    const updatedProject = await project.save();
+    const returnProject = await Project.findById(updatedProject.id)
+      .populate('author', 'name')
+      .populate('tickets')
+      .populate('team', 'name image email')
+      .populate('invitees', 'name image email');
+
+    res.status(200).json({ project: returnProject });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+/*
+  * @route   PUT /projects/:id/accept-invite
+  * @desc    Accept an invite to a project
+  * @access  Private
+  * @todo    Add user to project team
+  * @todo    Remove user from invitees
+*/
+export const acceptInvite = async (
+  req: AuthorizedRequest<ProjectType>,
+  res: Response
+) => {
+  try {
+    const { id } = req.params;
+    const project = await Project.findById(id).populate('author', 'name');
+
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    const invitees = project.invitees.map((invitee) => invitee.toString());
+    if (invitees.includes(req.user as string)) {
+      project.invitees = project.invitees.filter(
+        (invitee) => invitee.toString() !== req.user
+      );
+      project.team.push(req.user as any);
+      await project.save();
+      res.status(200).json({ project });
+    } else {
+      res.status(400).json({ message: 'User not invited' });
     }
   } catch (error: any) {
     res.status(400).json({ message: error.message });

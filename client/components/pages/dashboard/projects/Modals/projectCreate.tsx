@@ -19,7 +19,7 @@ const CreateProjectModal = ({
     [key: string]: any;
   };
 }) => {
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const [titleError, setTitleError] = useState<string | null>(null);
@@ -29,17 +29,17 @@ const CreateProjectModal = ({
     setTitleError(null);
 
     if (!title) {
-      setTitleError('Title is required');
+      setTitleError("Title is required");
       return;
     }
 
     if (title.length < 5) {
-      setTitleError('Title must be at least 5 characters');
+      setTitleError("Title must be at least 5 characters");
       return;
     }
 
     if (title.length > 25) {
-      setTitleError('Title must be less than 25 characters');
+      setTitleError("Title must be less than 25 characters");
       return;
     }
 
@@ -51,7 +51,7 @@ const CreateProjectModal = ({
   useEffect(() => {
     if (open && loading === false && !method.create) {
       setOpen(false);
-      setTitle('');
+      setTitle("");
       setTitleError(null);
     }
   }, [method.create]);
@@ -84,12 +84,12 @@ const CreateProjectModal = ({
           <label
             htmlFor="name"
             className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
-              titleError && 'text-red-300'
+              titleError && "text-red-300"
             }`}
           >
             Title {titleError && <span className="text-red-300"> - </span>}
             <span className="capitalize font-normal italic text-red-300">
-              {titleError ? `${titleError}` : ''}
+              {titleError ? `${titleError}` : ""}
             </span>
           </label>
           <input
@@ -102,7 +102,7 @@ const CreateProjectModal = ({
             value={title}
             onChange={(event) => setTitle(event.target.value)}
           />
-          <p className="text-xsm">You can assign members after creation.</p>
+          <p className="text-xsm">You can invite members after creation.</p>
         </div>
 
         <button
@@ -110,7 +110,7 @@ const CreateProjectModal = ({
           disabled={loading && method.create}
           type="submit"
         >
-          {loading && method.create ? <ThreeDotsLoader /> : 'Create'}
+          {loading && method.create ? <ThreeDotsLoader /> : "Create"}
         </button>
       </form>
     </Modal>

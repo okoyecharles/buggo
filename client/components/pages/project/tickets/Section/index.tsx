@@ -58,7 +58,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
   };
 
   return (
-    <section className="project-tickets flex-1 relative">
+    <section className="project-tickets flex-1 relative z-20">
       <header className="p-3 px-6 h-16 lg:px-3 shadow-sm items-center shadow-gray-950 flex justify-between">
         <h1 className="font-bold text-gray-100 text-lg">Tickets</h1>
         <button

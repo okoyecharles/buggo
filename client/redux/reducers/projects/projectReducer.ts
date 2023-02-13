@@ -59,7 +59,6 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
       };
 
     // Update a project
-    // Assign team members to a project and Change title of a project
     case types.PROJECT_UPDATE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
     case types.PROJECT_UPDATE_SUCCESS:

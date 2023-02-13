@@ -10,6 +10,7 @@ const projectSchema = new mongoose.Schema(
       required: true,
     },
     team: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    invitees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     tickets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket' }],
   },
   {
