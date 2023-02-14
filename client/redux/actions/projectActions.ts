@@ -21,7 +21,10 @@ export const fetchProjects =
 
       dispatch({
         type: types.PROJECT_LIST_SUCCESS,
-        payload: data,
+        payload: {
+          ...data,
+          userId: getState().currentUser.user?._id,
+        },
       });
     } catch (error: any) {
       dispatch({
@@ -139,7 +142,10 @@ export const deleteProject =
     }
   };
 
-export const inviteToProject = (id: string, invitees: string[]) =>
+export const inviteToProject = (id: string, invitees: {
+  _id: string;
+  email: string;
+}[]) =>
   async (dispatch: DispatchType) => {
     try {
       dispatch({
@@ -150,7 +156,7 @@ export const inviteToProject = (id: string, invitees: string[]) =>
         { invitees },
         generateConfig()
       );
-      toast.success("Invitation sent successfully");
+      toast.success("Members invited successfully");
 
       dispatch({
         type: types.PROJECT_INVITE_SUCCESS,
@@ -175,12 +181,14 @@ export const acceptInvite = (id: string) =>
         {},
         generateConfig()
       );
+      toast.success("Invitation accepted successfully");
 
       dispatch({
         type: types.PROJECT_ACCEPT_INVITE_SUCCESS,
         payload: data
       });
     } catch (error: any) {
+      toast.error("Error accepting invite");
       dispatch({
         type: types.PROJECT_ACCEPT_INVITE_FAIL,
         payload: error.response?.data ? error.response.data : error.error,

@@ -273,7 +273,10 @@ const ProjectInviteModal: React.FC<{
             store.dispatch(
               inviteToProject(
                 project._id,
-                invitees.map((invitee: User) => invitee._id)
+                invitees.map((invitee: User) => ({
+                  user: invitee._id,
+                  email: invitee.email,
+                }))
               )
             );
           }}

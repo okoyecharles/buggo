@@ -35,7 +35,7 @@ const projectsReducer = (state: ProjectsState = initialState, action: ActionType
     case types.PROJECT_LIST_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, list: true } };
     case types.PROJECT_LIST_SUCCESS:
-      return { ...state, error: null, loading: false, method: { ...state.method, list: false }, ...payload };
+      return { ...state, error: null, loading: false, method: { ...state.method, list: false }, projects: payload.projects };
     case types.PROJECT_LIST_FAIL:
       return { ...state, loading: false, method: { ...state.method, list: false }, error: payload };
 

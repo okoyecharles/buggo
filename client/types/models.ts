@@ -50,3 +50,13 @@ export type Comment = {
   ticket?: Ticket;
   createdAt: any;
 };
+
+export type Notification = {
+  type: string;
+  subject: string;
+  message: string;
+  date: any;
+  ref: {
+    [key: string]: string;
+  };
+};

@@ -10,7 +10,11 @@ const projectSchema = new mongoose.Schema(
       required: true,
     },
     team: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    invitees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    invitees: [{
+      user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User', },
+      email: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now },
+    }],
     tickets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket' }],
   },
   {
@@ -28,6 +32,26 @@ projectSchema.pre('remove', { document: true }, async function (next) {
     console.log('ticket removed');
     await ticket.remove();
   });
+  next();
+});
+
+// Make sure invitees and team are unique
+projectSchema.pre('save', { document: true }, async function (next) {
+  const project: ProjectType = this;
+  const invitees = project.invitees;
+  const uniqueInvitees = invitees.filter(
+    (invitee, index) =>
+      index === invitees.findIndex((t) => t.user.toString() === invitee.user.toString())
+  );
+
+  const team = project.team;
+  const uniqueTeam = team.filter(
+    (member, index) =>
+      index === team.findIndex((t) => t.toString() === member.toString())
+  );
+
+  project.invitees = uniqueInvitees;
+  project.team = uniqueTeam;
   next();
 });
 

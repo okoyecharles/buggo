@@ -2,6 +2,17 @@ import { Request, Response } from 'express';
 import AuthorizedRequest from '../types/request';
 import Ticket, { TicketType } from '../models/ticketModel';
 import Project, { ProjectType } from './../models/projectModel';
+import { Types } from 'mongoose';
+
+const getProject = async (id: Types.ObjectId | string) => {
+  const project = await Project.findById(id)
+    .populate('author', 'name')
+    .populate('team', 'name image email')
+    .populate('tickets')
+    .populate('invitees.user', 'name image email');
+
+  return project;
+};
 
 /*
  * @route   POST /projects
@@ -20,10 +31,7 @@ export const createProject = async (
 
   try {
     const newProject = await project.save();
-    const returnProject = await Project.findById(newProject.id)
-      .populate('author', 'name')
-      .populate('team', 'name email image')
-      .populate('invitees', 'name image email');
+    const returnProject = await getProject(newProject._id);
 
     res.status(201).json({ project: returnProject });
   } catch (error: any) {
@@ -57,11 +65,7 @@ export const getProjects = async (req: Request, res: Response) => {
 export const getProjectById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const project = await Project.findById(id)
-      .populate('author', 'name')
-      .populate('tickets')
-      .populate('team', 'name image email')
-      .populate('invitees', 'name image email');
+    const project = await getProject(id);
 
     res.status(200).json({ project });
   } catch (error: any) {
@@ -112,11 +116,7 @@ export const updateProject = async (
       if (team) project.team = team;
 
       const updatedProject = await project.save();
-      const returnProject = await Project.findById(updatedProject.id)
-        .populate('author', 'name')
-        .populate('tickets')
-        .populate('team', 'name image email')
-        .populate('invitees', 'name image email');
+      const returnProject = await getProject(updatedProject.id);
       res.status(200).json({ project: returnProject });
     }
   } catch (error: any) {
@@ -149,11 +149,7 @@ export const inviteToProject = async (
     project.invitees = [...project.invitees, ...invitees];
 
     const updatedProject = await project.save();
-    const returnProject = await Project.findById(updatedProject.id)
-      .populate('author', 'name')
-      .populate('tickets')
-      .populate('team', 'name image email')
-      .populate('invitees', 'name image email');
+    const returnProject = await getProject(updatedProject.id);
 
     res.status(200).json({ project: returnProject });
   } catch (error: any) {
@@ -176,20 +172,24 @@ export const acceptInvite = async (
     const { id } = req.params;
     const project = await Project.findById(id).populate('author', 'name');
 
-    if (!project) {
+    if (!project)
       return res.status(404).json({ message: 'Project not found' });
-    }
 
-    const invitees = project.invitees.map((invitee) => invitee.toString());
+    const invitees = project.invitees.map((invitee) => {
+      return invitee.user.toString();
+    });
+
     if (invitees.includes(req.user as string)) {
       project.invitees = project.invitees.filter(
-        (invitee) => invitee.toString() !== req.user
+        (invitee) => invitee.user.toString() !== req.user
       );
+
       project.team.push(req.user as any);
       await project.save();
+
       res.status(200).json({ project });
     } else {
-      res.status(400).json({ message: 'User not invited' });
+      res.status(400).json({ message: 'Invitation invalid or expired' });
     }
   } catch (error: any) {
     res.status(400).json({ message: error.message });
