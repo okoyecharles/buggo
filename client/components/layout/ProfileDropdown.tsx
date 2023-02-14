@@ -43,7 +43,7 @@ const ProfileDropdown: React.FC<{
       <div className="flex flex-col gap-2 p-2 z-10 text-ss">
         <header className="px-2 text-sm text-gray-500">
           <h2>Signed in as</h2>
-          <h3 className="text-orange-400/90 font-semibold font-noto">{user?.name}</h3>
+          <h3 className="text-orange-400/90 font-semibold font-noto truncate">{user?.name}</h3>
         </header>
         <hr className="border-gray-800 w-11/12 self-center" />
         <button

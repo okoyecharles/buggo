@@ -1,6 +1,7 @@
 import { Notification, Project } from './../../../types/models';
 import { ActionType } from "../../types";
 import * as projectTypes from "../../constants/projectConstants";
+import * as userTypes from "../../constants/userConstants";
 
 type NotificationsState = {
   notifications: Notification[];
@@ -32,7 +33,7 @@ const notificationReducer = (
               ref: {
                 project: project._id
               },
-              message: `You were invited to the project '${project.title}' by ${project.author.name}`,
+              message: `You were invited to the project <a href='/project/${project._id}' className="bg-orange-500 font-semibold underline cursor-pointer">${project.title}</a> by ${project.author.name}`,
               date: invite.createdAt,
             });
           }
@@ -48,6 +49,8 @@ const notificationReducer = (
         ...state,
         notifications: newNotifications
       }
+    case userTypes.USER_LOGOUT:
+      return initialState;
     default:
       return state;
   }

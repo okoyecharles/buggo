@@ -25,6 +25,10 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
   const currentUser = useSelector((store: storeType) => store.currentUser);
+  const notifications = useSelector(
+    (store: storeType) => store.notifications.notifications
+  );
+
   const [openDropdown, setOpenDropdown] = useState(false);
   const [expandNav, setExpandNav] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
@@ -61,7 +65,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               setNotificationOpen(true);
             }}
           >
-            <FaBell className="text-xl" />
+            <div className="relative">
+              <FaBell className="text-xl" />
+              {notifications?.length > 0 && (
+                <span className="absolute -top-1/2 -right-1/2 bg-blue-500 text-white w-4 h-4 flex items-center justify-center text-xsm rounded-lg font-semibold ring-4 ring-gray-800">
+                  1
+                </span>
+              )}
+            </div>
           </button>
           <div className="profile flex items-center gap-2 relative select-none">
             <Image
