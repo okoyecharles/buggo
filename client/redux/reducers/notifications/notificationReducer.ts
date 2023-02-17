@@ -17,37 +17,49 @@ const notificationReducer = (
 ): NotificationsState => {
   const { type, payload } = action;
 
+
   switch (type) {
     case projectTypes.PROJECT_LIST_SUCCESS:
+      // Update / Populate all project notifications
       const { projects, userId }: { projects: Project[], userId: string } = payload;
       const projectNotifications: Notification[] = [];
 
       projects.forEach((project) => {
         if (project.invitees.length) {
-          const invite = project.invitees.find((invitee) => invitee.user === userId);
+          const invite = project.invitees.find((invitee) => invitee.user._id === userId);
 
           if (invite) {
             projectNotifications.push({
+              _id: invite._id,
               type: 'project',
               subject: 'invite',
               ref: {
-                project: project._id
+                project
               },
-              message: `You were invited to the project <a href='/project/${project._id}' className="bg-orange-500 font-semibold underline cursor-pointer">${project.title}</a> by ${project.author.name}`,
               date: invite.createdAt,
             });
           }
         }
       });
-
       const newNotifications = [
-        ...state.notifications.filter(n => n.type !== 'project'),
-        ...projectNotifications
+        ...projectNotifications,
+        ...state.notifications.filter(n => n.type !== 'project')
       ];
 
       return {
         ...state,
         notifications: newNotifications
+      }
+    case projectTypes.PROJECT_ACCEPT_INVITE_SUCCESS:
+      // Remove project invite notification
+
+      return {
+        ...state,
+        notifications: state.notifications.filter(
+          (notification) => {
+            return notification.ref.project._id !== payload.project._id;
+          }
+        )
       }
     case userTypes.USER_LOGOUT:
       return initialState;

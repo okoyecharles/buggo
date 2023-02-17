@@ -41,9 +41,14 @@ const ProfileDropdown: React.FC<{
         onClick={() => setOpen(false)}
       />
       <div className="flex flex-col gap-2 p-2 z-10 text-ss">
-        <header className="px-2 text-sm text-gray-500">
+        <header className="px-2 text-sm text-gray-400">
           <h2>Signed in as</h2>
-          <h3 className="text-orange-400/90 font-semibold font-noto truncate">{user?.name}</h3>
+          <h3 className="text-orange-400/90 font-semibold font-noto truncate">
+            {user?.name}
+          </h3>
+          <h3 className="text-gray-500 text-xsm font-noto truncate">
+            {user?.email}
+          </h3>
         </header>
         <hr className="border-gray-800 w-11/12 self-center" />
         <button

@@ -58,7 +58,13 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
         }
       };
 
-    // Update a project
+    case types.PROJECT_ACCEPT_INVITE_REQUEST:
+      return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
+    case types.PROJECT_ACCEPT_INVITE_SUCCESS:
+      return { ...state, loading: false, ...payload, error: null, method: { ...state.method, update: false } };
+    case types.PROJECT_ACCEPT_INVITE_FAIL:
+      return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
+
     case types.PROJECT_UPDATE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
     case types.PROJECT_UPDATE_SUCCESS:
@@ -66,7 +72,8 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
     case types.PROJECT_UPDATE_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
 
-    // Create a ticket
+
+
     case ticketTypes.TICKET_CREATE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, createTicket: true } };
     case ticketTypes.TICKET_CREATE_SUCCESS:

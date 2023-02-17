@@ -188,6 +188,7 @@ export const acceptInvite = (id: string) =>
         payload: data
       });
     } catch (error: any) {
+      console.log('Errrrrrooooorrrr!!!!! =?', error)
       toast.error("Error accepting invite");
       dispatch({
         type: types.PROJECT_ACCEPT_INVITE_FAIL,

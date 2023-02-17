@@ -17,6 +17,7 @@ import { SOCKET_URL } from "../../config/Backend";
 import SocketContext from "../context/SocketContext";
 import { FaBell } from "react-icons/fa";
 import NotificationModal from "./Notifications";
+import { useSpring, a } from "@react-spring/web";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -52,8 +53,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       socket.current = io(SOCKET_URL);
   }, [currentUser.user?._id]);
 
+  const spring = useSpring({
+    opacity: notificationOpen ? 0.2 : 1,
+    scale: notificationOpen ? 0.95 : 1,
+    config: {
+      tension: 800,
+      friction: 50,
+    },
+  });
+
   return (
-    <div className="flex flex-col min-h-screen isolate">
+    <a.div className="flex flex-col min-h-screen isolate" style={spring}>
       <header className="flex flex-col sticky top-0 z-40">
         <nav className="flex items-center shadow-sm shadow-gray-950 bg-gray-800 p-3 text-gray-100 font-open md:px-8 gap-4">
           <div className="logo font-bold">
@@ -69,7 +79,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <FaBell className="text-xl" />
               {notifications?.length > 0 && (
                 <span className="absolute -top-1/2 -right-1/2 bg-blue-500 text-white w-4 h-4 flex items-center justify-center text-xsm rounded-lg font-semibold ring-4 ring-gray-800">
-                  1
+                  {notifications.length}
                 </span>
               )}
             </div>
@@ -209,7 +219,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </aside>
       </div>
-    </div>
+    </a.div>
   );
 };
 

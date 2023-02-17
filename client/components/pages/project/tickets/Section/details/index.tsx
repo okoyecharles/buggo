@@ -82,7 +82,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
 
   return (
     <aside
-      className={`bg-gray-850 fixed top-16 w-screen right-0 bottom-[58px] border-gray-700 lg:absolute lg:top-0 lg:w-72 lg:h-full lg:border-l ${
+      className={`bg-gray-850 fixed top-16 w-screen right-0 bottom-[58px] border-gray-700 lg:absolute lg:top-0 lg:w-80 lg:h-full lg:border-l ${
         open ? "translate-x-0" : "translate-x-full"
       } transition-all`}
     >

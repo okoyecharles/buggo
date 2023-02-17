@@ -52,11 +52,11 @@ export type Comment = {
 };
 
 export type Notification = {
+  _id: string;
   type: string;
   subject: string;
-  message: string;
   date: any;
   ref: {
-    [key: string]: string;
+    [key: string]: any;
   };
 };

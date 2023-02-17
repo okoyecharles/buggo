@@ -27,6 +27,7 @@ export const createProject = async (
   const project = new Project({
     title,
     author: req.user,
+    team: [req.user],
   });
 
   try {
@@ -49,7 +50,7 @@ export const getProjects = async (req: Request, res: Response) => {
     const projects = await Project.find()
       .populate('author', 'name')
       .populate('team', 'name email image')
-      .populate('invitees', 'name image email')
+      .populate('invitees.user', 'name image email')
       .sort({ createdAt: -1 });
     res.status(200).json({ projects });
   } catch (error: any) {
@@ -186,8 +187,9 @@ export const acceptInvite = async (
 
       project.team.push(req.user as any);
       await project.save();
+      const returnProject = await getProject(project.id);
 
-      res.status(200).json({ project });
+      res.status(200).json({ project: returnProject });
     } else {
       res.status(400).json({ message: 'Invitation invalid or expired' });
     }

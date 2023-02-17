@@ -108,9 +108,6 @@ const ProjectAssignModal: React.FC<{
           }}
         >
           <IoMdClose />
-          <div className="absolute top-full left-1/2 -translate-x-1/2 text-sm font-bold hidden sm:block pt-1 opacity-50 text-gray-400">
-            ESC
-          </div>
         </button>
         </header>
 

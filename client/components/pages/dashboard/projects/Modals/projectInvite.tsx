@@ -61,10 +61,11 @@ const ProjectInviteModal: React.FC<{
     filteredUsers = filteredUsers.filter((user) => {
       return (
         user._id !== currentUser.user?._id &&
-        !project.team.find((member) => member._id === user._id) &&
-        !project.invitees.find((invitee) => invitee._id === user._id)
+        !project.invitees.find((invitee) => invitee.user._id === user._id)
+        // !project.team.find((member) => member._id === user._id) &&
       );
     });
+    console.log(filteredUsers, project.invitees);
     setUsers(filteredUsers);
   };
 
@@ -110,17 +111,14 @@ const ProjectInviteModal: React.FC<{
             Invite Members
           </h3>
           <button
-          name="close modal"
-          className="p-1 text-2xl text-gray-400 ring-1 ring-gray-400 hover:text-gray-200 hover:ring-gray-200 rounded-full transition-all focus:outline-none active:bg-gray-700 relative"
-          onClick={() => {
-            setOpen(false);
-          }}
-        >
-          <IoMdClose />
-          <div className="absolute top-full left-1/2 -translate-x-1/2 text-sm font-bold hidden sm:block pt-1 opacity-50 text-gray-400">
-            ESC
-          </div>
-        </button>
+            name="close modal"
+            className="p-1 text-2xl text-gray-400 hover:text-gray-200 rounded-full transition-all focus:outline-none active:bg-gray-700"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            <IoMdClose />
+          </button>
         </header>
 
         <p className="font-semibold flex items-center text-gray-400 gap-1 mt-1">
@@ -203,7 +201,9 @@ const ProjectInviteModal: React.FC<{
           ) : !users ? (
             <TailSpinLoader color="#1aa6fe" className="self-center my-4" />
           ) : !users.length ? (
-            <li className="text-gray-400">No users found</li>
+            <li className="text-gray-400">
+              No users found
+            </li>
           ) : (
             users.map((user) => (
               <li
