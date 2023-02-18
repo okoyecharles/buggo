@@ -61,8 +61,8 @@ const ProjectInviteModal: React.FC<{
     filteredUsers = filteredUsers.filter((user) => {
       return (
         user._id !== currentUser.user?._id &&
-        !project.invitees.find((invitee) => invitee.user._id === user._id)
-        // !project.team.find((member) => member._id === user._id) &&
+        !project.invitees.find((invitee) => invitee.user._id === user._id) &&
+        !project.team.find((member) => member._id === user._id) 
       );
     });
     console.log(filteredUsers, project.invitees);

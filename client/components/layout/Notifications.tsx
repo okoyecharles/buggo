@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Modal from "../modal";
 import { User } from "../../types/models";
 import { IoMdClose, IoMdNotificationsOff } from "react-icons/io";
@@ -40,6 +40,17 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 
   const [currentAction, setCurrentAction] = React.useState<string | null>(null);
 
+  useEffect(() => {
+    if (open)
+      window.addEventListener(
+        "keydown",
+        (e) => {
+          if (e.key === "Escape") setOpen(false);
+        },
+        { once: true }
+      );
+  }, [open]);
+
   return (
     <Portal>
       <a.section
@@ -69,17 +80,22 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         <div className="flex flex-1">
           {notifications?.length > 0 ? (
             <ul className="mb-4 flex-1">
-              {notifications?.map((notification, index) => (
-                <li className="p-3 px-6 flex items-center gap-3 bg-gray-800 hover:bg-gray-750 border-l-2 border-b border-b-gray-700 first:border-t border-t-gray-700 border-l-gray-800 hover:border-l-blue-500 group">
-                  <div className="notification-icon text-xl">
+              {notifications?.map((notification) => (
+                <li className="p-3 lg:px-6 flex items-center gap-3 bg-gray-800 hover:bg-gray-750 border-l-2 border-b border-b-gray-700 first:border-t border-t-gray-700 border-l-gray-800 hover:border-l-blue-500 group">
+                  <div className="notification-icon text-xl self-start mt-1">
                     {getNotificationIcon(notification)}
                   </div>
                   <div className="flex-1">
                     <div className="notification-title text-gray-100 font-semibold capitalize  font-noto group-hover:text-white">
                       {`${notification.type} ${notification.subject}`}
                     </div>
-                    <div className="notification-description text-gray-300 text-ss">
+                    <div className="notification-description text-gray-300 text-sm lg:text-ss">
                       {getNotificationDescription(notification)}
+                    </div>
+                    <div className="notification-date text-gray-300 mt-2 text-xsm font-noto font-semibold flex lg:hidden truncate">
+                      {getDate(notification.date, {
+                        format: "short calendar",
+                      })}
                     </div>
                   </div>
                   <div className="notification-action">
@@ -92,7 +108,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                       setCurrentAction
                     )}
                   </div>
-                  <div className="notification-date text-gray-400 text-sm font-medium w-32 flex justify-end truncate">
+                  <div className="notification-date text-gray-400 text-sm font-medium w-32 hidden lg:flex justify-end truncate">
                     {getDate(notification.date, {
                       format: "short calendar",
                     })}

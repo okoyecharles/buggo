@@ -46,14 +46,16 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
         hover:bg-gray-825 hover:text-gray-100
         "
         onClick={() => {
-          if (!project) return;
+          if (!project || currentUser.user?._id !== project?.author._id) return;
           setOptionsOpen(!optionsOpen);
         }}
       >
         <span className="truncate font-bold text-gray-100 text-lg">
           {project?.title}
         </span>
-        <div className="relative w-6 h-6">
+        {
+          currentUser.user?._id === project?.author._id && (
+            <div className="relative w-6 h-6">
           <MdOutlineKeyboardArrowDown
             className={`text-2xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
               optionsOpen ? "rotate-180 opacity-0" : "rotate-0 opacity-1"
@@ -65,6 +67,8 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
             } transition-all`}
           />
         </div>
+          )
+        }
       </header>
 
       {/* Project details content */}
