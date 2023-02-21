@@ -10,7 +10,7 @@ import {
   socketCreateTicket,
   socketDeleteTicket,
 } from "../../redux/actions/ticketActions";
-import SocketContext from "../../components/context/SocketContext";
+import PusherContext from "../../components/context/SocketContext";
 import ProjectDeleteModal from "../../components/pages/dashboard/projects/Modals/projectDelete";
 import Head from "next/head";
 
@@ -19,7 +19,7 @@ const ProjectDetails: React.FC = () => {
   const { id } = router.query;
 
   const project = useSelector((store: storeType) => store.project);
-  const socket = useContext(SocketContext);
+  const socket = useContext(PusherContext);
 
   const [ticketCreateOpen, setTicketCreateOpen] = useState<boolean>(false);
   const [projectDeleteOpen, setProjectDeleteOpen] = useState<boolean>(false);

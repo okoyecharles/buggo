@@ -1,4 +1,4 @@
 import React from 'react';
-const SocketContext = React.createContext<any>(null);
+const PusherContext = React.createContext<any>(null);
 
-export default SocketContext;
+export default PusherContext;

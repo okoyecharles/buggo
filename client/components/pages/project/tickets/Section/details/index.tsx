@@ -17,7 +17,7 @@ import TicketComments from "./comments";
 import { Ticket } from "../../../../../../types/models";
 import getDate from "../../../../../../utils/dateHelper";
 import TicketDeleteModal from "../../Modals/ticketDelete";
-import SocketContext from "../../../../../context/SocketContext";
+import PusherContext from "../../../../../context/SocketContext";
 
 interface TicketDetailsBarProps {
   ticket: Ticket | null;
@@ -39,7 +39,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   const [comment, setComment] = useState("");
   const commentsRef = useRef(null);
 
-  const socket = useContext(SocketContext);
+  const socket = useContext(PusherContext);
 
   useEffect(() => {
     socket?.emit("join-ticket-room", {

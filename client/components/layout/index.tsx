@@ -12,12 +12,11 @@ import navLinks from "./data/navigation";
 import { restrictLength } from "../../utils/stringHelper";
 import EditProfileModal from "./profileEdit";
 import defaultAvatar from "../../db/avatar/default";
-import { io } from "socket.io-client";
-import { SOCKET_URL } from "../../config/Backend";
-import SocketContext from "../context/SocketContext";
 import { FaBell } from "react-icons/fa";
 import NotificationModal from "./Notifications";
 import { useSpring, a } from "@react-spring/web";
+import Pusher from "pusher-js";
+import { PUSHER_KEY } from "../../config/Backend";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -35,7 +34,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [editProfile, setEditProfile] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
 
-  const socket = useRef<any>(null);
+  const pusher = useRef<any>(null);
 
   useEffect(() => {
     if (
@@ -47,10 +46,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [currentUser]);
 
-  // Reconnect to socket if user is logged in
+  // Reconnect to pusher if user is logged in
   useEffect(() => {
     if (currentUser.user?._id && !currentUser.loading)
-      socket.current = io(SOCKET_URL);
+      pusher.current = new Pusher(PUSHER_KEY, {
+        cluster: "eu",
+      });
+    const channel = pusher.current?.subscribe("bug-tracker");
+
+    // Listen for pusher events
+    channel?.bind("new-ticket-comment", (data: any) => {
+      console.log("Comment was just made on a ticket");
+    });
+    channel?.bind("create-project-ticket", (data: any) => {
+      console.log("New ticket was just created");
+    });
+    channel?.bind("delete-project-ticket", (data: any) => {
+      console.log("Ticket was just deleted");
+    });
   }, [currentUser.user?._id]);
 
   const spring = useSpring({
@@ -147,12 +160,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             expandNav ? "lg:ml-36" : "lg:ml-[60px]"
           } transition-all`}
         >
-          <SocketContext.Provider value={socket.current}>
-            {children}
-          </SocketContext.Provider>
+          {children}
         </main>
         <aside
-          className={`bg-gray-950 border-t lg:border-none border-t-gray-700 px-2 py-1 flex gap-3 w-screen sticky bottom-0 lg:flex-col lg:py-10 lg:fixed lg:left-0 lg:top-0 ${
+          className={`bg-gray-950 border-t lg:border-none border-t-gray-700 px-2 py-1 flex gap-3 w-screen sticky bottom-0 z-50 lg:z-0 lg:flex-col lg:py-10 lg:fixed lg:left-0 lg:top-0 ${
             expandNav ? "lg:w-36" : "lg:w-[60px]"
           } lg:transition-all`}
         >
