@@ -86,15 +86,15 @@ const ticketReducer = (state: TicketState = initialState, action: ActionType): T
       };
     case types.TICKET_COMMENT_SUCCESS:
       if (!state.ticket) return state;
+      if (payload.ticketId && state.ticket._id !== payload.ticketId) return state;
 
-      const createdComment = payload.comment.ticket === state.ticket?._id ? payload.comment : {};
       return {
         ...state, loading: false, error: null, method: {
           ...state.method,
           comment: false,
         }, ticket: {
           ...state.ticket,
-          comments: [...state.ticket.comments, createdComment]
+          comments: [...state.ticket.comments, payload.comment]
         }
       };
     case types.TICKET_COMMENT_FAIL:

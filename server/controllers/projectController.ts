@@ -3,6 +3,7 @@ import AuthorizedRequest from '../types/request';
 import Ticket, { TicketType } from '../models/ticketModel';
 import Project, { ProjectType } from './../models/projectModel';
 import { Types } from 'mongoose';
+import { pusher, pusherChannel } from '..';
 
 const getProject = async (id: Types.ObjectId | string) => {
   const project = await Project.findById(id)
@@ -260,6 +261,13 @@ export const createTicket = async (
     // Assign ticket to project's relationship
     ticketProject?.tickets.unshift(ticket._id);
     await ticketProject?.save();
+
+    pusher.trigger(pusherChannel, 'create-project-ticket', {
+      ticket: {
+        _id: ticket.id.toString(),
+        author: ticket.author.toString(),
+      },
+    });
 
     res.status(200).json({ ticket });
   } catch (error: any) {

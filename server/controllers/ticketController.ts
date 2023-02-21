@@ -4,6 +4,7 @@ import Ticket, { TicketType } from '../models/ticketModel';
 import Project from '../models/projectModel';
 import AuthorizedRequest from '../types/request';
 import Comment from '../models/commentModel';
+import { pusher, pusherChannel } from '..';
 
 /*
 * @route    GET /tickets
@@ -82,6 +83,14 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
           select: 'name image email'
         }
       });
+
+      pusher.trigger(pusherChannel, 'update-project-ticket', {
+        ticket: {
+          _id: id,
+          author: updatedTicket?.author._id.toString(),
+        },
+      });
+
       res.status(200).json({ ticket: updatedTicket });
     };
   } catch (error: any) {
@@ -109,6 +118,13 @@ export const deleteTicket = async (req: AuthorizedRequest<TicketType>, res: Resp
       // Remove ticket reference from the project without using pull
       project.tickets = project.tickets.filter((ticketId) => ticketId.toString() !== id);
       await project?.save();
+
+      pusher.trigger(pusherChannel, 'delete-project-ticket', {
+        ticket: {
+          _id: id,
+          author: ticket.author._id.toString(),
+        },
+      });
 
       res.status(200).json({ message: 'Ticket removed' });
     }
@@ -139,9 +155,46 @@ export const createTicketComment = async (req: AuthorizedRequest<CommentType>, r
     commentTicket?.comments.push(comment.id);
     await commentTicket?.save();
 
-    const savedComment = await Comment.findById(comment.id).populate('author', 'name image email');
+    const savedComment = await Comment.findById(comment.id)
+      .populate('author', 'name image email');
+
+    pusher.trigger(pusherChannel, 'new-ticket-comment', {
+      ticketId: id,
+      comment: {
+        _id: savedComment?._id.toString(),
+        author: savedComment?.author._id.toString(),
+      }
+    });
 
     res.status(200).json({ comment: savedComment });
+  } catch (error: any) {
+    res.status(404).json({ message: error.message });
+  }
+}
+
+/*
+  * @route    GET /tickets/:id/comments/:commentId
+  * @desc     Get a comment
+  * @access   Private
+*/
+
+export const getTicketComment = async (req: AuthorizedRequest<CommentType>, res: Response) => {
+  try {
+    const { id, commentId } = req.params;
+
+    const comment = await Comment.findById(commentId)
+      .populate('author', 'name image email');
+    const ticket = await Ticket.findById(id);
+
+    if (!comment || !ticket)
+      return res.status(404).json('Comment not found');
+
+    if (!ticket?.comments.includes(comment?._id))
+      return res.status(404).json({
+        message: 'Couldn\'t find comment in specified ticket'
+      })
+
+    res.status(200).json({ comment });
   } catch (error: any) {
     res.status(404).json({ message: error.message });
   }

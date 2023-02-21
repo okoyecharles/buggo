@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
-import { storeType } from "../../redux/configureStore";
+import store, { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
 import { RiArrowRightSLine } from "react-icons/ri";
 import { MdOutlineArrowDropDown } from "react-icons/md";
@@ -17,6 +17,13 @@ import NotificationModal from "./Notifications";
 import { useSpring, a } from "@react-spring/web";
 import Pusher from "pusher-js";
 import { PUSHER_KEY } from "../../config/Backend";
+import { Comment } from "../../types/models";
+import {
+  pusherCommentOnTicket,
+  pusherCreateTicket,
+  pusherDeleteTicket,
+  pusherUpdateTicket,
+} from "../../redux/actions/ticketActions";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -54,15 +61,33 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       });
     const channel = pusher.current?.subscribe("bug-tracker");
 
-    // Listen for pusher events
-    channel?.bind("new-ticket-comment", (data: any) => {
-      console.log("Comment was just made on a ticket");
+    // LISTEN FOR PUSHER EVENTS AND DISPATCH ACTIONS ACCORDINGLY:
+
+    // Comment on ticket
+    channel?.bind(
+      "new-ticket-comment",
+      ({ ticketId, comment }: { ticketId: string; comment: any }) => {
+        if (comment.author === currentUser.user?._id) return;
+        store.dispatch(pusherCommentOnTicket(ticketId, comment._id));
+      }
+    );
+
+    // Create ticket
+    channel?.bind("create-project-ticket", ({ ticket }: { ticket: any }) => {
+      if (ticket.author === currentUser.user?._id) return;
+      store.dispatch(pusherCreateTicket(ticket._id));
     });
-    channel?.bind("create-project-ticket", (data: any) => {
-      console.log("New ticket was just created");
+
+    // Update ticket
+    channel?.bind("update-project-ticket", ({ ticket }: { ticket: any }) => {
+      if (ticket.author === currentUser.user?._id) return;
+      store.dispatch(pusherUpdateTicket(ticket._id));
     });
-    channel?.bind("delete-project-ticket", (data: any) => {
-      console.log("Ticket was just deleted");
+
+    // Delete ticket
+    channel?.bind("delete-project-ticket", ({ ticket }: { ticket: any }) => {
+      if (ticket.author === currentUser.user?._id) return;
+      store.dispatch(pusherDeleteTicket(ticket._id));
     });
   }, [currentUser.user?._id]);
 

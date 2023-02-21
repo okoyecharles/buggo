@@ -9,8 +9,11 @@ import cookieParser from 'cookie-parser';
 import userRouter from './routes/userRoutes';
 import projectRouter from './routes/projectRoutes';
 import ticketRouter from './routes/ticketRoutes';
+import connectToPusher from './config/Pusher';
 
 const app = express();
+const pusher = connectToPusher();
+const pusherChannel = 'bug-tracker';
 
 app.use(express.json({ limit: '30mb' }));
 app.use(express.urlencoded({ limit: '30mb', extended: true }));
@@ -39,3 +42,4 @@ mongoose.connect(CONNECTION_URI)
     console.log(`Connection error: ${err}`);
   });
 
+export { pusher, pusherChannel };

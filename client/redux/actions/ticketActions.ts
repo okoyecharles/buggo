@@ -4,7 +4,6 @@ import * as types from './../constants/ticketConstants';
 import axios from 'axios';
 import { DispatchType } from '../types';
 import generateConfig from './config/axios';
-import { Comment } from '../../types/models';
 import { toast } from 'react-toastify';
 
 export const fetchTickets = () => async (dispatch: DispatchType, getState: () => storeType) => {
@@ -12,7 +11,6 @@ export const fetchTickets = () => async (dispatch: DispatchType, getState: () =>
     dispatch({
       type: types.TICKET_LIST_REQUEST,
     });
-    const currentUser = getState().currentUser;
     const { data } = await axios.get(
       `${SERVER_URL}/tickets`,
       generateConfig()
@@ -81,11 +79,21 @@ export const createTicket = (ticket: any, projectId: string, socket: any) => asy
   }
 };
 
-export const socketCreateTicket = (ticket: any) => {
-  console.log('socketCreateTicket: ', ticket);
-  return {
-    type: types.TICKET_CREATE_SUCCESS,
-    payload: { ticket },
+export const pusherCreateTicket = (ticketId: string) => async (dispatch: DispatchType) => {
+  try {
+    const { data } = await axios.get(
+      `${SERVER_URL}/tickets/${ticketId}`,
+      generateConfig()
+    );
+    dispatch({
+      type: types.TICKET_CREATE_SUCCESS,
+      payload: data,
+    });
+  } catch (error: any) {
+    dispatch({
+      type: types.TICKET_CREATE_FAIL,
+      payload: error.response?.data ? error.response.data : error.error,
+    });
   }
 }
 
@@ -112,7 +120,26 @@ export const updateTicket = (id: string, ticket: any) => async (dispatch: Dispat
   }
 };
 
-export const commentOnTicket = (id: string, text: string, socket: any) => async (dispatch: DispatchType) => {
+export const pusherUpdateTicket = (ticketId: string) => async (dispatch: DispatchType) => {
+  try {
+    const { data } = await axios.get(
+      `${SERVER_URL}/tickets/${ticketId}`,
+      generateConfig()
+    );
+
+    dispatch({
+      type: types.TICKET_UPDATE_SUCCESS,
+      payload: data,
+    });
+  } catch (error: any) {
+    dispatch({
+      type: types.TICKET_UPDATE_FAIL,
+      payload: error.response?.data ? error.response.data : error.error,
+    });
+  }
+}
+
+export const commentOnTicket = (id: string, text: string) => async (dispatch: DispatchType) => {
   try {
     dispatch({
       type: types.TICKET_COMMENT_REQUEST,
@@ -122,11 +149,6 @@ export const commentOnTicket = (id: string, text: string, socket: any) => async 
       { text },
       generateConfig()
     );
-
-    socket?.emit("send-ticket-comment", {
-      ticketId: id,
-      comment: data.comment,
-    });
 
     dispatch({
       type: types.TICKET_COMMENT_SUCCESS,
@@ -141,11 +163,26 @@ export const commentOnTicket = (id: string, text: string, socket: any) => async 
   }
 };
 
-export const socketCommentOnTicket = (comment: Comment) => {
-  return {
-    type: types.TICKET_COMMENT_SUCCESS,
-    payload: { comment },
-  };
+export const pusherCommentOnTicket = (ticketId: string, commentId: string) => async (dispatch: DispatchType) => {
+  try {
+    const { data } = await axios.get(
+      `${SERVER_URL}/tickets/${ticketId}/comments/${commentId}`,
+      generateConfig()
+    );
+
+    dispatch({
+      type: types.TICKET_COMMENT_SUCCESS,
+      payload: {
+        ticketId,
+        comment: data.comment
+      },
+    });
+  } catch (error: any) {
+    dispatch({
+      type: types.TICKET_COMMENT_FAIL,
+      payload: error.response?.data ? error.response.data : error.error,
+    });
+  }
 }
 
 export const deleteTicket = (id: string, projectId: any, socket: any) => async (dispatch: DispatchType) => {
@@ -178,7 +215,7 @@ export const deleteTicket = (id: string, projectId: any, socket: any) => async (
   }
 };
 
-export const socketDeleteTicket = (ticketId: string) => {
+export const pusherDeleteTicket = (ticketId: string) => {
   return {
     type: types.TICKET_DELETE_SUCCESS,
     payload: { ticketId },

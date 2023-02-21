@@ -6,9 +6,9 @@ import { fetchProjectById } from "../../redux/actions/projectActions";
 import ProjectDetailsBar from "../../components/pages/project/details";
 import TicketsSection from "../../components/pages/project/tickets/Section";
 import {
-  socketCommentOnTicket,
-  socketCreateTicket,
-  socketDeleteTicket,
+  pusherCommentOnTicket,
+  pusherCreateTicket,
+  pusherDeleteTicket,
 } from "../../redux/actions/ticketActions";
 import PusherContext from "../../components/context/SocketContext";
 import ProjectDeleteModal from "../../components/pages/dashboard/projects/Modals/projectDelete";
@@ -35,15 +35,15 @@ const ProjectDetails: React.FC = () => {
   useEffect(() => {
     if (project.project?._id) {
       socket?.on("get-project-ticket", (ticket: any) => {
-        store.dispatch(socketCreateTicket(ticket));
+        store.dispatch(pusherCreateTicket(ticket));
       });
 
       socket?.on("get-project-ticket-delete", (ticketId: any) => {
-        store.dispatch(socketDeleteTicket(ticketId));
+        store.dispatch(pusherDeleteTicket(ticketId));
       });
 
       socket?.on("get-ticket-comment", (comment: any) => {
-        store.dispatch(socketCommentOnTicket(comment));
+        store.dispatch(pusherCommentOnTicket(comment));
       });
     }
   }, [project.project?._id]);
