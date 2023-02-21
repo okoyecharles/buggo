@@ -5,9 +5,11 @@ import MyTicketsDetailsBar from "../components/pages/my-tickets/details";
 import MyTicketsSection from "../components/pages/my-tickets/tickets/Section";
 import { fetchTickets } from "../redux/actions/ticketActions";
 import { GroupedTickets, Ticket } from "../types/models";
+import Head from "next/head";
 
 const tickets = () => {
   const tickets = useSelector((store: storeType) => store.tickets);
+  const user = useSelector((store: storeType) => store.currentUser.user);
 
   useEffect(() => {
     store.dispatch(fetchTickets());
@@ -47,10 +49,15 @@ const tickets = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full isolate">
-      <MyTicketsDetailsBar group={groupTicketsByProjects(tickets.tickets)} />
-      <MyTicketsSection group={groupTicketsByProjects(tickets.tickets)} />
-    </div>
+    <>
+      <Head>
+        <title>Tickets</title>
+      </Head>
+      <div className="flex flex-col lg:flex-row h-full isolate">
+        <MyTicketsDetailsBar group={groupTicketsByProjects(tickets.tickets)} />
+        <MyTicketsSection group={groupTicketsByProjects(tickets.tickets)} />
+      </div>
+    </>
   );
 };
 

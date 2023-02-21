@@ -24,11 +24,6 @@ const Modal: React.FC<ModalProps> = ({ open, setOpen, children, style }) => {
     <Portal>
       <div
         className="modal text-gray-300 text-ss font-open"
-        onKeyDown={(e) => {
-          if (e.key === "Escape" && open) {
-            setOpen(false);
-          }
-        }}
       >
         <div
           className={`outclick fixed top-0 left-0 w-screen h-screen flex justify-center items-end sm:items-center bg-black/50 backdrop-blur-sm sm:backdrop-blur-0 sm:bg-black/75 z-0 transition ${

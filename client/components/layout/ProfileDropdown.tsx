@@ -44,10 +44,10 @@ const ProfileDropdown: React.FC<{
         <header className="px-2 text-sm text-gray-400">
           <h2>Signed in as</h2>
           <h3 className="text-orange-400/90 font-semibold font-noto truncate">
-            {user?.name}
+            {user?.name || 'User'}
           </h3>
           <h3 className="text-gray-500 text-xsm font-noto truncate">
-            {user?.email}
+            {user?.email || 'user@gmail.com'}
           </h3>
         </header>
         <hr className="border-gray-800 w-11/12 self-center" />

@@ -1,18 +1,18 @@
 import React, { useEffect } from "react";
-import Modal from "../modal";
 import { User } from "../../types/models";
 import { IoMdClose, IoMdNotificationsOff } from "react-icons/io";
 import { useSelector } from "react-redux";
-import { storeType } from "../../redux/configureStore";
-import { BsPersonPlusFill } from "react-icons/bs";
+import store, { storeType } from "../../redux/configureStore";
+import { BsCheck } from "react-icons/bs";
 import getDate from "../../utils/dateHelper";
 import Portal from "../portal";
 import { useSpring, a } from "@react-spring/web";
 import {
-  getNotificationActionButton,
   getNotificationDescription,
   getNotificationIcon,
 } from "../../utils/notificationHelper";
+import { ThreeDotsLoader } from "../loader";
+import { acceptInvite } from "../../redux/actions/projectActions";
 
 interface NotificationModalProps {
   open: boolean;
@@ -81,7 +81,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           {notifications?.length > 0 ? (
             <ul className="mb-4 flex-1">
               {notifications?.map((notification) => (
-                <li className="p-3 lg:px-6 flex items-center gap-3 bg-gray-800 hover:bg-gray-750 border-l-2 border-b border-b-gray-700 first:border-t border-t-gray-700 border-l-gray-800 hover:border-l-blue-500 group">
+                <li
+                  key={notification._id}
+                  className="p-3 lg:px-6 flex items-center gap-3 bg-gray-800 hover:bg-gray-750 border-l-2 border-b border-b-gray-700 first:border-t border-t-gray-700 border-l-gray-800 hover:border-l-blue-500 group"
+                >
                   <div className="notification-icon text-xl self-start mt-1">
                     {getNotificationIcon(notification)}
                   </div>
@@ -99,14 +102,29 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                     </div>
                   </div>
                   <div className="notification-action">
-                    {getNotificationActionButton(
-                      notification,
-                      projects.loading,
-                      projects.method,
-                      notification.ref,
-                      currentAction,
-                      setCurrentAction
-                    )}
+                    <button
+                      className="bg-blue-500 text-white text-ss rounded-full lg:rounded h-10 w-10 lg:w-32 lg:h-8 flex items-center justify-center"
+                      disabled={projects.loading && projects.method.update}
+                      onClick={() => {
+                        store.dispatch(
+                          acceptInvite(notification.ref.project._id)
+                        );
+                        setCurrentAction(notification._id);
+                      }}
+                    >
+                      {projects.loading &&
+                      projects.method.update &&
+                      currentAction === notification._id ? (
+                        <ThreeDotsLoader className="text-red-500" />
+                      ) : (
+                        <>
+                          <span className="hidden lg:inline text-ss font-medium">
+                            Accept Invite
+                          </span>
+                          <BsCheck className="lg:hidden text-2xl" />
+                        </>
+                      )}
+                    </button>
                   </div>
                   <div className="notification-date text-gray-400 text-sm font-medium w-32 hidden lg:flex justify-end truncate">
                     {getDate(notification.date, {

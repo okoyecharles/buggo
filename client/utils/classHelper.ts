@@ -5,7 +5,7 @@ export const getTicketPriority = (priority: string | undefined) => {
     case "low":
       return "bg-blue-500 text-blue-50 ring-blue-500/30";
     case "medium":
-      return "bg-orange-500 text-orange-50 ring-orange-500/30";
+      return "bg-orange-500 text-white ring-orange-500/30";
     case "high":
       return "bg-red-500 text-red-50 ring-red-500/30";
     default:
