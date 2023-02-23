@@ -12,13 +12,12 @@ const TicketDeleteModal: React.FC<{
   setOpen: any;
   ticket: Ticket;
   loading: boolean;
-  socket: any;
   method: {
     [key: string]: any;
   };
-}> = ({ open, setOpen, ticket, loading, socket, method }) => {
+}> = ({ open, setOpen, ticket, loading, method }) => {
   const handleDelete = () => {
-    store.dispatch(deleteTicket(ticket._id, ticket.project, socket));
+    store.dispatch(deleteTicket(ticket._id, ticket.project));
   };
   
   useEffect(() => {

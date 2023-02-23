@@ -53,6 +53,7 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
   try {
     const { id } = req.params;
     const { title, description, priority, status, type, time_estimate, team, comments } = req.body;
+    const socketId = req.headers['x-pusher-socket-id'];
     const ticket = await Ticket.findById(id);
 
     if (!ticket) {
@@ -89,6 +90,8 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
           _id: id,
           author: updatedTicket?.author._id.toString(),
         },
+      }, {
+        socket_id: socketId as string
       });
 
       res.status(200).json({ ticket: updatedTicket });
@@ -106,6 +109,8 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
 export const deleteTicket = async (req: AuthorizedRequest<TicketType>, res: Response) => {
   try {
     const { id } = req.params;
+    const socketId = req.headers['x-pusher-socket-id'];
+
     const ticket = await Ticket.findById(id).populate('author', 'name');
     const project = await Project.findById(ticket?.project);
 
@@ -124,6 +129,8 @@ export const deleteTicket = async (req: AuthorizedRequest<TicketType>, res: Resp
           _id: id,
           author: ticket.author._id.toString(),
         },
+      }, {
+        socket_id: socketId as string
       });
 
       res.status(200).json({ message: 'Ticket removed' });
@@ -144,6 +151,7 @@ export const createTicketComment = async (req: AuthorizedRequest<CommentType>, r
     const { text } = req.body;
     const commentAuthor = req.user;
     const commentTicket = await Ticket.findById(id);
+    const socketId = req.headers['x-pusher-socket-id'];
 
     const comment = await Comment.create({
       text,
@@ -164,6 +172,8 @@ export const createTicketComment = async (req: AuthorizedRequest<CommentType>, r
         _id: savedComment?._id.toString(),
         author: savedComment?.author._id.toString(),
       }
+    }, {
+      socket_id: socketId as string
     });
 
     res.status(200).json({ comment: savedComment });

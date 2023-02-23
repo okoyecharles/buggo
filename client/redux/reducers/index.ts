@@ -7,6 +7,7 @@ import ticketsReducer from './tickets/ticketsReducer';
 import projectReducer from './projects/projectReducer';
 import ticketReducer from './tickets/ticketReducer';
 import notificationReducer from './notifications/notificationReducer';
+import pusherReducer from './pusher/pusherReducer';
 
 const rootReducer = combineReducers({
   login: loginReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   tickets: ticketsReducer,
   ticket: ticketReducer,
   notifications: notificationReducer,
+  pusher: pusherReducer,
 });
 
 export default rootReducer;

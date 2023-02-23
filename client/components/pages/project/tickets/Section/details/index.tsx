@@ -17,7 +17,6 @@ import TicketComments from "./comments";
 import { Ticket } from "../../../../../../types/models";
 import getDate from "../../../../../../utils/dateHelper";
 import TicketDeleteModal from "../../Modals/ticketDelete";
-import PusherContext from "../../../../../context/SocketContext";
 
 interface TicketDetailsBarProps {
   ticket: Ticket | null;
@@ -38,15 +37,6 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
 
   const [comment, setComment] = useState("");
   const commentsRef = useRef(null);
-
-  const socket = useContext(PusherContext);
-
-  useEffect(() => {
-    socket?.emit("join-ticket-room", {
-      userId: currentUser.user!._id,
-      ticketId: ticket?._id,
-    });
-  }, [ticket?._id]);
 
   useEffect(() => {
     if (!ticketDetails.loading && !ticketDetails.ticket) {
@@ -75,7 +65,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
 
     if (comment.trim() && !ticketDetails.method.comment) {
       const ticket = ticketDetails.ticket!;
-      store.dispatch(commentOnTicket(ticket._id, comment, socket));
+      store.dispatch(commentOnTicket(ticket._id, comment));
       setComment("");
     }
   };
@@ -243,7 +233,6 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           ticket={ticketDetails.ticket!}
           loading={ticketDetails.loading}
           method={ticketDetails.method}
-          socket={socket}
         />
       )}
     </aside>

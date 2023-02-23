@@ -51,6 +51,10 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
     filterByStatus(tickets || [], statusFilter),
     authorFilter
   )?.slice(indexOfFirstTicket, indexOfLastTicket)!;
+  const totalTicketsLength = filterByAuthor(
+    filterByStatus(tickets || [], statusFilter),
+    authorFilter
+  ).length;
 
   const ticketPageCount = Math.ceil((tickets?.length || 0) / ticketsPerPage);
   const handleTicketPageChange = (data: any) => {
@@ -189,7 +193,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
             handlePageChange={handleTicketPageChange}
             indexOfFirstItem={indexOfFirstTicket}
             indexOfLastItem={indexOfLastTicket}
-            totalItems={currentTickets?.length || 0}
+            totalItems={totalTicketsLength}
             itemName="ticket"
           />
         </div>

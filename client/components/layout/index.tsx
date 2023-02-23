@@ -17,13 +17,16 @@ import NotificationModal from "./Notifications";
 import { useSpring, a } from "@react-spring/web";
 import Pusher from "pusher-js";
 import { PUSHER_KEY } from "../../config/Backend";
-import { Comment } from "../../types/models";
 import {
   pusherCommentOnTicket,
   pusherCreateTicket,
   pusherDeleteTicket,
   pusherUpdateTicket,
 } from "../../redux/actions/ticketActions";
+import {
+  connectPusher,
+  disconnectPusher,
+} from "../../redux/actions/pusherActions";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -41,8 +44,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [editProfile, setEditProfile] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
 
-  const pusher = useRef<any>(null);
-
   useEffect(() => {
     if (
       !currentUser.user &&
@@ -55,40 +56,52 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Reconnect to pusher if user is logged in
   useEffect(() => {
-    if (currentUser.user?._id && !currentUser.loading)
-      pusher.current = new Pusher(PUSHER_KEY, {
-        cluster: "eu",
+    if (currentUser.user?._id && !currentUser.loading) {
+      const pusher = new Pusher(PUSHER_KEY, { cluster: "eu" });
+
+      pusher.connection.bind("connected", () => {
+        const channel = pusher.subscribe("bug-tracker");
+
+        // Comment on ticket
+        channel?.bind(
+          "new-ticket-comment",
+          ({ ticketId, comment }: { ticketId: string; comment: any }) => {
+            store.dispatch(pusherCommentOnTicket(ticketId, comment._id));
+          }
+        );
+
+        // Create ticket
+        channel?.bind(
+          "create-project-ticket",
+          ({ ticket }: { ticket: any }) => {
+            store.dispatch(pusherCreateTicket(ticket._id));
+          }
+        );
+
+        // Update ticket
+        channel?.bind(
+          "update-project-ticket",
+          ({ ticket }: { ticket: any }) => {
+            store.dispatch(pusherUpdateTicket(ticket._id));
+          }
+        );
+
+        // Delete ticket
+        channel?.bind(
+          "delete-project-ticket",
+          ({ ticket }: { ticket: any }) => {
+            store.dispatch(pusherDeleteTicket(ticket._id));
+          }
+        );
+
+        store.dispatch(connectPusher(pusher.connection.socket_id));
       });
-    const channel = pusher.current?.subscribe("bug-tracker");
 
-    // LISTEN FOR PUSHER EVENTS AND DISPATCH ACTIONS ACCORDINGLY:
-
-    // Comment on ticket
-    channel?.bind(
-      "new-ticket-comment",
-      ({ ticketId, comment }: { ticketId: string; comment: any }) => {
-        if (comment.author === currentUser.user?._id) return;
-        store.dispatch(pusherCommentOnTicket(ticketId, comment._id));
-      }
-    );
-
-    // Create ticket
-    channel?.bind("create-project-ticket", ({ ticket }: { ticket: any }) => {
-      if (ticket.author === currentUser.user?._id) return;
-      store.dispatch(pusherCreateTicket(ticket._id));
-    });
-
-    // Update ticket
-    channel?.bind("update-project-ticket", ({ ticket }: { ticket: any }) => {
-      if (ticket.author === currentUser.user?._id) return;
-      store.dispatch(pusherUpdateTicket(ticket._id));
-    });
-
-    // Delete ticket
-    channel?.bind("delete-project-ticket", ({ ticket }: { ticket: any }) => {
-      if (ticket.author === currentUser.user?._id) return;
-      store.dispatch(pusherDeleteTicket(ticket._id));
-    });
+      return () => {
+        store.dispatch(disconnectPusher());
+        pusher.disconnect();
+      };
+    }
   }, [currentUser.user?._id]);
 
   const spring = useSpring({

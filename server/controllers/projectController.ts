@@ -231,12 +231,13 @@ export const deleteProject = async (
  *  @access  Private
  */
 export const createTicket = async (
-  req: AuthorizedRequest<TicketType>,
+  req: AuthorizedRequest<TicketType & { socketId: string }>,
   res: Response
 ) => {
   const { priority, status, type, time_estimate, title, description } =
     req.body;
   const { id } = req.params;
+  const socketId = req.headers['x-pusher-socket-id'];
 
   try {
     // Get ticket's project and author
@@ -262,12 +263,17 @@ export const createTicket = async (
     ticketProject?.tickets.unshift(ticket._id);
     await ticketProject?.save();
 
-    pusher.trigger(pusherChannel, 'create-project-ticket', {
-      ticket: {
-        _id: ticket.id.toString(),
-        author: ticket.author.toString(),
+    pusher.trigger(
+      pusherChannel,
+      'create-project-ticket',
+      {
+        ticket: {
+          _id: ticket.id.toString(),
+          author: ticket.author.toString(),
+        },
       },
-    });
+      { socket_id: socketId as string }
+    );
 
     res.status(200).json({ ticket });
   } catch (error: any) {

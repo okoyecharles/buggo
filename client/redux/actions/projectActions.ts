@@ -35,7 +35,7 @@ export const fetchProjects =
   };
 
 export const fetchProjectById =
-  (id: string, socket: any) => async (dispatch: DispatchType, getState: () => storeType) => {
+  (id: string) => async (dispatch: DispatchType, getState: () => storeType) => {
     try {
       dispatch({
         type: types.PROJECT_DETAILS_REQUEST,
@@ -43,11 +43,6 @@ export const fetchProjectById =
 
       const currentUser = getState().currentUser;
       const { data } = await axios.get(`${SERVER_URL}/projects/${id}`, generateConfig());
-
-      socket?.emit("join-project-room", {
-        projectId: data.project._id,
-        userId: currentUser.user?._id,
-      });
 
       dispatch({
         type: types.PROJECT_DETAILS_SUCCESS,
