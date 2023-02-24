@@ -51,7 +51,7 @@ const TicketStats: React.FC<Props> = ({
       </h3>
       <p className="text-center text-ss text-gray-400">
         You need at least 1 ticket to view these statistics. You can create a
-        ticket on a project you have been assigned to.
+        ticket on a project you are a member of.
       </p>
     </div>
   );

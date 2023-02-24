@@ -58,6 +58,7 @@ const CreateProjectModal = ({
   useEffect(() => {
     if (open) {
       inputRef.current?.focus();
+      setTitleError(null);
     }
   }, [open]);
 

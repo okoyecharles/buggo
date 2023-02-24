@@ -108,7 +108,7 @@ export const updateProject =
     };
 
 export const pusherUpdateProject = (projectId: string) => async (
-  dispatch: DispatchType
+  dispatch: DispatchType, getState: () => storeType
 ) => {
   try {
     const { data } = await axios.get(
@@ -118,7 +118,10 @@ export const pusherUpdateProject = (projectId: string) => async (
 
     dispatch({
       type: types.PROJECT_UPDATE_SUCCESS,
-      payload: data,
+      payload: {
+        ...data,
+        userId: getState().currentUser.user?._id
+      },
     });
   } catch (error: any) {
     dispatch({
@@ -189,15 +192,17 @@ export const inviteToProject = (id: string, invitees: {
   };
 
 export const acceptInvite = (id: string) =>
-  async (dispatch: DispatchType) => {
+  async (dispatch: DispatchType, getState: () => storeType) => {
     try {
       dispatch({
         type: types.PROJECT_ACCEPT_INVITE_REQUEST,
       });
+
+      const socketId = getState().pusher.socket;
       const { data } = await axios.put(
         `${SERVER_URL}/projects/${id}/accept-invite`,
         {},
-        generateConfig()
+        generateConfig(socketId || '')
       );
       toast.success("Invitation accepted successfully");
 
@@ -206,8 +211,7 @@ export const acceptInvite = (id: string) =>
         payload: data
       });
     } catch (error: any) {
-      console.log('Errrrrrooooorrrr!!!!! =?', error)
-      toast.error("Error accepting invite");
+      toast.error("Couldn't accept invite");
       dispatch({
         type: types.PROJECT_ACCEPT_INVITE_FAIL,
         payload: error.response?.data ? error.response.data : error.error,

@@ -52,6 +52,41 @@ const notificationReducer = (
           notifications: newNotifications
         }
       }
+
+    case projectTypes.PROJECT_UPDATE_SUCCESS:
+      {
+        // Update project notification
+        const { project, userId }: { project: Project, userId: string } = payload;
+        if (!userId) return state;
+
+        const projectNotifications: Notification[] = state.notifications.filter(n => n.type === 'project' && n.ref.project._id !== project._id);
+
+        if (project.invitees.length) {
+          const invite = project.invitees.find((invitee) => invitee.user._id === userId);
+
+          if (invite) {
+            projectNotifications.push({
+              _id: invite._id,
+              type: 'project',
+              subject: 'invite',
+              ref: {
+                project
+              },
+              date: invite.createdAt,
+            });
+          }
+        }
+
+        const newNotifications = [
+          ...projectNotifications,
+          ...state.notifications.filter(n => n.type !== 'project')
+        ];
+
+        return {
+          ...state,
+          notifications: newNotifications
+        }
+      }
     case projectTypes.PROJECT_ACCEPT_INVITE_SUCCESS:
       // Remove project invite notification
       return {

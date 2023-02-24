@@ -71,6 +71,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           }
         );
 
+        // Accept project invite
+        channel?.bind(
+          "accept-project-invite",
+          ({ projectId }: { projectId: string }) => {
+            store.dispatch(pusherUpdateProject(projectId));
+          }
+        );
+
         // Comment on ticket
         channel?.bind(
           "new-ticket-comment",
