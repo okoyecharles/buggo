@@ -28,6 +28,7 @@ import {
   disconnectPusher,
 } from "../../redux/actions/pusherActions";
 import { pusherUpdateProject } from "../../redux/actions/projectActions";
+import bindChannelEvents from "./pusher/channel";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -45,6 +46,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [editProfile, setEditProfile] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
 
+  // Redirect to login if user is not logged in
   useEffect(() => {
     if (
       !currentUser.user &&
@@ -55,61 +57,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [currentUser]);
 
-  // Reconnect to pusher if user is logged in
+  // Connect to pusher when user logs in
   useEffect(() => {
     if (currentUser.user?._id && !currentUser.loading) {
       const pusher = new Pusher(PUSHER_KEY, { cluster: "eu" });
 
       pusher.connection.bind("connected", () => {
         const channel = pusher.subscribe("bug-tracker");
-
-        // Project invite
-        channel?.bind(
-          "project-invite",
-          ({ projectId }: { projectId: string }) => {
-            store.dispatch(pusherUpdateProject(projectId));
-          }
-        );
-
-        // Accept project invite
-        channel?.bind(
-          "accept-project-invite",
-          ({ projectId }: { projectId: string }) => {
-            store.dispatch(pusherUpdateProject(projectId));
-          }
-        );
-
-        // Comment on ticket
-        channel?.bind(
-          "new-ticket-comment",
-          ({ ticketId, comment }: { ticketId: string; comment: any }) => {
-            store.dispatch(pusherCommentOnTicket(ticketId, comment._id));
-          }
-        );
-
-        // Create ticket
-        channel?.bind(
-          "create-project-ticket",
-          ({ ticket }: { ticket: any }) => {
-            store.dispatch(pusherCreateTicket(ticket._id));
-          }
-        );
-
-        // Update ticket
-        channel?.bind(
-          "update-project-ticket",
-          ({ ticket }: { ticket: any }) => {
-            store.dispatch(pusherUpdateTicket(ticket._id));
-          }
-        );
-
-        // Delete ticket
-        channel?.bind(
-          "delete-project-ticket",
-          ({ ticket }: { ticket: any }) => {
-            store.dispatch(pusherDeleteTicket(ticket._id));
-          }
-        );
+        bindChannelEvents(channel);
 
         store.dispatch(connectPusher(pusher.connection.socket_id));
       });
@@ -122,7 +77,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, [currentUser.user?._id]);
 
   const spring = useSpring({
-    opacity: notificationOpen ? 0.2 : 1,
+    opacity: notificationOpen ? 0.75 : 1,
     scale: notificationOpen ? 0.95 : 1,
     config: {
       tension: 800,
@@ -131,7 +86,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   });
 
   return (
-    <a.div className="flex flex-col min-h-screen isolate" style={spring}>
+    <a.div
+      className="flex flex-col min-h-screen isolate"
+      style={{
+        ...spring,
+        transformOrigin: "center",
+      }}
+    >
       <header className="flex flex-col sticky top-0 z-40">
         <nav className="flex items-center shadow-sm shadow-gray-950 bg-gray-800 p-3 text-gray-100 font-open md:px-8 gap-4">
           <div className="logo font-bold">

@@ -1,13 +1,8 @@
 import React from "react";
-import { GroupedTickets, Ticket } from "../../../types/models";
-import MyTicketsStats from "./stats";
-import { BsPlus, BsPlusLg } from "react-icons/bs";
-import { FaCommentAlt } from "react-icons/fa";
-import { AiFillClockCircle } from "react-icons/ai";
-import Pluralize from "react-pluralize";
-import getDate from "../../../utils/dateHelper";
-import { getTicketPriority, getTicketStatus } from "../../../utils/classHelper";
-import MyTicketsRow from "./row";
+import { GroupedTickets } from "../../../types/models";
+import MyTicketsStats from "./Stats";
+import { BsPlus } from "react-icons/bs";
+import MyTicketsRow from "./Row";
 
 interface MyTicketsSectionProps {
   group: GroupedTickets[];

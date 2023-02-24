@@ -1,10 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AiFillClockCircle } from "react-icons/ai";
 import { FaCommentAlt } from "react-icons/fa";
 import Pluralize from "react-pluralize";
 import getDate from "../../../utils/dateHelper";
 import { Ticket } from "../../../types/models";
 import { getTicketPriority, getTicketStatus } from "../../../utils/classHelper";
+import { BsThreeDots } from "react-icons/bs";
+import { Tooltip } from "react-tooltip";
+import TicketOptionsPopup from "./Options";
 
 interface TicketRowProps {
   ticket: Ticket | undefined;
@@ -19,14 +22,16 @@ const TicketRow: React.FC<TicketRowProps> = ({
   showTicketDetails,
   setTicketDetails,
 }) => {
+  const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
+
   useEffect(() => {
     // Set ticket details if the ticket id matches the ticket details id
     if (ticket?._id === ticketDetails?._id) setTicketDetails(ticket);
   }, [ticket]);
 
   return (
-    <li className="ticket-row grid gap-2 grid-cols-6 lg:grid-cols-7 pt-2 pb-4 border-b border-gray-600 hover:bg-gray-825 transition-all">
-      <header className="flex flex-col gap-1 lg:col-span-2 px-1 pl-2 select-none">
+    <li className="ticket-row grid gap-2 grid-cols-6 lg:grid-cols-7 pt-2 pb-4 border-b border-gray-600 hover:bg-gray-850 transition-all group relative">
+      <header className="flex flex-col gap-1 lg:col-span-2 px-1 pl-4 select-none">
         <h3
           className="font-semibold font-noto text-gray-100 hover:underline cursor-pointer"
           onClick={() => {
@@ -76,10 +81,24 @@ const TicketRow: React.FC<TicketRowProps> = ({
         </span>
       </div>
       <div className="flex items-center px-1">
-        <span className="text-sm text-gray-500 font-noto text-center">
-          No team member assigned
-        </span>
+        <span className="text-sm text-gray-500 font-noto flex-1">No team</span>
+        <button
+          className="p-1 mr-3 flex items-center justify-center transition"
+          id={`ticket-options-${ticket?._id}`}
+          onClick={() => setOptionsOpen(!optionsOpen)}
+        >
+          <BsThreeDots className="text-lg text-white opacity-0 group-hover:opacity-100" />
+        </button>
+        <Tooltip
+          anchorId={`ticket-options-${ticket?._id}`}
+          content={`More options for ${ticket?.title}`}
+        />
       </div>
+      <TicketOptionsPopup
+        open={optionsOpen}
+        setOpen={setOptionsOpen}
+        ticket={ticket!}
+      />
     </li>
   );
 };

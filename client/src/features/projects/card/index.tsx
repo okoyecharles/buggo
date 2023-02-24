@@ -158,7 +158,8 @@ const ProjectCard: React.FC<projectProps> = ({
           }}
           onKeyDown={(event: KeyboardEvent) => {
             if (event.key === "Enter") {
-              editProject(project._id, { title: editTitle });
+              if (project.title !== editTitle)
+                editProject(project._id, { title: editTitle });
               setEditMode(false);
             }
             if (event.key === "Escape") {

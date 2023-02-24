@@ -28,7 +28,7 @@ const ProjectDetails: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Project - {project.project?.title || "Loading..."}</title>
+        <title>Project - {project?.project?.title}</title>
       </Head>
       <div className="flex flex-col lg:flex-row h-full isolate">
         <ProjectDetailsBar

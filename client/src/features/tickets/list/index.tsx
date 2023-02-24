@@ -144,7 +144,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
               <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto ">
                 Created
               </div>
-              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto ">
+              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto">
                 Assigned
               </div>
             </header>

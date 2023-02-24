@@ -18,4 +18,10 @@ export const returnWithTwoDigitsOrMore = (str: string | number) => {
   str = str.toString();
   const appendStr = str.length < 2 ? "0" : "";
   return appendStr + str;
-}
+};
+
+export const incrementColor = (color: string, incrementValue?: number) => {
+  const [name, value] = color.split("-");
+
+  return `${name}-${parseInt(value) + (incrementValue || 100)}`;
+};
