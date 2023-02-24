@@ -76,7 +76,7 @@ const ProjectDetailsOptionsPopup: React.FC<{
 
   return (
     <a.div
-      className={`projectDetailOptionsPopup absolute top-[4.5rem] right-2 w-52 bg-gray-950 shadow-lg shadow-gray-950/40 rounded-md p-2 z-40 isolate`}
+      className={`projectDetailOptionsPopup absolute top-[4.5rem] right-2 w-52 bg-gray-950 shadow-lg shadow-gray-950/40 rounded-md p-2 isolate`}
       style={{
         ...spring,
         pointerEvents: open ? "all" : "none",

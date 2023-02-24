@@ -6,7 +6,7 @@ import type { AppProps } from "next/app";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-tooltip/dist/react-tooltip.css";
-import Layout from "../components/layout/index";
+import Layout from "../src/layout/index";
 import { validateUserSession } from "../redux/actions/userActions";
 
 export default function App({ Component, pageProps }: AppProps) {

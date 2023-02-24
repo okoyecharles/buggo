@@ -17,6 +17,8 @@ import TicketComments from "./comments";
 import { Ticket } from "../../../types/models";
 import getDate from "../../../utils/dateHelper";
 import TicketDeleteModal from "../modal/ticketDelete";
+import { BsCheck } from "react-icons/bs";
+import { Tooltip } from "react-tooltip";
 
 interface TicketDetailsBarProps {
   ticket: Ticket | null;
@@ -44,8 +46,14 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
     }
 
     if (ticket) refetchTicketDetails(ticket);
-    else setOpen(false);
   }, [ticket?._id]);
+
+  useEffect(() => {
+    // If ticket is deleted, close the details bar
+    if (!ticketDetails.ticket && !ticketDetails.loading) {
+      setOpen(false);
+    }
+  }, [ticketDetails.ticket])
 
   useEffect(() => {
     const commentSection = commentsRef?.current as HTMLDivElement | null;
@@ -67,42 +75,54 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
 
   return (
     <aside
-      className={`bg-gray-850 fixed top-16 w-screen right-0 bottom-[58px] border-gray-700 lg:absolute lg:top-0 lg:w-80 lg:h-full lg:border-l ${
+      className={`bg-gray-850 fixed top-16 w-screen right-0 bottom-[58px] border-gray-700 lg:absolute lg:top-0 lg:w-80 lg:h-full lg:border-l z-50 ${
         open ? "translate-x-0" : "translate-x-full"
       } transition-all`}
     >
-      <div className="relative flex flex-col h-full">
-        <header className="flex p-3 gap-2 border-b border-gray-700">
-          <div className="flex-1 flex flex-col gap-1">
-            <h2 className="font-semibold text-gray-100 text-lg">
+      <div className="relative h-full flex flex-col">
+        <header className="flex gap-2 p-3 border-b border-gray-700 max-w-full">
+          <span
+            className={`p-1 m-1 ring-1 rounded-full h-fit w-fit ${
+              ticket?.status === "closed"
+                ? "ring-red-500 text-red-500"
+                : "ring-blue-400 text-blue-400"
+            }`}
+          >
+            {ticket?.status === "closed" ? (
+              <IoMdClose className="text-lg" id="ticket-status-icon-closed" />
+            ) : (
+              <BsCheck className="text-lg" id="ticket-status-icon-open" />
+            )}
+            <Tooltip
+              anchorId="ticket-status-icon-opened"
+              content="Opened ticket"
+              place="bottom"
+            />
+            <Tooltip
+              anchorId="ticket-status-icon-closed"
+              content="Closed ticket"
+              place="bottom"
+            />
+          </span>
+          <div className="flex-1 flex flex-col gap-1 min-w-0">
+            <h2 className="font-semibold text-gray-100 text-lg truncate">
               {ticket?.title}
             </h2>
-            <span
-              className={`uppercase text-xsm py-1 px-2 font-bold ring-1 rounded-sm h-fit w-fit ${
-                ticket?.status === "open"
-                  ? "ring-blue-500 text-blue-500"
-                  : "ring-red-500 text-red-500"
-              }`}
-            >
-              {ticket?.status}
-            </span>
-            <p className="text-sm text-gray-500 font-semibold">
+            <p className="text-sm text-gray-500 font-semibold truncate">
               <span>{`Created ${getDate(ticket?.createdAt, {
                 format: "on calendar",
               })}`}</span>
             </p>
           </div>
-          <div>
-            <button
-              name="close modal"
-              className="p-1 text-2xl text-gray-500 ring-1 ring-gray-500 hover:text-gray-300 hover:ring-gray-300 rounded-full transition-all focus:outline-none active:bg-gray-700"
-              onClick={() => {
-                setOpen(false);
-              }}
-            >
-              <IoMdClose />
-            </button>
-          </div>
+          <button
+            name="close modal"
+            className="p-1 text-2xl text-gray-500 ring-1 ring-gray-500 hover:text-gray-300 hover:ring-gray-300 rounded-full transition-all focus:outline-none active:bg-gray-700 h-fit"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            <IoMdClose />
+          </button>
         </header>
 
         {ticketDetails.loading && ticketDetails.method.details ? (

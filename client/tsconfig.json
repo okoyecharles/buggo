@@ -15,6 +15,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/pages/project", "components/features/tickets/details", "components/features/tickets/Modals", "components/pages/project/tickets/Section", "components/features/tickets/details"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/project", "src/features/tickets/details", "src/features/tickets/Modals", "src/pages/project/tickets/Section", "src/features/tickets/details"],
   "exclude": ["node_modules"]
 }

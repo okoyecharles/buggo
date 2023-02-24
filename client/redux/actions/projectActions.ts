@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify';
-import { Project } from '../../components/types/models';
+import { Project } from '../../src/types/models';
 import { storeType } from './../configureStore';
-import SERVER_URL from '../../components/data/backend-config';
+import SERVER_URL from '../../src/data/backend-config';
 import * as types from '../constants/projectConstants';
 import axios from 'axios';
 import { DispatchType } from '../types';
@@ -107,6 +107,27 @@ export const updateProject =
       }
     };
 
+export const pusherUpdateProject = (projectId: string) => async (
+  dispatch: DispatchType
+) => {
+  try {
+    const { data } = await axios.get(
+      `${SERVER_URL}/projects/${projectId}`,
+      generateConfig()
+    );
+
+    dispatch({
+      type: types.PROJECT_UPDATE_SUCCESS,
+      payload: data,
+    });
+  } catch (error: any) {
+    dispatch({
+      type: types.PROJECT_UPDATE_FAIL,
+      payload: error.response?.data ? error.response.data : error.error,
+    });
+  }
+};
+
 
 export const getProjectTeamIds = async (project: Project) => {
   const { data } = await axios.get(
@@ -141,15 +162,17 @@ export const inviteToProject = (id: string, invitees: {
   _id: string;
   email: string;
 }[]) =>
-  async (dispatch: DispatchType) => {
+  async (dispatch: DispatchType, getState: () => storeType) => {
     try {
       dispatch({
         type: types.PROJECT_INVITE_REQUEST,
       });
+
+      const socketId = getState().pusher.socket;
       const { data } = await axios.put(
         `${SERVER_URL}/projects/${id}/invite`,
         { invitees },
-        generateConfig()
+        generateConfig(socketId || '')
       );
       toast.success("Members invited successfully");
 

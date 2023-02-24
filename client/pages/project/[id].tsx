@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import store, { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
 import { fetchProjectById } from "../../redux/actions/projectActions";
-import TicketsSection from "../../components/features/tickets/list";
-import ProjectDeleteModal from "../../components/features/projects/modal/projectDelete";
+import TicketsSection from "../../src/features/tickets/list";
+import ProjectDeleteModal from "../../src/features/projects/modal/projectDelete";
 import Head from "next/head";
-import ProjectDetailsBar from "../../components/features/projects/details";
+import ProjectDetailsBar from "../../src/features/projects/details";
 
 const ProjectDetails: React.FC = () => {
   const router = useRouter();
@@ -30,7 +30,7 @@ const ProjectDetails: React.FC = () => {
       <Head>
         <title>Project - {project.project?.title || "Loading..."}</title>
       </Head>
-      <div className="flex flex-col lg:flex-row h-full">
+      <div className="flex flex-col lg:flex-row h-full isolate">
         <ProjectDetailsBar
           project={project.project}
           loading={project.loading}

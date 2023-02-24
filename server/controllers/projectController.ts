@@ -138,6 +138,7 @@ export const inviteToProject = async (
   try {
     const { id } = req.params;
     const { invitees } = req.body;
+    const socketId = req.headers['x-pusher-socket-id'];
     const project = await Project.findById(id).populate('author', 'name');
 
     if (!project) {
@@ -152,6 +153,15 @@ export const inviteToProject = async (
 
     const updatedProject = await project.save();
     const returnProject = await getProject(updatedProject.id);
+
+    pusher.trigger(
+      pusherChannel,
+      'project-invite',
+      {
+        projectId: returnProject?._id.toString(),
+      },
+      { socket_id: socketId as string }
+    );
 
     res.status(200).json({ project: returnProject });
   } catch (error: any) {

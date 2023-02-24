@@ -13,9 +13,7 @@ import Highlighter from "react-highlight-words";
 import store, { storeType } from "../../../../redux/configureStore";
 import {
   inviteToProject,
-  updateProject,
 } from "../../../../redux/actions/projectActions";
-import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
 const projectInviteesReducer = (state: User[], action: any) => {
@@ -65,7 +63,6 @@ const ProjectInviteModal: React.FC<{
         !project.team.find((member) => member._id === user._id) 
       );
     });
-    console.log(filteredUsers, project.invitees);
     setUsers(filteredUsers);
   };
 

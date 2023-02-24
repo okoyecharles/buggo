@@ -2,14 +2,19 @@ import { useState } from "react";
 import { Project } from "../../../types/models";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
-import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowRight } from "react-icons/md";
+import {
+  MdOutlineKeyboardArrowDown,
+  MdOutlineKeyboardArrowRight,
+} from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
+import { FiCheckCircle } from "react-icons/fi";
 import getDate from "../../../utils/dateHelper";
 import Image from "next/image";
 import { BsPlus } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
 import ProjectDetailsOptionsPopup from "./Options";
 import ProjectInviteModal from "../modal/projectInvite";
+import Button from "../../../components/Button";
 
 interface ProjectDetailsBarProps {
   project: Project | null;
@@ -34,7 +39,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   const currentUser = useSelector((store: storeType) => store.currentUser);
 
   return (
-    <aside className="project-details-bar w-full lg:w-60 bg-gray-850 sticky lg:relative z-10">
+    <aside className="project-details-bar w-full lg:w-60 bg-gray-850 sticky lg:relative z-30">
       {/* Project details header */}
       <header
         className="
@@ -49,22 +54,20 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
         <span className="truncate font-bold text-gray-100 text-lg">
           {project?.title}
         </span>
-        {
-          currentUser.user?._id === project?.author._id && (
-            <div className="relative w-6 h-6">
-          <MdOutlineKeyboardArrowDown
-            className={`text-2xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
-              optionsOpen ? "rotate-180 opacity-0" : "rotate-0 opacity-1"
-            } transition-all`}
-          />
-          <IoMdClose
-            className={`text-xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
-              optionsOpen ? "rotate-0 opacity-1" : "-rotate-180 opacity-0"
-            } transition-all`}
-          />
-        </div>
-          )
-        }
+        {currentUser.user?._id === project?.author._id && (
+          <div className="relative w-6 h-6">
+            <MdOutlineKeyboardArrowDown
+              className={`text-2xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
+                optionsOpen ? "rotate-180 opacity-0" : "rotate-0 opacity-1"
+              } transition-all`}
+            />
+            <IoMdClose
+              className={`text-xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
+                optionsOpen ? "rotate-0 opacity-1" : "-rotate-180 opacity-0"
+              } transition-all`}
+            />
+          </div>
+        )}
       </header>
 
       {/* Project details content */}
@@ -74,6 +77,12 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
             format: "on calendar",
           })}`}
         </p>
+
+        {project?.invitees.some((i) => i._id !== currentUser.user?._id) && (
+          <Button overrideStyle="mx-1">
+            Accept Invitation <FiCheckCircle className="ml-1 text-md" />
+          </Button>
+        )}
 
         <div className="members-drop font-noto">
           <div className=" flex items-center gap-0 cursor-pointer group transition-all select-none relative h-8 mb-1">

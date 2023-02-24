@@ -2,7 +2,7 @@ import { ActionType } from "../../types";
 import * as types from "../../constants/projectConstants";
 import * as userTypes from "../../constants/userConstants";
 import * as ticketTypes from "../../constants/ticketConstants";
-import { Project } from "../../../components/types/models";
+import { Project } from "../../../src/types/models";
 
 type ProjectsState = {
   project: Project | null;
@@ -58,17 +58,37 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
         }
       };
 
+    case types.PROJECT_INVITE_REQUEST:
+      return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
+    case types.PROJECT_INVITE_SUCCESS:
+      return {
+        ...state, loading: false, error: null, method: { ...state.method, update: false }, project: {
+          ...(payload.project._id === state.project?._id ? payload.project : state.project)
+        }
+      };
+    case types.PROJECT_ACCEPT_INVITE_FAIL:
+      return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
+
+
     case types.PROJECT_ACCEPT_INVITE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
     case types.PROJECT_ACCEPT_INVITE_SUCCESS:
-      return { ...state, loading: false, ...payload, error: null, method: { ...state.method, update: false } };
+      return {
+        ...state, loading: false, error: null, method: { ...state.method, update: false }, project: {
+          ...(payload.project._id === state.project?._id ? payload.project : state.project)
+        }
+      };
     case types.PROJECT_ACCEPT_INVITE_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
 
     case types.PROJECT_UPDATE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
     case types.PROJECT_UPDATE_SUCCESS:
-      return { ...state, loading: false, ...payload, error: null, method: { ...state.method, update: false } };
+      return {
+        ...state, loading: false, error: null, method: { ...state.method, update: false }, project: {
+          ...(payload.project._id === state.project?._id ? payload.project : state.project)
+        }
+      };
     case types.PROJECT_UPDATE_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
 
@@ -77,7 +97,7 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
     case ticketTypes.TICKET_CREATE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, createTicket: true } };
     case ticketTypes.TICKET_CREATE_SUCCESS:
-      if (!state.project) return state;
+      if (!state.project || state.project._id !== payload.ticket.project) return state;
       return {
         project: {
           ...state.project,

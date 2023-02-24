@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import store, { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
 import { RiArrowRightSLine } from "react-icons/ri";
@@ -27,6 +27,7 @@ import {
   connectPusher,
   disconnectPusher,
 } from "../../redux/actions/pusherActions";
+import { pusherUpdateProject } from "../../redux/actions/projectActions";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -61,6 +62,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       pusher.connection.bind("connected", () => {
         const channel = pusher.subscribe("bug-tracker");
+
+        // Project invite
+        channel?.bind(
+          "project-invite",
+          ({ projectId }: { projectId: string }) => {
+            store.dispatch(pusherUpdateProject(projectId));
+          }
+        );
 
         // Comment on ticket
         channel?.bind(

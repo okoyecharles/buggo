@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import SERVER_URL from '../../components/data/backend-config';
+import SERVER_URL from '../../src/data/backend-config';
 import * as types from '../constants/userConstants';
 import axios, { AxiosRequestConfig } from 'axios';
 import { DispatchType } from '../types';

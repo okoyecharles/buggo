@@ -1,14 +1,15 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSpring, a } from "@react-spring/web";
-import { ThreeDotsLoader } from "../components/features/loader";
-import { validateEmail, validatePassword } from "../components/utils/forms/register";
+import { ThreeDotsLoader } from "../src/features/loader";
+import { validateEmail, validatePassword } from "../src/utils/forms/register";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { login } from "../redux/actions/userActions";
 import Head from "next/head";
+import Button from "../src/components/Button";
 
 const Login = () => {
   const router = useRouter();
@@ -163,12 +164,9 @@ const Login = () => {
             />
           </div>
 
-          <button
-            className="font-open font-semibold p-3 text-ss mt-6 bg-blue-600 text-white rounded hover:bg-blue-700 hover:text-blue-100 disabled:opacity-80 disabled:cursor-not-allowed  transition flex justify-center"
-            disabled={processing}
-          >
-            {processing ? <ThreeDotsLoader /> : "Log In"}
-          </button>
+          <Button overrideStyle="mt-6" processing={processing}>
+            Log In
+          </Button>
 
           <div className="text-ss text-gray-400 mt-4">
             Need an account?{" "}
