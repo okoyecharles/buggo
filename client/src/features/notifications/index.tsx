@@ -104,7 +104,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                   <div className="notification-action">
                     <button
                       className="bg-blue-500 text-white text-ss rounded-full lg:rounded h-10 w-10 lg:w-32 lg:h-8 flex items-center justify-center"
-                      disabled={projects.loading && projects.method.update}
+                      disabled={projects.loading && projects.method.acceptInvite}
                       onClick={() => {
                         store.dispatch(
                           acceptInvite(notification.ref.project._id)
@@ -113,7 +113,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                       }}
                     >
                       {projects.loading &&
-                      projects.method.update &&
+                      projects.method.acceptInvite &&
                       currentAction === notification._id ? (
                         <ThreeDotsLoader className="text-red-500" />
                       ) : (

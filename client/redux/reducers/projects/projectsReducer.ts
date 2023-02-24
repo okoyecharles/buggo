@@ -12,6 +12,7 @@ interface ProjectsState {
     create: boolean;
     update: boolean;
     delete: boolean;
+    acceptInvite: boolean;
   };
 };
 
@@ -23,7 +24,8 @@ const initialState = {
     list: false,
     create: false,
     update: false,
-    delete: false
+    delete: false,
+    acceptInvite: false
   }
 };
 
@@ -100,7 +102,7 @@ const projectsReducer = (state: ProjectsState = initialState, action: ActionType
 
 
     case types.PROJECT_ACCEPT_INVITE_REQUEST:
-      return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
+      return { ...state, loading: true, error: null, method: { ...state.method, acceptInvite: true } };
     case types.PROJECT_ACCEPT_INVITE_SUCCESS:
       return {
         ...state,
@@ -112,10 +114,10 @@ const projectsReducer = (state: ProjectsState = initialState, action: ActionType
           }
           return project;
         }),
-        method: { ...state.method, update: false }
+        method: { ...state.method, acceptInvite: false }
       };
     case types.PROJECT_ACCEPT_INVITE_FAIL:
-      return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
+      return { ...state, loading: false, error: payload, method: { ...state.method, acceptInvite: false } };
 
     // Clear state on logout
     case userTypes.USER_LOGOUT:

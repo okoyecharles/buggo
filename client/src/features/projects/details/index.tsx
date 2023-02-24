@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Project } from "../../../types/models";
 import { useSelector } from "react-redux";
-import { storeType } from "../../../../redux/configureStore";
+import store, { storeType } from "../../../../redux/configureStore";
 import {
   MdOutlineKeyboardArrowDown,
   MdOutlineKeyboardArrowRight,
@@ -15,6 +15,7 @@ import { Tooltip } from "react-tooltip";
 import ProjectDetailsOptionsPopup from "./Options";
 import ProjectInviteModal from "../modal/projectInvite";
 import Button from "../../../components/Button";
+import { acceptInvite } from "../../../../redux/actions/projectActions";
 
 interface ProjectDetailsBarProps {
   project: Project | null;
@@ -79,7 +80,13 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
         </p>
 
         {project?.invitees.some((i) => i._id !== currentUser.user?._id) && (
-          <Button overrideStyle="mx-1">
+          <Button
+            overrideStyle="mx-1"
+            onClick={() => {
+              store.dispatch(acceptInvite(project._id));
+            }}
+            processing={loading && method.acceptInvite}
+          >
             Accept Invitation <FiCheckCircle className="ml-1 text-md" />
           </Button>
         )}

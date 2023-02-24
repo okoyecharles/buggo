@@ -13,6 +13,7 @@ type ProjectsState = {
     details: boolean;
     update: boolean;
     delete: boolean;
+    acceptInvite: boolean;
   };
 };
 
@@ -25,6 +26,7 @@ const initialState = {
     details: false,
     update: false,
     delete: false,
+    acceptInvite: false
   },
 };
 
@@ -71,15 +73,15 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
 
 
     case types.PROJECT_ACCEPT_INVITE_REQUEST:
-      return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
+      return { ...state, loading: true, error: null, method: { ...state.method, acceptInvite: true } };
     case types.PROJECT_ACCEPT_INVITE_SUCCESS:
       return {
-        ...state, loading: false, error: null, method: { ...state.method, update: false }, project: {
+        ...state, loading: false, error: null, method: { ...state.method, acceptInvite: false }, project: {
           ...(payload.project._id === state.project?._id ? payload.project : state.project)
         }
       };
     case types.PROJECT_ACCEPT_INVITE_FAIL:
-      return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
+      return { ...state, loading: false, error: payload, method: { ...state.method, acceptInvite: false } };
 
     case types.PROJECT_UPDATE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
