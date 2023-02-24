@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import store, { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
 import { fetchProjectById } from "../../redux/actions/projectActions";
-import ProjectDetailsBar from "../../components/pages/project/details";
-import TicketsSection from "../../components/pages/project/tickets/Section";
-import ProjectDeleteModal from "../../components/pages/dashboard/projects/Modals/projectDelete";
+import TicketsSection from "../../components/features/tickets/list";
+import ProjectDeleteModal from "../../components/features/projects/modal/projectDelete";
 import Head from "next/head";
+import ProjectDetailsBar from "../../components/features/projects/details";
 
 const ProjectDetails: React.FC = () => {
   const router = useRouter();
@@ -32,10 +32,10 @@ const ProjectDetails: React.FC = () => {
       </Head>
       <div className="flex flex-col lg:flex-row h-full">
         <ProjectDetailsBar
-          setProjectDeleteOpen={setProjectDeleteOpen}
           project={project.project}
           loading={project.loading}
           method={project.method}
+          setProjectDeleteOpen={setProjectDeleteOpen}
           setTicketCreateOpen={setTicketCreateOpen}
         />
         <TicketsSection

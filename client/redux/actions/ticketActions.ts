@@ -1,5 +1,5 @@
 import { storeType } from './../configureStore';
-import SERVER_URL from '../../config/Backend';
+import SERVER_URL from '../../components/data/backend-config';
 import * as types from './../constants/ticketConstants';
 import axios from 'axios';
 import { DispatchType } from '../types';

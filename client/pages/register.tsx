@@ -1,13 +1,13 @@
 import React, { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSpring, a } from '@react-spring/web';
-import { ThreeDotsLoader } from '../components/loader';
+import { ThreeDotsLoader } from '../components/features/loader';
 import {
   validateName,
   validateEmail,
   validatePassword,
   validateConfirmPassword,
-} from '../utils/forms/register';
+} from '../components/utils/forms/register';
 import { useSelector } from 'react-redux';
 import store, { storeType } from '../redux/configureStore';
 import { toast } from 'react-toastify';
@@ -15,7 +15,7 @@ import { useRouter } from 'next/router';
 import { register } from '../redux/actions/userActions';
 import Head from 'next/head';
 import Compressor from 'compressorjs';
-import { toBase64 } from '../utils/imageHelper';
+import { toBase64 } from '../components/utils/imageHelper';
 
 const Register = () => {
   const router = useRouter();

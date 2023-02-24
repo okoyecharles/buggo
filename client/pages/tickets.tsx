@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
-import MyTicketsDetailsBar from "../components/pages/my-tickets/details";
-import MyTicketsSection from "../components/pages/my-tickets/tickets/Section";
+import MyTicketsDetailsBar from "../components/features/my-tickets/details";
+import MyTicketsSection from "../components/features/my-tickets/section";
 import { fetchTickets } from "../redux/actions/ticketActions";
-import { GroupedTickets, Ticket } from "../types/models";
+import { GroupedTickets, Ticket } from "../components/types/models";
 import Head from "next/head";
 
 const tickets = () => {

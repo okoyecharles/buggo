@@ -1,4 +1,4 @@
-import { User } from '../../../types/models';
+import { User } from '../../../components/types/models';
 import * as types from '../../constants/userConstants';
 import { ActionType } from '../../types';
 

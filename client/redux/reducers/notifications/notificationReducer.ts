@@ -1,4 +1,4 @@
-import { Notification, Project } from './../../../types/models';
+import { Notification, Project } from '../../../components/types/models';
 import { ActionType } from "../../types";
 import * as projectTypes from "../../constants/projectConstants";
 import * as userTypes from "../../constants/userConstants";

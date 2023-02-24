@@ -1,7 +1,7 @@
 import { ActionType } from "../../types";
 import * as types from "../../constants/projectConstants";
 import * as userTypes from "../../constants/userConstants";
-import { Project } from "../../../types/models";
+import { Project } from "../../../components/types/models";
 
 interface ProjectsState {
   projects: Project[];

@@ -7,16 +7,16 @@ import { RiArrowRightSLine } from "react-icons/ri";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { useRouter } from "next/router";
 import { Tooltip } from "react-tooltip";
-import ProfileDropdown from "./ProfileDropdown";
-import navLinks from "./data/navigation";
-import { restrictLength } from "../../utils/stringHelper";
-import EditProfileModal from "./profileEdit";
-import defaultAvatar from "../../db/avatar/default";
+import ProfileDropdown from "./modal/ProfileDropdown";
+import navLinks from "./data/navlinks";
+import { restrictLength } from "../utils/stringHelper";
+import EditProfileModal from "./modal/profileEdit";
+import defaultAvatar from "../assets/default-avatar";
 import { FaBell } from "react-icons/fa";
-import NotificationModal from "./Notifications";
+import NotificationModal from "../features/notifications";
 import { useSpring, a } from "@react-spring/web";
 import Pusher from "pusher-js";
-import { PUSHER_KEY } from "../../config/Backend";
+import { PUSHER_KEY } from "../data/backend-config";
 import {
   pusherCommentOnTicket,
   pusherCreateTicket,
@@ -150,7 +150,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <p
                 className={`text-xsm ${
                   currentUser.user?.admin
-                    ? "text-blue-500/90"
+                    ? "text-blue-400"
                     : "text-orange-500/90"
                 } uppercase font-bold`}
               >
