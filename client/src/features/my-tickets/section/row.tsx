@@ -12,8 +12,8 @@ interface MyTicketsRowProps {
 
 const MyTicketsRow: React.FC<MyTicketsRowProps> = ({ ticket }) => {
   return (
-    <li className="ticket-row grid gap-2 grid-cols-5 lg:grid-cols-6 pt-2 pb-4 border-b border-gray-600 hover:bg-gray-825 transition-all">
-      <header className="flex flex-col gap-1 lg:col-span-2 px-1 pl-2 select-none">
+    <li className="ticket-row grid gap-2 grid-cols-5 lg:grid-cols-6 pt-2 pb-4 border-b border-gray-600 hover:bg-gray-850 transition-all">
+      <header className="flex flex-col gap-1 lg:col-span-2 px-1 pl-4 select-none">
         <h3 className="font-semibold font-noto text-gray-100">
           {ticket?.title}
         </h3>
@@ -51,7 +51,7 @@ const MyTicketsRow: React.FC<MyTicketsRowProps> = ({ ticket }) => {
           {ticket?.type}
         </span>
       </div>
-      <div className="flex items-center px-1">
+      <div className="flex items-center px-1 pr-4">
         <span className="text-sm xl:text-ss text-gray-200 font-noto">
           {getDate(ticket?.createdAt, { format: "L" })}
         </span>

@@ -29,6 +29,7 @@ export type Ticket = {
   time_estimate: number;
   project: Project;
   comments: string[] | {}[];
+  team: User[];
   author: any;
   createdAt: any;
 };

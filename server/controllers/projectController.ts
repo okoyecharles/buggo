@@ -9,7 +9,13 @@ const getProject = async (id: Types.ObjectId | string) => {
   const project = await Project.findById(id)
     .populate('author', 'name')
     .populate('team', 'name image email')
-    .populate('tickets')
+    .populate({
+      path: 'tickets',
+      populate: {
+        path: 'team',
+        select: 'name image email',
+      },
+    })
     .populate('invitees.user', 'name image email');
 
   return project;

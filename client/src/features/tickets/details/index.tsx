@@ -206,7 +206,8 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
             disabled={
               ticketDetails.loading ||
               ticketDetails.method.update ||
-              ticketDetails.ticket?.status === "closed"
+              ticketDetails.ticket?.status === "closed" ||
+              ticketDetails.ticket?.author._id !== currentUser.user?._id
             }
             onClick={() => {
               store.dispatch(

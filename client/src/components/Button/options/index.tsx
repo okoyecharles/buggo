@@ -21,7 +21,7 @@ const OptionsButton: React.FC<ButtonProps> = ({
         hover:bg-${color}
         hover:text-${color.split("-")[0] + "-50"}
         active:bg-${incrementColor(color, 100)}
-        disabled:opacity-75 disabled:cursor-not-allowed
+        disabled:opacity-90 disabled:cursor-not-allowed
         
         transition-colors
         ${overrideStyle}

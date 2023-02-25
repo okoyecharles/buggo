@@ -29,7 +29,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
   const [ticketDetailsOpen, setTicketDetailsOpen] = useState<boolean>(false);
   const [ticketDetails, setTicketDetails] = useState<Ticket | null>(null);
 
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("open");
   const [authorFilter, setAuthorFilter] = useState<string>("all");
 
   const filterByStatus = (tickets: Ticket[], status: string) => {
@@ -56,7 +56,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
     authorFilter
   ).length;
 
-  const ticketPageCount = Math.ceil((tickets?.length || 0) / ticketsPerPage);
+  const ticketPageCount = Math.ceil(totalTicketsLength / ticketsPerPage);
   const handleTicketPageChange = (data: any) => {
     setCurrentPage(data.selected + 1);
   };
@@ -107,6 +107,10 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
               <option value="closed">Closed</option>
             </select>
           </button>
+          <Tooltip
+            anchorId="status-filter"
+            content={`Filter by status - ${statusFilter}`}
+          />
           <button className="text-sm flex items-center pl-2 bg-gray-850 font-semibold text-gray-100 relative">
             {authorFilter === "me" ? "Me" : "Everyone"}{" "}
             <BsDot className="text-2xl text-gray-600" />
@@ -123,32 +127,36 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
               <option value="me">Me</option>
             </select>
           </button>
+          <Tooltip
+            anchorId="author-filter"
+            content={`Filter by author - ${authorFilter}`}
+          />
         </div>
       </div>
-      <div className="tickets-grid overflow-x-scroll text-ss lg:text-base">
+      <div className="tickets-grid overflow-x-scroll lg:overflow-visible text-ss lg:text-base">
         {tickets?.length ? (
-          <div className="tickets-grid-container w-[992px] lg:w-auto">
-            <header className="grid gap-2 grid-cols-6 lg:grid-cols-7 px-4 mt-4 uppercase">
-              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto lg:col-span-2">
+          <div className="tickets-grid-container w-[992px] lg:w-auto ring-1">
+            <header className="grid gap-2 grid-cols-6 lg:grid-cols-16 xl:grid-cols-15 lg:px-4 mt-4 uppercase">
+              <div className="py-3 px-1 pl-4 text-sm text-gray-200 font-bold font-noto lg:col-span-4">
                 Ticket
               </div>
-              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto ">
+              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto lg:col-span-2">
                 Priority
               </div>
-              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto ">
+              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto lg:col-span-2">
                 Status
               </div>
-              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto ">
+              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto lg:col-span-2">
                 Type
               </div>
-              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto ">
+              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto lg:col-span-2">
                 Created
               </div>
-              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto">
+              <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto lg:col-span-4 xl:col-span-3">
                 Assigned
               </div>
             </header>
-            <ul className="px-4 flex flex-col">
+            <ul className="lg:px-4 flex flex-col">
               {currentTickets.length ? (
                 currentTickets.map((ticket) => (
                   <TicketRow

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSpring, a } from "@react-spring/web";
 import { useSelector } from "react-redux";
-import { storeType } from "../../../../redux/configureStore";
+import store, { storeType } from "../../../../redux/configureStore";
 import { Ticket } from "../../../types/models";
 import {
   BsFillPersonCheckFill,
@@ -10,6 +10,14 @@ import {
   BsPersonPlusFill,
 } from "react-icons/bs";
 import { OptionsButton } from "../../../components/Button";
+import { TailSpinLoader } from "../../loader";
+import {
+  deleteTicket,
+  updateTicket,
+} from "../../../../redux/actions/ticketActions";
+import { IoClose, IoCloseCircle } from "react-icons/io5";
+import TicketAssignModal from "../modal/ticketAssign";
+import { chownSync } from "fs";
 
 interface TicketOptionsPopupProps {
   ticket: Ticket;
@@ -25,6 +33,10 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
   const currentUser = useSelector((store: storeType) => store.currentUser);
   const project = useSelector((store: storeType) => store.project.project!);
   const { loading, method } = useSelector((store: storeType) => store.ticket);
+
+  const [deleting, setDeleting] = useState<boolean>(false);
+  const [closing, setClosing] = useState<boolean>(false);
+  const [ticketAssignOpen, setTicketAssignOpen] = useState<boolean>(false);
 
   const spring = useSpring({
     opacity: 0,
@@ -42,9 +54,26 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
   });
 
   const isInTeam = (model: any) => {
-    return !!model.team.filter(
+    return model.team.some(
       (member: any) => member._id === currentUser.user?._id
-    ).length;
+    );
+  };
+
+  const handleTicketAssign = () => {
+    const isInPreviousTeam = isInTeam(ticket);
+    const previousTeam = ticket.team.map((member: any) => member._id);
+
+    const newTeam: any = isInPreviousTeam
+      ? previousTeam.filter((member) => member !== currentUser.user?._id!)
+      : [...previousTeam, currentUser.user?._id];
+
+    store.dispatch(
+      updateTicket(ticket._id, {
+        team: newTeam,
+      })
+    );
+
+    setOpen(false);
   };
 
   return (
@@ -54,6 +83,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
         ...spring,
         pointerEvents: open ? "all" : "none",
       }}
+      onClick={(e) => e.stopPropagation()}
     >
       <div
         className={open ? "fixed top-0 left-0 h-screen w-screen -z-10" : ""}
@@ -62,36 +92,81 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
         }}
       />
       <div className="flex flex-col gap-1">
-        {isInTeam(project) && (
-          <OptionsButton
-            id={`remove-self-${ticket._id}`}
-            processing={loading && method.update}
-          >
-            {isInTeam(ticket) ? (
-              <>
-                Remove Yourself <BsPersonDashFill />
-              </>
-            ) : (
-              <>
-                Assign Yourself <BsPersonPlusFill />
-              </>
-            )}
-          </OptionsButton>
-        )}
-        {currentUser.user?._id === ticket?.author && (
+        <OptionsButton
+          id={`remove-self-${ticket._id}`}
+          processing={loading && method.update}
+          onClick={handleTicketAssign}
+        >
+          {isInTeam(ticket) ? (
+            <>
+              Remove Yourself <BsPersonDashFill />
+            </>
+          ) : (
+            <>
+              Assign Yourself <BsPersonPlusFill />
+            </>
+          )}
+        </OptionsButton>
+        {currentUser.user?._id === ticket?.author ||
+        currentUser.user?._id === project.author._id ? (
           <>
-            <OptionsButton processing={loading && method.update} color="blue-500">
+            <OptionsButton
+              processing={loading && method.update}
+              color="blue-500"
+              onClick={() => {
+                setOpen(false);
+                setTicketAssignOpen((prev) => !prev);
+              }}
+            >
               Assign Members
               <BsFillPersonCheckFill />
             </OptionsButton>
 
-            <OptionsButton color="red-500">
+            {ticket.status !== "closed" ? (
+              <OptionsButton
+                processing={loading && method.update}
+                color="blue-500"
+                onClick={() => {
+                  setClosing(true);
+                  store.dispatch(
+                    updateTicket(ticket._id, { status: "closed" })
+                  );
+                }}
+              >
+                Close Ticket
+                {loading && method.update && closing ? (
+                  <TailSpinLoader height="15" />
+                ) : (
+                  <BsFillTrashFill />
+                )}
+              </OptionsButton>
+            ) : null}
+
+            <OptionsButton
+              color="red-500"
+              processing={loading && method.delete}
+              onClick={() => {
+                setDeleting(true);
+                store.dispatch(deleteTicket(ticket._id));
+              }}
+            >
               Delete Ticket
-              <BsFillTrashFill />
+              {loading && method.delete && deleting ? (
+                <TailSpinLoader height="15" />
+              ) : (
+                <BsFillTrashFill />
+              )}
             </OptionsButton>
           </>
-        )}
+        ) : null}
       </div>
+      <TicketAssignModal
+        open={ticketAssignOpen}
+        setOpen={setTicketAssignOpen}
+        ticket={ticket}
+        method={method}
+        loading={loading}
+      />
     </a.div>
   );
 };

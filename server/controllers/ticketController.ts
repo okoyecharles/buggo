@@ -6,6 +6,21 @@ import AuthorizedRequest from '../types/request';
 import Comment from '../models/commentModel';
 import { pusher, pusherChannel } from '..';
 
+const getTicket = async (id: string) => {
+  const ticket = Ticket.findById(id)
+    .populate('author', 'name')
+    .populate({
+      path: 'comments',
+      populate: {
+        path: 'author',
+        select: 'name image email'
+      }
+    })
+    .populate('team', 'name image email');
+
+  return ticket;
+}
+
 /*
 * @route    GET /tickets
 * @desc     Get all tickets created by a specific user
@@ -30,13 +45,7 @@ export const getTicketById = async (req: AuthorizedRequest<TicketType>, res: Res
     const { id } = req.params;
 
     // Get a ticket by id and populate the author and comments (with comments author)
-    const ticket = await Ticket.findById(id).populate('author', 'name').populate({
-      path: 'comments',
-      populate: {
-        path: 'author',
-        select: 'name image email'
-      }
-    });
+    const ticket = await getTicket(id);
 
     res.status(200).json({ ticket });
   } catch (error: any) {
@@ -55,12 +64,14 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
     const { title, description, priority, status, type, time_estimate, team, comments } = req.body;
     const socketId = req.headers['x-pusher-socket-id'];
     const ticket = await Ticket.findById(id);
+    const project = await Project.findById(ticket?.project);
+    const projectTeam = project!.team.map((member) => member.toString());
 
     if (!ticket) {
       return res.status(404).json({ message: 'Ticket not found' });
     }
 
-    if (ticket.author.toString() !== req.user) {
+    if (ticket.author.toString() !== req.user && !projectTeam.includes(req.user as string)) {
       return res.status(401).json({ message: 'User not authorized' });
     }
 
@@ -77,13 +88,7 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
           comments
         }
       });
-      const updatedTicket = await Ticket.findById(id).populate('author', 'name').populate({
-        path: 'comments',
-        populate: {
-          path: 'author',
-          select: 'name image email'
-        }
-      });
+      const updatedTicket = await getTicket(id);
 
       pusher.trigger(pusherChannel, 'update-project-ticket', {
         ticket: {
@@ -113,8 +118,9 @@ export const deleteTicket = async (req: AuthorizedRequest<TicketType>, res: Resp
 
     const ticket = await Ticket.findById(id).populate('author', 'name');
     const project = await Project.findById(ticket?.project);
+    const projectTeam = project!.team.map((member) => member.toString());
 
-    if (ticket?.author._id.toString() !== req.user) {
+    if (ticket?.author._id.toString() !== req.user && !projectTeam.includes(req.user as string)) {
       return res.status(401).json({ message: 'User not authorized' });
     }
 

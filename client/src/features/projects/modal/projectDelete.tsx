@@ -42,7 +42,7 @@ const ProjectDeleteModal: React.FC<{
           </p>
         </header>
         <div className="shadow-lg gap-2 bg-gray-700 p-2 rounded mb-2">
-          <p className="text-sm text-blue-500 capitalize">
+          <p className="text-sm text-blue-400 capitalize">
             {getDate(project?.createdAt)}
           </p>
           <p className="font-semibold text-gray-100">{project?.title}</p>

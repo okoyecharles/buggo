@@ -140,7 +140,7 @@ const ProjectInviteModal: React.FC<{
                     className="h-full object-center object-cover bg-gray-850"
                   />
                 </div>
-                <span>{restrictLength(invitee.name.split(" ")[0], 10)}</span>
+                <span className="truncate">{invitee.name.split(" ")[0]}</span>
                 <IoMdClose
                   className="text-xl cursor-pointer text-gray-600 hover:text-gray-200 transition"
                   onClick={() => {
@@ -152,12 +152,12 @@ const ProjectInviteModal: React.FC<{
           ))}
         </ul>
 
-        {/* Search bar */}
+        {/* Search */}
         <div className="search-wrapper relative mt-4">
           <input
             ref={searchRef}
             type="text"
-            placeholder="Search user by name or email username"
+            placeholder="Search user by name or email"
             className="bg-gray-900 text-ss placeholder:text-gray-500 hover:bg-gray-950 focus:bg-gray-950 focus:ring-1 ring-blue-500/75 text-gray-200 rounded py-2 px-3 pr-9 outline-none w-full transition-all"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

@@ -9,8 +9,8 @@ const getDate = (date: string | undefined, options: Options = {
   format: 'calendar time',
 }) => {
   if (!date) return '';
-
   const dateMoment = moment(date);
+  const now = moment().startOf('day');
 
   if (options.format === 'from now')
     return dateMoment.fromNow();
@@ -22,8 +22,7 @@ const getDate = (date: string | undefined, options: Options = {
     return dateMoment.format('[on] MMM D, YYYY');
   }
 
-
-  if (dateMoment.days() < 2) {
+  if (now.diff(dateMoment, 'days') < 1) {
     return dateMoment.calendar();
   } else if (options.format === 'calendar time') {
     return dateMoment.format("MM/DD/YYYY HH:mm A");
