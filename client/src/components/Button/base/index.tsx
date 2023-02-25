@@ -1,6 +1,7 @@
 import React from "react";
 import { ThreeDotsLoader } from "../../../features/loader";
 import { incrementColor } from "../../../utils/stringHelper";
+import ButtonProps from "../types";
 
 const Button: React.FC<ButtonProps> = ({
   color,

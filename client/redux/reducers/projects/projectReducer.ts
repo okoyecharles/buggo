@@ -42,6 +42,12 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
     case types.PROJECT_DETAILS_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, details: false } };
 
+
+
+
+
+
+
     // Delete a project
     case types.PROJECT_DELETE_REQUEST:
       return {
@@ -60,39 +66,63 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
         }
       };
 
+
+
+
+
+
     case types.PROJECT_INVITE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
     case types.PROJECT_INVITE_SUCCESS:
-      return {
-        ...state, loading: false, error: null, method: { ...state.method, update: false }, project: {
-          ...(payload.project._id === state.project?._id ? payload.project : state.project)
-        }
-      };
-    case types.PROJECT_ACCEPT_INVITE_FAIL:
+      {
+        const project = payload.project._id === state.project?._id ? payload.project : state.project;
+
+        return {
+          ...state, loading: false, error: null, method: { ...state.method, update: false }, project
+        };
+      }
+    case types.PROJECT_INVITE_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
+
+
+
+
+
 
 
     case types.PROJECT_ACCEPT_INVITE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, acceptInvite: true } };
     case types.PROJECT_ACCEPT_INVITE_SUCCESS:
+      const project = payload.project._id === state.project?._id ? payload.project : state.project;
+
       return {
-        ...state, loading: false, error: null, method: { ...state.method, acceptInvite: false }, project: {
-          ...(payload.project._id === state.project?._id ? payload.project : state.project)
-        }
+        ...state, loading: false, error: null, method: { ...state.method, acceptInvite: false }, project
       };
     case types.PROJECT_ACCEPT_INVITE_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, acceptInvite: false } };
 
+
+
+
+
+
     case types.PROJECT_UPDATE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, update: true } };
     case types.PROJECT_UPDATE_SUCCESS:
-      return {
-        ...state, loading: false, error: null, method: { ...state.method, update: false }, project: {
-          ...(payload.project._id === state.project?._id ? payload.project : state.project)
-        }
-      };
+      {
+        const project = payload.project._id === state.project?._id ? payload.project : state.project;
+
+        return {
+          ...state, loading: false, error: null, method: { ...state.method, update: false }, project
+        };
+      }
     case types.PROJECT_UPDATE_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, update: false } };
+
+
+
+    
+    
 
 
 

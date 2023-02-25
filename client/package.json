@@ -24,7 +24,6 @@
     "pusher-js": "^8.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-google-login": "^5.2.2",
     "react-highlight-words": "^0.18.0",
     "react-icons": "^4.7.1",
     "react-loader-spinner": "^5.3.4",

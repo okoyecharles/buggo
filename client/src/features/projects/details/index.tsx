@@ -79,7 +79,9 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
           })}`}
         </p>
 
-        {project?.invitees.some((i) => i._id !== currentUser.user?._id) && (
+        {project?.invitees.some(
+          (i) => i.user._id === currentUser.user?._id
+        ) && (
           <Button
             overrideStyle="mx-1"
             onClick={() => {

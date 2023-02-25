@@ -4,3 +4,5 @@ interface LoaderProps {
   width?: string | number;
   className?: string;
 }
+
+export default LoaderProps;

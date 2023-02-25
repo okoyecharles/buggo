@@ -1,4 +1,5 @@
 import { TailSpin } from "react-loader-spinner";
+import LoaderProps from "./types";
 
 const TailSpinLoader: React.FC<LoaderProps> = ({
   color = "#fff",

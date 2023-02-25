@@ -1,4 +1,5 @@
 import { ThreeDots } from "react-loader-spinner";
+import LoaderProps from "./types";
 
 const ThreeDotsLoader: React.FC<LoaderProps> = ({
   color = "#fff",

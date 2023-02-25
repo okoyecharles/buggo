@@ -1,10 +1,13 @@
 import { Project, User } from '../types/models';
 
 const searchByNameOrEmail = (search: string, users: User[]) => {
-  const searchRegex = new RegExp(search, 'i');
-  return users.filter(
-    (user) => searchRegex.test(user.name) || searchRegex.test(user.email)
-  );
+  const searchRegex = new RegExp(search.trim(), 'i');
+
+  // Search all users by name or email (without domain)
+  return users.filter((user) => {
+    const email = user.email.split('@')[0];
+    return searchRegex.test(user.name) || searchRegex.test(email);
+  });
 };
 
 const searchProjectByName = (search: string, projects: Project[]) => {

@@ -6,3 +6,5 @@ interface ButtonProps {
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   overrideStyle?: string;
 }
+
+export default ButtonProps;

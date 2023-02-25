@@ -11,9 +11,7 @@ import Image from "next/image";
 import { restrictLength } from "../../../utils/stringHelper";
 import Highlighter from "react-highlight-words";
 import store, { storeType } from "../../../../redux/configureStore";
-import {
-  inviteToProject,
-} from "../../../../redux/actions/projectActions";
+import { inviteToProject } from "../../../../redux/actions/projectActions";
 import { useSelector } from "react-redux";
 
 const projectInviteesReducer = (state: User[], action: any) => {
@@ -60,7 +58,7 @@ const ProjectInviteModal: React.FC<{
       return (
         user._id !== currentUser.user?._id &&
         !project.invitees.find((invitee) => invitee.user._id === user._id) &&
-        !project.team.find((member) => member._id === user._id) 
+        !project.team.find((member) => member._id === user._id)
       );
     });
     setUsers(filteredUsers);
@@ -159,7 +157,7 @@ const ProjectInviteModal: React.FC<{
           <input
             ref={searchRef}
             type="text"
-            placeholder="Search user by name or email"
+            placeholder="Search user by name or email username"
             className="bg-gray-900 text-ss placeholder:text-gray-500 hover:bg-gray-950 focus:bg-gray-950 focus:ring-1 ring-blue-500/75 text-gray-200 rounded py-2 px-3 pr-9 outline-none w-full transition-all"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -198,9 +196,7 @@ const ProjectInviteModal: React.FC<{
           ) : !users ? (
             <TailSpinLoader color="#1aa6fe" className="self-center my-4" />
           ) : !users.length ? (
-            <li className="text-gray-400">
-              No users found
-            </li>
+            <li className="text-gray-400">No users found</li>
           ) : (
             users.map((user) => (
               <li
@@ -221,17 +217,23 @@ const ProjectInviteModal: React.FC<{
                     <Highlighter
                       autoEscape={true}
                       textToHighlight={restrictLength(user.name, 25)}
-                      searchWords={[search]}
+                      searchWords={[search.trim()]}
                       highlightClassName="bg-blue-500/0 text-blue-500"
                     />
                   </h4>
                   <p className="text-gray-400 text-sm">
                     <Highlighter
                       autoEscape={true}
-                      textToHighlight={restrictLength(user.email, 30)}
-                      searchWords={[search]}
+                      textToHighlight={restrictLength(
+                        user.email.split("@")[0],
+                        30
+                      )}
+                      searchWords={[search.trim()]}
                       highlightClassName="bg-blue-500/0 text-blue-500"
                     />
+                    <span className="text-gray-200/30">
+                      @{user.email.split("@")[1]}
+                    </span>
                   </p>
                 </div>
                 <input
