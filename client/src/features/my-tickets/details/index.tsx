@@ -5,9 +5,13 @@ import MyTicketsProjects from "./projects";
 
 interface MyTicketsDetailsBarProps {
   group: GroupedTickets[];
+  scrollToTicketGroup: (id: string) => void;
 }
 
-const MyTicketsDetailsBar: React.FC<MyTicketsDetailsBarProps> = ({ group }) => {
+const MyTicketsDetailsBar: React.FC<MyTicketsDetailsBarProps> = ({
+  group,
+  scrollToTicketGroup,
+}) => {
   const [search, setSearch] = useState<string>("");
 
   return (
@@ -20,7 +24,10 @@ const MyTicketsDetailsBar: React.FC<MyTicketsDetailsBarProps> = ({ group }) => {
         <MyTicketsSearch search={search} setSearch={setSearch} />
       </header>
       <div className="py-2 pl-2 overflow-y-auto">
-        <MyTicketsProjects group={group} />
+        <MyTicketsProjects
+          scrollToTicketGroup={scrollToTicketGroup}
+          group={group}
+        />
       </div>
     </aside>
   );

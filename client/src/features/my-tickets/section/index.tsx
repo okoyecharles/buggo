@@ -1,14 +1,14 @@
 import React from "react";
 import { GroupedTickets } from "../../../types/models";
 import MyTicketsStats from "./Stats";
-import { BsPlus } from "react-icons/bs";
-import MyTicketsRow from "./Row";
+import TicketGroup from "./Group";
 
 interface MyTicketsSectionProps {
   group: GroupedTickets[];
+  scrolledTicketGroup: { id: string } | null;
 }
 
-const MyTicketsSection: React.FC<MyTicketsSectionProps> = ({ group }) => {
+const MyTicketsSection: React.FC<MyTicketsSectionProps> = ({ group, scrolledTicketGroup }) => {
   return (
     <section className="flex-1 relative">
       <header className="py-3 px-6 h-16 shadow-sm items-center shadow-gray-950 flex justify-between">
@@ -16,46 +16,30 @@ const MyTicketsSection: React.FC<MyTicketsSectionProps> = ({ group }) => {
       </header>
       <div className="py-3">
         <MyTicketsStats group={group} />
-        <div className="tickets-grid overflow-x-scroll text-ss lg:text-base">
+        <div className="tickets-grid text-ss lg:text-base">
           {group?.length && (
-            <div className="tickets-grid-container w-[768px] lg:w-auto">
+            <div className="tickets-grid-container">
               <hr className="border border-gray-850" />
-              <header className="grid gap-2 grid-cols-5 lg:grid-cols-6 px-4 mt-4 uppercase">
-                <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto lg:col-span-2">
-                  Ticket
+              <header className="grid gap-2 grid-cols-4 md:grid-cols-5 px-4 mt-4 uppercase">
+                <div className="py-3 text-sm text-gray-200 font-bold font-noto col-span-2">
+                  Status / Title
                 </div>
-                <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto ">
+                <div className="py-3 text-sm text-gray-200 font-bold font-noto hidden md:block">
                   Priority
                 </div>
-                <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto ">
-                  Status
-                </div>
-                <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto ">
+                <div className="py-3 text-sm text-gray-200 font-bold font-noto ">
                   Type
                 </div>
-                <div className="py-3 px-1 text-sm text-gray-200 font-bold font-noto ">
+                <div className="py-3 text-sm text-gray-200 font-bold font-noto ">
                   Created
                 </div>
               </header>
 
-              <div className="tickets-project-container px-4 flex flex-col gap-8">
+              <hr className="border-gray-700 md:mx-4" />
+
+              <div className="tickets-project-container md:px-4 flex flex-col gap-1">
                 {group.map((project) => (
-                  <article key={project._id}>
-                    <header className="flex items-center gap-2 font-noto font-semibold text-white my-2">
-                      <button
-                        className="group cursor-pointer"
-                        id="create-ticket"
-                      >
-                        <BsPlus className="bg-gray-700 text-blue-400 group-hover:bg-blue-500 text-3xl p-1 rounded-full group-hover:text-white group-hover:rounded-xl group-active:bg-blue-600 transition disabled:opacity-75" />
-                      </button>
-                      {project.title}
-                    </header>
-                    <ul className="flex flex-col">
-                      {project.tickets.map((ticket) => (
-                        <MyTicketsRow ticket={ticket} key={ticket._id} />
-                      ))}
-                    </ul>
-                  </article>
+                  <TicketGroup project={project} scrolledTicketGroup={scrolledTicketGroup} key={project._id} />
                 ))}
               </div>
             </div>

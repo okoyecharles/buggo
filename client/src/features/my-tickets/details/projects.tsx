@@ -5,10 +5,10 @@ import { returnWithTwoDigitsOrMore } from "../../../utils/stringHelper";
 
 interface MyTicketsProjectsProps {
   group: GroupedTickets[];
+  scrollToTicketGroup: (id: string) => void;
 }
 
-const MyTicketsProjects: React.FC<MyTicketsProjectsProps> = ({ group }) => {
-
+const MyTicketsProjects: React.FC<MyTicketsProjectsProps> = ({ group, scrollToTicketGroup }) => {
   return (
     <>
       <header className="flex-1 p-1 mb-4 flex items-center gap-1">
@@ -54,8 +54,9 @@ const MyTicketsProjects: React.FC<MyTicketsProjectsProps> = ({ group }) => {
         </li>
         {group.map((project) => (
           <li
-            className="hover:bg-gray-700 p-2 rounded-l-md text-gray-100 flex gap-1 select-none cursor-pointer transition-colors"
+            className="hover:bg-gray-750 active:bg-gray-700 p-2 rounded-l-md text-gray-100 flex gap-1 select-none cursor-pointer transition-colors"
             key={project._id}
+            onClick={() => scrollToTicketGroup(`ticket-group-${project._id}`)}
           >
             <span className="truncate">{project.title}</span>
             <span className="ml-auto flex items-center justify-end w-6 truncate text-sm">

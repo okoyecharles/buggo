@@ -82,10 +82,10 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
       <div className="relative h-full flex flex-col">
         <header className="flex gap-2 p-3 border-b border-gray-700 max-w-full">
           <span
-            className={`p-1 m-1 ring-1 rounded-full h-fit w-fit ${
+            className={`p-1 m-1 rounded-full h-fit w-fit ${
               ticket?.status === "closed"
-                ? "ring-red-500 text-red-500"
-                : "ring-blue-400 text-blue-400"
+                ? "bg-red-500 text-red-50"
+                : "bg-blue-500 text-blue-50"
             }`}
           >
             {ticket?.status === "closed" ? (

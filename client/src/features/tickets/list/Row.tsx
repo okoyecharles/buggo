@@ -103,7 +103,7 @@ const TicketRow: React.FC<TicketRowProps> = ({
           // Show options button if user is a project member
           isInProjectTeam() ? (
             <button
-              className="p-1 pr-4 flex items-center justify-center transition"
+              className="p-1 pr-4 items-center justify-center transition hidden lg:flex"
               onClick={(e) => {
                 e.stopPropagation();
                 setOptionsOpen(!optionsOpen);

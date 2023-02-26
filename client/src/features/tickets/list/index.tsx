@@ -81,7 +81,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
           place="left"
         />
       </header>
-      <div className="tickets-filter flex px-4 pt-4">
+      <div className="tickets-filter flex p-4">
         <div className="tickets-filter-container flex  rounded overflow-hidden">
           <span className="bg-gray-900 select-none flex items-center justify-center p-1">
             <BsFilter className="text-2xl text-orange-400" />
@@ -133,10 +133,10 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
           />
         </div>
       </div>
-      <div className="tickets-grid overflow-x-scroll lg:overflow-visible text-ss lg:text-base">
+      <div className="tickets-grid text-ss lg:text-base overflow-x-scroll lg:overflow-visible">
         {tickets?.length ? (
-          <div className="tickets-grid-container w-[992px] lg:w-auto ring-1">
-            <header className="grid gap-2 grid-cols-6 lg:grid-cols-16 xl:grid-cols-15 lg:px-4 mt-4 uppercase">
+          <div className="tickets-grid-container w-[992px] lg:w-auto">
+            <header className="grid gap-2 grid-cols-6 lg:grid-cols-16 xl:grid-cols-15 lg:px-4 uppercase">
               <div className="py-3 px-1 pl-4 text-sm text-gray-200 font-bold font-noto lg:col-span-4">
                 Ticket
               </div>

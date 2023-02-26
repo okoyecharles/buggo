@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
 import MyTicketsDetailsBar from "../src/features/my-tickets/details";
@@ -9,7 +9,10 @@ import Head from "next/head";
 
 const tickets = () => {
   const tickets = useSelector((store: storeType) => store.tickets);
-  const user = useSelector((store: storeType) => store.currentUser.user);
+
+  const [scrolledTicketGroup, setScrolledTicketGroup] = useState<null | { id: string }>(
+    null
+  );
 
   useEffect(() => {
     store.dispatch(fetchTickets());
@@ -48,14 +51,33 @@ const tickets = () => {
     return projects;
   };
 
+  const scrollToTicketGroup = (id: string) => {
+    const sectionHeader = document.getElementById(id);
+    if (sectionHeader) {
+      sectionHeader.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      setScrolledTicketGroup({
+        id,
+      });
+    }
+  };
+
   return (
     <>
       <Head>
         <title>Tickets</title>
       </Head>
       <div className="flex flex-col lg:flex-row h-full isolate">
-        <MyTicketsDetailsBar group={groupTicketsByProjects(tickets.tickets)} />
-        <MyTicketsSection group={groupTicketsByProjects(tickets.tickets)} />
+        <MyTicketsDetailsBar
+          scrollToTicketGroup={scrollToTicketGroup}
+          group={groupTicketsByProjects(tickets.tickets)}
+        />
+        <MyTicketsSection
+          group={groupTicketsByProjects(tickets.tickets)}
+          scrolledTicketGroup={scrolledTicketGroup}
+        />
       </div>
     </>
   );

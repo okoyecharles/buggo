@@ -13,6 +13,7 @@ import {
 } from "../../utils/notificationHelper";
 import { ThreeDotsLoader } from "../loader";
 import { acceptInvite } from "../../../redux/actions/projectActions";
+import { useRouter } from "next/router";
 
 interface NotificationModalProps {
   open: boolean;
@@ -28,6 +29,14 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
     (store: storeType) => store.notifications.notifications
   );
   const projects = useSelector((store: storeType) => store.projects);
+  const router = useRouter();
+
+  const [currentAction, setCurrentAction] = React.useState<string | null>(null);
+
+  useEffect(() => {
+    // Close notification modal when route changes
+    setOpen(false);
+  }, [router.pathname]);
 
   const spring = useSpring({
     opacity: open ? 1 : 0,
@@ -38,19 +47,6 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
     },
   });
 
-  const [currentAction, setCurrentAction] = React.useState<string | null>(null);
-
-  useEffect(() => {
-    if (open)
-      window.addEventListener(
-        "keydown",
-        (e) => {
-          if (e.key === "Escape") setOpen(false);
-        },
-        { once: true }
-      );
-  }, [open]);
-
   return (
     <Portal>
       <a.section
@@ -58,6 +54,11 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         style={{
           ...spring,
           pointerEvents: open ? "all" : "none",
+        }}
+        onKeyDown={(e) => {
+          if (open && e.key === "Escape") {
+            setOpen(false);
+          }
         }}
       >
         <header className="header flex justify-between items-center mb-4 p-4">
@@ -104,7 +105,9 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                   <div className="notification-action">
                     <button
                       className="bg-blue-500 text-white text-ss rounded-full lg:rounded h-10 w-10 lg:w-32 lg:h-8 flex items-center justify-center"
-                      disabled={projects.loading && projects.method.acceptInvite}
+                      disabled={
+                        projects.loading && projects.method.acceptInvite
+                      }
                       onClick={() => {
                         store.dispatch(
                           acceptInvite(notification.ref.project._id)

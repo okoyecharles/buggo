@@ -78,7 +78,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
   return (
     <a.div
-      className={`ticketOptionsPopup absolute top-3 right-3 w-48 bg-gray-950 shadow-lg shadow-gray-950/40 rounded-md p-2 z-40 isolate`}
+      className={`ticketOptionsPopup absolute right-3 top-3 w-48 bg-gray-950 shadow-lg shadow-gray-950/40 rounded-md p-2 z-40 isolate hidden lg:block`}
       style={{
         ...spring,
         pointerEvents: open ? "all" : "none",
