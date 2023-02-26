@@ -16,6 +16,7 @@ import ProjectDetailsOptionsPopup from "./Options";
 import ProjectInviteModal from "../modal/projectInvite";
 import Button from "../../../components/Button";
 import { acceptInvite } from "../../../../redux/actions/projectActions";
+import { a, useSpring, useTrail } from "@react-spring/web";
 
 interface ProjectDetailsBarProps {
   project: Project | null;
@@ -38,6 +39,38 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   const [assignOpen, setAssignOpen] = useState(false);
 
   const currentUser = useSelector((store: storeType) => store.currentUser);
+
+  const membersOpenTrail = useTrail(project?.team.length || 0, {
+    translateX: membersOpen ? "0%" : "-110%",
+    config: {
+      tension: 400,
+      friction: 40,
+    },
+  });
+
+  const membersOpenToggleSpring = useSpring({
+    height: membersOpen ? `${(project?.team.length || 0) * (32 + 8)}px` : "0px",
+    config: {
+      tension: 400,
+      friction: 40,
+    },
+  });
+
+  const invitedMembersOpenTrail = useTrail(project?.invitees.length || 0, {
+    translateX: invitedMembersOpen ? "0%" : "-110%",
+    config: {
+      tension: 400,
+      friction: 40,
+    },
+  });
+
+  const invitedMembersOpenToggleSpring = useSpring({
+    height: invitedMembersOpen ? `${(project?.invitees.length || 0) * (32 + 8)}px` : "0px",
+    config: {
+      tension: 400,
+      friction: 40,
+    },
+  });
 
   return (
     <aside className="project-details-bar w-full lg:w-60 bg-gray-850 sticky lg:relative z-30">
@@ -72,8 +105,8 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
       </header>
 
       {/* Project details content */}
-      <div className="project-info p-3 px-1 text-gray-300 flex flex-col gap-2">
-        <p className="text-gray-400 px-2 text-sm">
+      <div className="project-info p-3 px-1 text-gray-300 flex flex-col">
+        <p className="text-gray-400 px-2 text-sm mb-2">
           {`Created ${getDate(project?.createdAt, {
             format: "on calendar",
           })}`}
@@ -102,21 +135,21 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
               onClick={() => setMembersOpen(!membersOpen)}
             />
             <span
-              className="flex-1 group-hover:text-gray-100 text-white text-sm uppercase font-semibold"
+              className="flex-1 group-hover:text-gray-100 text-gray-200 text-sm uppercase font-semibold"
               onClick={() => setMembersOpen(!membersOpen)}
             >
               Members
             </span>
           </div>
-          <ul
-            className={`font-noto text-sm text-gray-200 flex flex-col gap-2 ${
-              membersOpen ? "block" : "hidden"
-            } transition-all`}
+          <a.ul
+            className={`font-noto text-sm text-gray-200 flex flex-col gap-2 transition-colors overflow-hidden`}
+            style={membersOpenToggleSpring}
           >
-            {project?.team.map((member) => (
-              <li
+            {project?.team.map((member, index) => (
+              <a.li
                 key={member._id}
                 className="p-1 px-2 rounded flex items-center gap-2 bg-gray-825 transition-colors select-none cursor-default capitalize hover:bg-gray-800 mx-2"
+                style={membersOpenTrail[index]}
               >
                 <div className="w-6 h-6 rounded overflow-hidden">
                   <Image
@@ -128,9 +161,9 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
                   />
                 </div>
                 <span>{member.name}</span>
-              </li>
+              </a.li>
             ))}
-          </ul>
+          </a.ul>
           {!project?.team.length && (
             <p className="p-1 px-2 rounded text-sm flex font-normal items-center gap-2 select-none cursor-default">
               No team members assigned
@@ -147,13 +180,13 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
                 onClick={() => setInvitedMembersOpen(!invitedMembersOpen)}
               />
               <span
-                className="flex-1 group-hover:text-gray-100 text-white text-sm uppercase font-semibold"
+                className="flex-1 group-hover:text-gray-100 text-gray-200 text-sm uppercase font-semibold"
                 onClick={() => setInvitedMembersOpen(!invitedMembersOpen)}
               >
                 Invited Members
               </span>
               <BsPlus
-                className="text-2xl bg-orange-500 text-white hover:bg-orange-600 rounded-full transition-colors"
+                className="text-2xl bg-orange-500 text-white hover:bg-orange-600 rounded-full transition-colors mr-2"
                 id="assign-members"
                 onClick={() => {
                   if (project) setAssignOpen(true);
@@ -161,15 +194,15 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
               />
               <Tooltip anchorId="assign-members" content="Invite Members" />
             </div>
-            <ul
-              className={`font-noto text-sm text-gray-200 flex flex-col gap-2 ${
-                invitedMembersOpen ? "block" : "hidden"
-              } transition-all`}
+            <a.ul
+              className={`font-noto text-sm text-gray-200 flex flex-col gap-2 overflow-hidden transition-colors`}
+              style={invitedMembersOpenToggleSpring}
             >
-              {project?.invitees.map(({ user: member }) => (
-                <li
+              {project?.invitees.map(({ user: member }, index) => (
+                <a.li
                   key={member._id}
                   className="p-1 px-2 rounded flex items-center gap-2 bg-gray-825 transition-colors select-none cursor-default capitalize hover:bg-gray-800 mx-2"
+                  style={invitedMembersOpenTrail[index]}
                 >
                   <div className="w-6 h-6 rounded overflow-hidden">
                     <Image
@@ -181,9 +214,9 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
                     />
                   </div>
                   <span>{member.name}</span>
-                </li>
+                </a.li>
               ))}
-            </ul>
+            </a.ul>
             {!project?.team.length && (
               <p className="p-1 px-2 rounded text-sm flex font-normal items-center gap-2 select-none cursor-default">
                 No team members assigned

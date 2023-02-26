@@ -30,7 +30,7 @@ const TicketGroup: React.FC<TicketGroupProps> = ({
     },
   });
 
-  const closeSpring = useSpring({
+  const toggleSpring = useSpring({
     height: groupOpen ? `${project.tickets.length * (57.59 + 8)}px` : "0px",
     config: {
       tension: 400,
@@ -75,7 +75,7 @@ const TicketGroup: React.FC<TicketGroupProps> = ({
       </header>
       <a.ul
         className="flex flex-col md:gap-2 overflow-hidden"
-        style={closeSpring}
+        style={toggleSpring}
       >
         {project.tickets.map((ticket, i) => (
           <TicketGroupRow
