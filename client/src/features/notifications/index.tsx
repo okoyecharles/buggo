@@ -4,13 +4,13 @@ import { IoMdClose, IoMdNotificationsOff } from "react-icons/io";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../../../redux/configureStore";
 import { BsCheck } from "react-icons/bs";
-import getDate from "../../utils/dateHelper";
+import getDate from "../../utils/strings/date";
 import Portal from "../portal";
 import { useSpring, a } from "@react-spring/web";
 import {
   getNotificationDescription,
   getNotificationIcon,
-} from "../../utils/notificationHelper";
+} from "../../utils/components/notification";
 import { ThreeDotsLoader } from "../loader";
 import { acceptInvite } from "../../../redux/actions/projectActions";
 import { useRouter } from "next/router";

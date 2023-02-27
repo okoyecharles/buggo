@@ -1,5 +1,5 @@
 import React from "react";
-import { incrementColor } from "../../../utils/stringHelper";
+import { incrementColor } from "../../../utils/components/string";
 import ButtonProps from "../types";
 
 const OptionsButton: React.FC<ButtonProps> = ({

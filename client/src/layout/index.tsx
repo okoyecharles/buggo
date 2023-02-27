@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { Tooltip } from "react-tooltip";
 import ProfileDropdown from "./modal/ProfileDropdown";
 import navLinks from "./data/navlinks";
-import { restrictLength } from "../utils/stringHelper";
+import { restrictLength } from "../utils/components/string";
 import EditProfileModal from "./modal/profileEdit";
 import defaultAvatar from "../assets/default-avatar";
 import { FaBell } from "react-icons/fa";

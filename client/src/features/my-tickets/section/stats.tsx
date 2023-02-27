@@ -1,6 +1,6 @@
 import React from "react";
 import { GroupedTickets, Ticket } from "../../../types/models";
-import { returnWithTwoDigitsOrMore } from "../../../utils/stringHelper";
+import { returnWithTwoDigitsOrMore } from "../../../utils/components/string";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
 

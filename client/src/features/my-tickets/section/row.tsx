@@ -1,7 +1,7 @@
 import React from "react";
 import { Ticket } from "../../../types/models";
-import { getTicketPriority } from "../../../utils/classHelper";
-import getDate from "../../../utils/dateHelper";
+import { getTicketPriority } from "../../../utils/strings/class";
+import getDate from "../../../utils/strings/date";
 import { BsCheck } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
 import { a } from "@react-spring/web";

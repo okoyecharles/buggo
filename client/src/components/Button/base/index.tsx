@@ -1,6 +1,6 @@
 import React from "react";
 import { ThreeDotsLoader } from "../../../features/loader";
-import { incrementColor } from "../../../utils/stringHelper";
+import { incrementColor } from "../../../utils/components/string";
 import ButtonProps from "../types";
 
 const Button: React.FC<ButtonProps> = ({

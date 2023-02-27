@@ -1,7 +1,7 @@
 import React from "react";
 import { Comment } from "../../../types/models";
 import Image from "next/image";
-import getDate from "../../../utils/dateHelper";
+import getDate from "../../../utils/strings/date";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { GroupedTickets } from "../../../types/models";
 import { Tooltip } from "react-tooltip";
-import { returnWithTwoDigitsOrMore } from "../../../utils/stringHelper";
+import { returnWithTwoDigitsOrMore } from "../../../utils/components/string";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { IoIosArrowBack } from "react-icons/io";
 

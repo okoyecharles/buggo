@@ -4,7 +4,7 @@ import { Ticket } from "../../../types/models";
 import { useEffect } from "react";
 import Modal from "../../modal";
 import { ThreeDotsLoader } from "../../loader";
-import getDate from "../../../utils/dateHelper";
+import getDate from "../../../utils/strings/date";
 
 const TicketDeleteModal: React.FC<{
   open: boolean;

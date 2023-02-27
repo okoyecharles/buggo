@@ -4,12 +4,12 @@ import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
 import { fetchProjects } from "../redux/actions/projectActions";
 import { fetchTickets } from "../redux/actions/ticketActions";
-import { getGreeting } from "../src/utils/InterfaceHelper";
+import { getGreeting } from "../src/utils/strings/greeting";
 import { Tooltip } from "react-tooltip";
 import TicketStats from "../src/features/tickets/statistics";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import ProjectSection from "../src/features/projects";
-import { searchProjectByName } from "../src/utils/searchHelper";
+import { searchProjectByName } from "../src/utils/strings/search";
 
 export default function Home() {
   const user = useSelector((store: storeType) => store.currentUser.user);

@@ -15,7 +15,7 @@ import { useRouter } from "next/router";
 import { register } from "../redux/actions/userActions";
 import Head from "next/head";
 import Compressor from "compressorjs";
-import { toBase64 } from "../src/utils/imageHelper";
+import { toBase64 } from "../src/utils/strings/image";
 import Button from "../src/components/Button";
 
 const Register = () => {

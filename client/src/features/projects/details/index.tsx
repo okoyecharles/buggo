@@ -8,7 +8,7 @@ import {
 } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import { FiCheckCircle } from "react-icons/fi";
-import getDate from "../../../utils/dateHelper";
+import getDate from "../../../utils/strings/date";
 import Image from "next/image";
 import { BsPlus } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";

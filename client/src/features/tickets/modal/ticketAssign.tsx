@@ -6,13 +6,13 @@ import { toast } from "react-toastify";
 import Modal from "../../modal";
 import { IoMdClose, IoMdReturnRight } from "react-icons/io";
 import Image from "next/image";
-import { restrictLength } from "../../../utils/stringHelper";
+import { restrictLength } from "../../../utils/components/string";
 import { FaSearch } from "react-icons/fa";
 import { MdOutlineClose } from "react-icons/md";
 import { updateTicket } from "../../../../redux/actions/ticketActions";
 import { ThreeDotsLoader } from "../../loader";
 import Highlighter from "react-highlight-words";
-import { searchByNameOrEmail } from "../../../utils/searchHelper";
+import { searchByNameOrEmail } from "../../../utils/strings/search";
 
 const ticketMembersReducer = (state: User[], action: any) => {
   switch (action.type) {

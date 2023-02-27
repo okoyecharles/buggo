@@ -19,13 +19,13 @@ import {
   updateProject,
 } from "../../../../redux/actions/projectActions";
 import ProjectDeleteModal from "../modal/projectDelete";
-import { restrictLength } from "../../../utils/stringHelper";
+import { restrictLength } from "../../../utils/components/string";
 import ProjectInviteModal from "../modal/projectInvite";
 import ProjectOptionsPopup from "./Options";
 import ProjectCardMembers from "./Members";
 import Highlighter from "react-highlight-words";
 import Link from "next/link";
-import getDate from "../../../utils/dateHelper";
+import getDate from "../../../utils/strings/date";
 
 interface projectProps {
   project: Project;

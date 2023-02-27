@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import Modal from "../../modal";
 import moment from "moment";
 import { ThreeDotsLoader } from "../../loader";
-import getDate from "../../../utils/dateHelper";
+import getDate from "../../../utils/strings/date";
 import { useRouter } from "next/router";
 
 const ProjectDeleteModal: React.FC<{

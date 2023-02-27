@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import store, { storeType } from "../../../../redux/configureStore";
 import {
@@ -11,14 +11,15 @@ import { TailSpinLoader, ThreeDotsLoader } from "../../loader";
 import {
   restrictLength,
   returnWithLineBreaks,
-} from "../../../utils/stringHelper";
+} from "../../../utils/components/string";
 import Pluralize from "react-pluralize";
 import TicketComments from "./comments";
 import { Ticket } from "../../../types/models";
-import getDate from "../../../utils/dateHelper";
+import getDate from "../../../utils/strings/date";
 import TicketDeleteModal from "../modal/ticketDelete";
 import { BsCheck } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
+import Authorized from "../../../utils/authorization";
 
 interface TicketDetailsBarProps {
   ticket: Ticket | null;
@@ -33,6 +34,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
   const ticketDetails = useSelector((store: storeType) => store.ticket);
+  const project = useSelector((store: storeType) => store.project.project);
 
   const [showAllDescription, setShowAllDescription] = useState(false);
   const [projectDeleteModalOpen, setProjectDeleteModalOpen] = useState(false);
@@ -53,7 +55,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
     if (!ticketDetails.ticket && !ticketDetails.loading) {
       setOpen(false);
     }
-  }, [ticketDetails.ticket])
+  }, [ticketDetails.ticket]);
 
   useEffect(() => {
     const commentSection = commentsRef?.current as HTMLDivElement | null;
@@ -200,6 +202,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           </div>
         )}
 
+        {/* Buttons */}
         <div className="buttons p-3 absolute bottom-0 left-0 w-full border-t border-gray-700 flex gap-2 bg-gray-825">
           <button
             className="bg-blue-500 flex justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-blue-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors flex-1"
@@ -207,7 +210,13 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
               ticketDetails.loading ||
               ticketDetails.method.update ||
               ticketDetails.ticket?.status === "closed" ||
-              ticketDetails.ticket?.author._id !== user?._id
+              !Authorized(
+                "ticket",
+                "update",
+                user,
+                project,
+                ticketDetails.ticket
+              )
             }
             onClick={() => {
               store.dispatch(
@@ -223,23 +232,27 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
               "Close Ticket"
             )}
           </button>
-          <button
-            className={`bg-red-500 justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-red-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors flex-1 ${
-              ticketDetails.ticket?.author._id !== user?._id
-                ? "hidden"
-                : "flex"
-            }`}
-            disabled={ticketDetails.loading || ticketDetails.method.delete}
-            onClick={() => {
-              setProjectDeleteModalOpen(true);
-            }}
-          >
-            {ticketDetails.loading && ticketDetails.method.delete ? (
-              <ThreeDotsLoader />
-            ) : (
-              "Delete Ticket"
-            )}
-          </button>
+          {Authorized(
+            "ticket",
+            "delete",
+            user,
+            project,
+            ticketDetails.ticket
+          ) && (
+            <button
+              className={`bg-red-500 justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-red-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors flex-1 flex`}
+              disabled={ticketDetails.loading || ticketDetails.method.delete}
+              onClick={() => {
+                setProjectDeleteModalOpen(true);
+              }}
+            >
+              {ticketDetails.loading && ticketDetails.method.delete ? (
+                <ThreeDotsLoader />
+              ) : (
+                "Delete Ticket"
+              )}
+            </button>
+          )}
         </div>
       </div>
       {ticketDetails.ticket && (

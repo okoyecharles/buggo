@@ -1,4 +1,4 @@
-import { Project, User } from '../types/models';
+import { Project, User } from '../../types/models';
 
 const searchByNameOrEmail = (search: string, users: User[]) => {
   const searchValue = search.trim().toLowerCase();

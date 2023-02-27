@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Modal from "../../features/modal";
 import Image from "next/image";
 import Compressor from "compressorjs";
-import { toBase64 } from "../../utils/imageHelper";
+import { toBase64 } from "../../utils/strings/image";
 import defaultAvatar from "../../assets/default-avatar";
 import store from "../../../redux/configureStore";
 import { updateUser } from "../../../redux/actions/userActions";
