@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Project } from "../../../types/models";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../../../../redux/configureStore";
@@ -17,6 +17,7 @@ import ProjectInviteModal from "../modal/projectInvite";
 import Button from "../../../components/Button";
 import { acceptInvite } from "../../../../redux/actions/projectActions";
 import { a, useSpring, useTrail } from "@react-spring/web";
+import Authorized from "../../../utils/authorization";
 
 interface ProjectDetailsBarProps {
   project: Project | null;
@@ -39,6 +40,10 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   const [assignOpen, setAssignOpen] = useState(false);
 
   const user = useSelector((store: storeType) => store.currentUser.user);
+
+  const isAuthorized = useMemo(() => {
+    return Authorized("project", "update", user, project);
+  }, [user, project]);
 
   const membersOpenTrail = useTrail(project?.team.length || 0, {
     translateX: membersOpen ? "0%" : "-110%",
@@ -65,7 +70,9 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   });
 
   const invitedMembersOpenToggleSpring = useSpring({
-    height: invitedMembersOpen ? `${(project?.invitees.length || 0) * (32 + 8)}px` : "0px",
+    height: invitedMembersOpen
+      ? `${(project?.invitees.length || 0) * (32 + 8)}px`
+      : "0px",
     config: {
       tension: 400,
       friction: 40,
@@ -77,31 +84,43 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
       {/* Project details header */}
       <header
         className="
-        p-3 px-6 h-16 lg:px-3 flex justify-between items-center shadow-sm shadow-gray-950 font-semibold text-gray-300 cursor-pointer transition-colors
-        hover:bg-gray-825 hover:text-gray-100
+         shadow-sm shadow-gray-950 font-semibold text-gray-300 cursor-pointer transition-colors bg-gray-850 z-10 hover:bg-gray-825 hover:text-gray-100 sticky top-[60px]
         "
         onClick={() => {
-          if (!project || user?._id !== project?.author._id) return;
+          if (!isAuthorized) return;
           setOptionsOpen(!optionsOpen);
         }}
       >
-        <span className="truncate font-bold text-gray-100 text-lg">
-          {project?.title}
-        </span>
-        {user?._id === project?.author._id && (
-          <div className="relative w-6 h-6">
-            <MdOutlineKeyboardArrowDown
-              className={`text-2xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
-                optionsOpen ? "rotate-180 opacity-0" : "rotate-0 opacity-1"
-              } transition-all`}
+        <div className="relative flex justify-between items-center p-3 px-6 h-16 lg:px-3">
+          <span className="truncate font-bold text-gray-100 text-lg">
+            {project?.title}
+          </span>
+          {isAuthorized && (
+            <div className="relative w-6 h-6">
+              <MdOutlineKeyboardArrowDown
+                className={`text-2xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
+                  optionsOpen ? "rotate-180 opacity-0" : "rotate-0 opacity-1"
+                } transition-all`}
+              />
+              <IoMdClose
+                className={`text-xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
+                  optionsOpen ? "rotate-0 opacity-1" : "-rotate-180 opacity-0"
+                } transition-all`}
+              />
+            </div>
+          )}
+          {project && (
+            <ProjectDetailsOptionsPopup
+              setProjectDeleteOpen={setProjectDeleteOpen}
+              setTicketCreateOpen={setTicketCreateOpen}
+              setProjectAssignOpen={setAssignOpen}
+              open={optionsOpen}
+              setOpen={setOptionsOpen}
+              project={project}
+              method={method}
             />
-            <IoMdClose
-              className={`text-xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
-                optionsOpen ? "rotate-0 opacity-1" : "-rotate-180 opacity-0"
-              } transition-all`}
-            />
-          </div>
-        )}
+          )}
+        </div>
       </header>
 
       {/* Project details content */}
@@ -112,9 +131,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
           })}`}
         </p>
 
-        {project?.invitees.some(
-          (i) => i.user._id === user?._id
-        ) && (
+        {project?.invitees.some((i) => i.user._id === user?._id) && (
           <Button
             overrideStyle="mx-1"
             onClick={() => {
@@ -170,7 +187,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
             </p>
           )}
         </div>
-        {user?._id === project?.author._id ? (
+        {isAuthorized ? (
           <div className="invitees-drop font-noto">
             <div className=" flex items-center gap-0 cursor-pointer group transition-all select-none relative h-8 mb-1">
               <MdOutlineKeyboardArrowRight
@@ -227,24 +244,13 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
       </div>
 
       {project && (
-        <>
-          <ProjectDetailsOptionsPopup
-            setProjectDeleteOpen={setProjectDeleteOpen}
-            setTicketCreateOpen={setTicketCreateOpen}
-            setProjectAssignOpen={setAssignOpen}
-            open={optionsOpen}
-            setOpen={setOptionsOpen}
-            project={project}
-            method={method}
-          />
-          <ProjectInviteModal
-            open={assignOpen}
-            setOpen={setAssignOpen}
-            project={project}
-            loading={loading}
-            method={method}
-          />
-        </>
+        <ProjectInviteModal
+          open={assignOpen}
+          setOpen={setAssignOpen}
+          project={project}
+          loading={loading}
+          method={method}
+        />
       )}
     </aside>
   );

@@ -1,17 +1,8 @@
 import { useSpring, a } from "@react-spring/web";
 import { AiFillPlusCircle } from "react-icons/ai";
-import {
-  BsFillPersonCheckFill,
-  BsFillTrashFill,
-  BsPersonDashFill,
-  BsPersonPlusFill,
-} from "react-icons/bs";
+import { BsFillPersonCheckFill, BsFillTrashFill } from "react-icons/bs";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../../../../redux/configureStore";
-import {
-  getProjectTeamIds,
-  updateProject,
-} from "../../../../redux/actions/projectActions";
+import { storeType } from "../../../../redux/configureStore";
 import { Project } from "../../../types/models";
 
 const ProjectDetailsOptionsPopup: React.FC<{
@@ -27,7 +18,6 @@ const ProjectDetailsOptionsPopup: React.FC<{
 }> = ({
   open,
   setOpen,
-  project,
   method,
   setProjectAssignOpen,
   setTicketCreateOpen,
@@ -47,32 +37,7 @@ const ProjectDetailsOptionsPopup: React.FC<{
       friction: 25,
     },
   });
-
   const user = useSelector((store: storeType) => store.currentUser.user);
-  const isInTeam = (project: any) => {
-    return !!project.team.filter(
-      (member: any) => member._id === user?._id
-    ).length;
-  };
-
-  async function handleAssign() {
-    const previousTeam: string[] = await getProjectTeamIds(project);
-
-    const newTeam: any = isInTeam(project)
-      ? previousTeam.filter((id: string) => id !== user?._id!)
-      : !previousTeam.includes(user?._id!)
-      ? [...previousTeam, user?._id]
-      : previousTeam;
-
-    store.dispatch(
-      updateProject({
-        id: project._id,
-        project: {
-          team: newTeam,
-        },
-      })
-    );
-  }
 
   return (
     <a.div
@@ -93,26 +58,11 @@ const ProjectDetailsOptionsPopup: React.FC<{
           className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700  hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
           disabled={method.update}
           onClick={() => {
-            setProjectAssignOpen(true);
+            setTicketCreateOpen(true);
           }}
         >
-          Invite Members
-          <BsFillPersonCheckFill />
-        </button>
-        <button
-          className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700  hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
-          disabled={method.update}
-          onClick={handleAssign}
-        >
-          {isInTeam(project) ? (
-            <>
-              Remove Yourself <BsPersonDashFill />
-            </>
-          ) : (
-            <>
-              Assign Yourself <BsPersonPlusFill />
-            </>
-          )}
+          Create Ticket
+          <AiFillPlusCircle className="text-lg" />
         </button>
 
         <hr className="border-gray-800" />
@@ -121,11 +71,11 @@ const ProjectDetailsOptionsPopup: React.FC<{
           className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700  hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
           disabled={method.update}
           onClick={() => {
-            setTicketCreateOpen(true);
+            setProjectAssignOpen(true);
           }}
         >
-          Create Ticket
-          <AiFillPlusCircle className="text-lg" />
+          Invite Members
+          <BsFillPersonCheckFill />
         </button>
 
         <hr className="border-gray-800" />

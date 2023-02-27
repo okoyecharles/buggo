@@ -1,17 +1,19 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { AiFillClockCircle } from "react-icons/ai";
 import { FaCommentAlt } from "react-icons/fa";
 import Pluralize from "react-pluralize";
 import getDate from "../../../utils/strings/date";
 import { Ticket } from "../../../types/models";
-import { getTicketPriority, getTicketStatus } from "../../../utils/strings/class";
+import {
+  getTicketPriority,
+  getTicketStatus,
+} from "../../../utils/strings/class";
 import { BsThreeDots } from "react-icons/bs";
-import { Tooltip } from "react-tooltip";
 import TicketOptionsPopup from "./Options";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
-import Image from "next/image";
 import ImageRow from "../../../components/ImageRow";
+import Authorized from "../../../utils/authorization";
 
 interface TicketRowProps {
   ticket: Ticket | undefined;
@@ -35,10 +37,8 @@ const TicketRow: React.FC<TicketRowProps> = ({
     if (ticket?._id === ticketDetails?._id) setTicketDetails(ticket);
   }, [ticket]);
 
-  const isInProjectTeam = useCallback(() => {
-    return project?.team.some(
-      (member: any) => member._id === user?._id
-    );
+  const isInProjectTeam = useMemo(() => {
+    return Authorized("project", "team", user, project);
   }, [project, user?._id]);
 
   return (
@@ -101,7 +101,7 @@ const TicketRow: React.FC<TicketRowProps> = ({
         />
         {
           // Show options button if user is a project member
-          isInProjectTeam() ? (
+          isInProjectTeam ? (
             <button
               className="p-1 pr-4 items-center justify-center transition hidden lg:flex"
               onClick={(e) => {

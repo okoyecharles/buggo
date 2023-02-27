@@ -4,8 +4,8 @@
 import { Project, Ticket, User } from "../../types/models";
 
 const Authorized = (
-  modelName: "project" | "ticket" | "comment" | "user",
-  action: "create" | "update" | "delete",
+  modelName: "project" | "ticket" | "comment",
+  action: "create" | "update" | "delete" | "team" | "ticket-create",
   user: User | null,
   project?: Project | null,
   ticket?: Ticket | null,
@@ -15,45 +15,34 @@ const Authorized = (
 
   switch (modelName) {
     case "project":
+      if (!project) return false;
       switch (action) {
-        case "create":
-          return true;
         case "update":
-          return true;
+          return project.author._id === user._id;
         case "delete":
-          return true;
+          return project.author._id === user._id;
+        case "team":
+          return project.team.some((member) => member._id === user._id);
+        case "ticket-create":
+          return project.team.some((member) => member._id === user._id);
         default:
           return false;
       }
     case "ticket":
       if (!ticket) return false;
+      const ticketAuthor =
+        typeof ticket.author === "string" ? ticket.author : ticket.author._id;
+
       switch (action) {
-        case "create":
-          return true;
         case "update": {
-          return (
-            user._id === ticket.author._id || user._id === project?.author._id
-          );
+          return user._id === ticketAuthor || user._id === project?.author._id;
         }
         case "delete":
-          return (
-            user._id === ticket.author._id || user._id === project?.author._id
-          );
+          return user._id === ticketAuthor || user._id === project?.author._id;
         default:
           return false;
       }
     case "comment":
-      switch (action) {
-        case "create":
-          return true;
-        case "update":
-          return true;
-        case "delete":
-          return true;
-        default:
-          return false;
-      }
-    case "user":
       switch (action) {
         case "create":
           return true;

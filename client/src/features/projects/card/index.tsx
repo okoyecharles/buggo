@@ -1,10 +1,8 @@
-import React, { KeyboardEvent, useEffect, useState } from "react";
+import React, { KeyboardEvent, useEffect, useMemo, useState } from "react";
 import {
   BsFillPencilFill,
   BsFillPersonCheckFill,
   BsFillTrashFill,
-  BsPersonDashFill,
-  BsPersonPlusFill,
   BsThreeDots,
 } from "react-icons/bs";
 import { AiFillClockCircle } from "react-icons/ai";
@@ -14,10 +12,7 @@ import Pluralize from "react-pluralize";
 import { Project } from "../../../types/models";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../../../../redux/configureStore";
-import {
-  getProjectTeamIds,
-  updateProject,
-} from "../../../../redux/actions/projectActions";
+import { updateProject } from "../../../../redux/actions/projectActions";
 import ProjectDeleteModal from "../modal/projectDelete";
 import { restrictLength } from "../../../utils/components/string";
 import ProjectInviteModal from "../modal/projectInvite";
@@ -26,6 +21,7 @@ import ProjectCardMembers from "./Members";
 import Highlighter from "react-highlight-words";
 import Link from "next/link";
 import getDate from "../../../utils/strings/date";
+import Authorized from "../../../utils/authorization";
 
 interface projectProps {
   project: Project;
@@ -47,15 +43,14 @@ const ProjectCard: React.FC<projectProps> = ({
   setCurrentEdit,
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
-  const [optionsOpen, setOptionsOpen] = useState(false);
 
+  const [optionsOpen, setOptionsOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editTitle, setEditTitle] = useState(project.title);
-  const editInputRef = React.useRef<HTMLInputElement>(null);
-
   const [projectDeleteConfirm, setProjectDeleteConfirm] = useState(false);
-
   const [projectInvite, setProjectInvite] = useState(false);
+
+  const editInputRef = React.useRef<HTMLInputElement>(null);
 
   // Disable edit while editing another project
   useEffect(() => {
@@ -67,43 +62,6 @@ const ProjectCard: React.FC<projectProps> = ({
   const handleAssignMembers = async () => {
     setProjectInvite(true);
   };
-
-  async function handleAssign() {
-    const previousTeam: string[] = await getProjectTeamIds(project);
-
-    if (isInTeam(project)) {
-      store.dispatch(
-        updateProject({
-          id: project._id,
-          project: {
-            team: previousTeam.filter(
-              (id: string) => id !== user?._id
-            ),
-          },
-        })
-      );
-    } else {
-      if (previousTeam.includes(user?._id as string)) {
-        store.dispatch(
-          updateProject({
-            id: project._id,
-            project: {
-              team: previousTeam,
-            },
-          })
-        );
-      } else {
-        store.dispatch(
-          updateProject({
-            id: project._id,
-            project: {
-              team: [...previousTeam, user?._id],
-            },
-          })
-        );
-      }
-    }
-  }
 
   function handleEditMode() {
     setEditMode(true);
@@ -123,11 +81,9 @@ const ProjectCard: React.FC<projectProps> = ({
     setEditMode(false);
   };
 
-  const isInTeam = (project: any) => {
-    return !!project.team.filter(
-      (member: any) => member._id === user?._id
-    ).length;
-  };
+  const isAuthorized = useMemo(() => {
+    return Authorized("project", "update", user, project);
+  }, [user, project]);
 
   return (
     <article
@@ -198,13 +154,7 @@ const ProjectCard: React.FC<projectProps> = ({
           />
         </button>
       </div>
-      <ProjectCardMembers
-        project={project}
-        handleAssign={handleAssign}
-        isInTeam={isInTeam}
-        loading={loading}
-        method={method}
-      />
+      <ProjectCardMembers project={project} />
       <div className="flex flex-col mt-4 lg:flex-row lg:mt-0  lg:gap-4">
         <div className="text-gray-500 uppercase text-xsm flex items-center gap-2">
           <AiFillClockCircle className="text-orange-400" />
@@ -223,17 +173,8 @@ const ProjectCard: React.FC<projectProps> = ({
           editMode ? "hidden" : ""
         }`}
       >
-        {user?._id === project.author._id && (
+        {isAuthorized && (
           <>
-            <button
-              id={`assign-self-${project._id}`}
-              className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
-              tabIndex={-1}
-              onClick={handleAssign}
-              disabled={loading && method.update}
-            >
-              {isInTeam(project) ? <BsPersonDashFill /> : <BsPersonPlusFill />}
-            </button>
             <button
               id={`invite-project-${project._id}`}
               className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
@@ -278,23 +219,17 @@ const ProjectCard: React.FC<projectProps> = ({
       </div>
       <Tooltip anchorId={`edit-project-${project._id}`} content="Edit" />
       <Tooltip
-        anchorId={`assign-self-${project._id}`}
-        content={isInTeam(project) ? "Remove Yourself" : "Assign Yourself"}
-      />
-      <Tooltip
         anchorId={`invite-project-${project._id}`}
         content="Invite Members"
       />
       <Tooltip anchorId={`delete-project-${project._id}`} content="Delete" />
       <ProjectOptionsPopup
         open={optionsOpen}
-        project={project}
         loading={loading}
         method={method}
         setOpen={setOptionsOpen}
         setProjectDeleteConfirm={setProjectDeleteConfirm}
         handleEditMode={handleEditMode}
-        handleAssign={handleAssign}
         setProjectAssign={setProjectInvite}
       />
       <ProjectInviteModal

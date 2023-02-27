@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { BsDot, BsFilter, BsPlusLg } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
 import TicketRow from "./Row";
@@ -8,6 +8,7 @@ import { Ticket } from "../../../types/models";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
 import CreateTicketModal from "../modal/ticketCreate";
+import Authorized from "../../../utils/authorization";
 
 interface TicketsSectionProps {
   tickets: Ticket[] | undefined;
@@ -25,6 +26,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
   method,
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
+  const project = useSelector((store: storeType) => store.project.project);
 
   const [ticketDetailsOpen, setTicketDetailsOpen] = useState<boolean>(false);
   const [ticketDetails, setTicketDetails] = useState<Ticket | null>(null);
@@ -61,25 +63,33 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
     setCurrentPage(data.selected + 1);
   };
 
+  const canCreateTicket = useMemo(() => {
+    return Authorized("project", "ticket-create", user, project);
+  }, [user, project]);
+
   return (
     <section className="project-tickets flex-1 relative">
       <header className="p-3 px-6 h-16 lg:px-3 shadow-sm items-center shadow-gray-950 flex justify-between">
         <h1 className="font-bold text-gray-100 text-lg">Tickets</h1>
-        <button
-          className="group cursor-pointer disabled:opacity-75"
-          id="create-ticket"
-          onClick={() => {
-            setTicketCreateOpen(true);
-          }}
-          disabled={loading && method.details}
-        >
-          <BsPlusLg className="bg-gray-700 text-blue-400 group-hover:bg-blue-500 text-4xl p-3 rounded-full group-hover:text-white group-hover:rounded-xl group-active:bg-blue-600 transition disabled:opacity-75" />
-        </button>
-        <Tooltip
-          anchorId="create-ticket"
-          content="Create Ticket"
-          place="left"
-        />
+        {canCreateTicket ? (
+          <>
+            <button
+              className="group cursor-pointer disabled:opacity-75"
+              id="create-ticket"
+              onClick={() => {
+                setTicketCreateOpen(true);
+              }}
+              disabled={loading && method.details}
+            >
+              <BsPlusLg className="bg-gray-700 text-blue-400 group-hover:bg-blue-500 text-4xl p-3 rounded-full group-hover:text-white group-hover:rounded-xl group-active:bg-blue-600 transition disabled:opacity-75" />
+            </button>
+            <Tooltip
+              anchorId="create-ticket"
+              content="Create Ticket"
+              place="left"
+            />
+          </>
+        ) : null}
       </header>
       <div className="tickets-filter flex p-4">
         <div className="tickets-filter-container flex  rounded overflow-hidden">

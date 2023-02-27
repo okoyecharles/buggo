@@ -30,10 +30,10 @@ const MyTicketsSection: React.FC<MyTicketsSectionProps> = ({
           <HiOutlineMenuAlt3 className="text-2xl text-white" />
         </button>
       </header>
-      <div>
+      <div className="lg:max-h-[calc(100vh-129px)] lg:overflow-y-scroll">
         <MyTicketsStats group={group} />
         <hr className="border border-gray-850" />
-        <div className="ticket-group-grid text-ss lg:text-base lg:max-h-[calc(100vh-249px)] lg:overflow-y-scroll">
+        <div className="ticket-group-grid text-ss lg:text-base">
           {group?.length && (
             <div className="tickets-grid-container">
               <header className="grid gap-2 grid-cols-4 md:grid-cols-5 px-4 mt-4 uppercase">

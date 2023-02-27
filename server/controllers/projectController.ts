@@ -283,6 +283,13 @@ export const createTicket = async (
     ticket.project = ticketProject?.id;
     ticket.author = ticketAuthor;
 
+    const ticketProjectMembers = ticketProject?.team.map((member) => {
+      return member.toString();
+    });
+    if (!ticketProjectMembers?.some((member) => member === req.user)) {
+      return res.status(401).json({ message: 'User not authorized' });
+    }
+
     ticket = await ticket.save();
 
     // Assign ticket to project's relationship

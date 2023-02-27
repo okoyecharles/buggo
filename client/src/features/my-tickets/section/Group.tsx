@@ -58,7 +58,7 @@ const TicketGroup: React.FC<TicketGroupProps> = ({
   return (
     <article key={project._id}>
       <header
-        className={`flex items-center gap-1 font-noto font-semibold text-gray-200 hover:text-white my-2 cursor-pointer group ${
+        className={`flex items-center gap-1 font-noto font-semibold text-gray-200 hover:text-white py-1 my-1 cursor-pointer group ${
           groupScrolled ? "bg-blue-500/40 text-white" : ""
         } transition-all px-2 md:px-0 md:rounded`}
         onClick={() => setGroupOpen((prev) => !prev)}

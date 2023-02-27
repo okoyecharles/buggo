@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSpring, a } from "@react-spring/web";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../../../../redux/configureStore";
@@ -15,9 +15,9 @@ import {
   deleteTicket,
   updateTicket,
 } from "../../../../redux/actions/ticketActions";
-import { IoClose, IoCloseCircle } from "react-icons/io5";
 import TicketAssignModal from "../modal/ticketAssign";
-import { chownSync } from "fs";
+import Authorized from "../../../utils/authorization";
+import { IoClose } from "react-icons/io5";
 
 interface TicketOptionsPopupProps {
   ticket: Ticket;
@@ -54,9 +54,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
   });
 
   const isInTeam = (model: any) => {
-    return model.team.some(
-      (member: any) => member._id === user?._id
-    );
+    return model.team.some((member: any) => member._id === user?._id);
   };
 
   const handleTicketAssign = () => {
@@ -75,6 +73,10 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
     setOpen(false);
   };
+
+  const isAuthorized = useMemo(() => {
+    return Authorized("ticket", "update", user, project, ticket);
+  }, [user, project, ticket]);
 
   return (
     <a.div
@@ -107,8 +109,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
             </>
           )}
         </OptionsButton>
-        {user?._id === ticket?.author ||
-        user?._id === project.author._id ? (
+        {isAuthorized ? (
           <>
             <OptionsButton
               processing={loading && method.update}
@@ -121,6 +122,8 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
               Assign Members
               <BsFillPersonCheckFill />
             </OptionsButton>
+
+            <hr className="border-gray-800" />
 
             {ticket.status !== "closed" ? (
               <OptionsButton
@@ -137,7 +140,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
                 {loading && method.update && closing ? (
                   <TailSpinLoader height="15" />
                 ) : (
-                  <BsFillTrashFill />
+                  <IoClose className="text-lg" />
                 )}
               </OptionsButton>
             ) : null}

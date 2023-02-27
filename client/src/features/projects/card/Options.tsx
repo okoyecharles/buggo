@@ -1,38 +1,28 @@
-import React from 'react';
-import { useSelector } from "react-redux";
-import { Project } from "../../../types/models";
-import { storeType } from "../../../../redux/configureStore";
+import React from "react";
 import { useSpring, a } from "@react-spring/web";
-import { BsFillPencilFill, BsFillPersonCheckFill, BsFillTrashFill, BsPersonDashFill, BsPersonPlusFill } from "react-icons/bs";
+import {
+  BsFillPencilFill,
+  BsFillPersonCheckFill,
+  BsFillTrashFill,
+} from "react-icons/bs";
 
 const ProjectOptionsPopup: React.FC<{
   open: boolean;
-  project: Project;
   loading: boolean;
   method: any;
   setOpen: any;
   setProjectDeleteConfirm: any;
   handleEditMode: any;
-  handleAssign: any;
   setProjectAssign: any;
 }> = ({
   open,
-  project,
   loading,
   method,
   setOpen,
-  handleAssign,
   handleEditMode,
   setProjectDeleteConfirm,
   setProjectAssign,
 }) => {
-  const user = useSelector((store: storeType) => store.currentUser.user);
-  const isInTeam = (project: any) => {
-    return !!project.team.filter(
-      (member: any) => member._id === user?._id
-    ).length;
-  };
-
   const spring = useSpring({
     opacity: 0,
     y: -10,
@@ -64,59 +54,36 @@ const ProjectOptionsPopup: React.FC<{
       />
       <div className="flex flex-col gap-1">
         <button
-          id={`remove-self-${project._id}`}
           className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700  hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
+          disabled={loading && method.update}
           onClick={() => {
-            handleAssign();
+            setProjectAssign(true);
             setOpen(false);
           }}
-          disabled={loading && method.update}
         >
-          {isInTeam(project) ? (
-            <>
-              Remove Yourself <BsPersonDashFill />
-            </>
-          ) : (
-            <>
-              Assign Yourself <BsPersonPlusFill />
-            </>
-          )}
+          Invite Members
+          <BsFillPersonCheckFill />
         </button>
-        {user?._id === project.author._id && (
-          <>
-            <button
-              className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700  hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
-              disabled={loading && method.update}
-              onClick={() => {
-                setProjectAssign(true);
-                setOpen(false);
-              }}
-            >
-              Invite Members
-              <BsFillPersonCheckFill />
-            </button>
 
-            <button
-              className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700 hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
-              disabled={loading && method.update}
-              onClick={() => {
-                setOpen(false);
-                handleEditMode();
-              }}
-            >
-              Edit Project
-              <BsFillPencilFill />
-            </button>
+        <button
+          className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700 hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
+          disabled={loading && method.update}
+          onClick={() => {
+            setOpen(false);
+            handleEditMode();
+          }}
+        >
+          Edit Project
+          <BsFillPencilFill />
+        </button>
 
-            <button
-              className="p-2 group text-red-500 hover:bg-red-500 active:bg-red-600 hover:text-red-50 flex justify-between items-center transition-colors rounded-sm text-sm"
-              onClick={() => setProjectDeleteConfirm(true)}
-            >
-              Delete Project
-              <BsFillTrashFill />
-            </button>
-          </>
-        )}
+        <button
+          className="p-2 group text-red-500 hover:bg-red-500 active:bg-red-600 hover:text-red-50 flex justify-between items-center transition-colors rounded-sm text-sm"
+          onClick={() => setProjectDeleteConfirm(true)}
+        >
+          Delete Project
+          <BsFillTrashFill />
+        </button>
       </div>
     </a.div>
   );
