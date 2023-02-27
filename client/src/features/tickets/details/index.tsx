@@ -31,7 +31,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   setOpen,
   ticket,
 }) => {
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
   const ticketDetails = useSelector((store: storeType) => store.ticket);
 
   const [showAllDescription, setShowAllDescription] = useState(false);
@@ -207,7 +207,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
               ticketDetails.loading ||
               ticketDetails.method.update ||
               ticketDetails.ticket?.status === "closed" ||
-              ticketDetails.ticket?.author._id !== currentUser.user?._id
+              ticketDetails.ticket?.author._id !== user?._id
             }
             onClick={() => {
               store.dispatch(
@@ -225,7 +225,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           </button>
           <button
             className={`bg-red-500 justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-red-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors flex-1 ${
-              ticketDetails.ticket?.author._id !== currentUser.user?._id
+              ticketDetails.ticket?.author._id !== user?._id
                 ? "hidden"
                 : "flex"
             }`}

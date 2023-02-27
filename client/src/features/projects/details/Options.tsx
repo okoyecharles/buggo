@@ -48,10 +48,10 @@ const ProjectDetailsOptionsPopup: React.FC<{
     },
   });
 
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
   const isInTeam = (project: any) => {
     return !!project.team.filter(
-      (member: any) => member._id === currentUser.user?._id
+      (member: any) => member._id === user?._id
     ).length;
   };
 
@@ -59,9 +59,9 @@ const ProjectDetailsOptionsPopup: React.FC<{
     const previousTeam: string[] = await getProjectTeamIds(project);
 
     const newTeam: any = isInTeam(project)
-      ? previousTeam.filter((id: string) => id !== currentUser.user?._id!)
-      : !previousTeam.includes(currentUser.user?._id!)
-      ? [...previousTeam, currentUser.user?._id]
+      ? previousTeam.filter((id: string) => id !== user?._id!)
+      : !previousTeam.includes(user?._id!)
+      ? [...previousTeam, user?._id]
       : previousTeam;
 
     store.dispatch(

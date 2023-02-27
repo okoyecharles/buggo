@@ -38,7 +38,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
 
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
 
   const membersOpenTrail = useTrail(project?.team.length || 0, {
     translateX: membersOpen ? "0%" : "-110%",
@@ -81,14 +81,14 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
         hover:bg-gray-825 hover:text-gray-100
         "
         onClick={() => {
-          if (!project || currentUser.user?._id !== project?.author._id) return;
+          if (!project || user?._id !== project?.author._id) return;
           setOptionsOpen(!optionsOpen);
         }}
       >
         <span className="truncate font-bold text-gray-100 text-lg">
           {project?.title}
         </span>
-        {currentUser.user?._id === project?.author._id && (
+        {user?._id === project?.author._id && (
           <div className="relative w-6 h-6">
             <MdOutlineKeyboardArrowDown
               className={`text-2xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
@@ -113,7 +113,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
         </p>
 
         {project?.invitees.some(
-          (i) => i.user._id === currentUser.user?._id
+          (i) => i.user._id === user?._id
         ) && (
           <Button
             overrideStyle="mx-1"
@@ -170,7 +170,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
             </p>
           )}
         </div>
-        {currentUser.user?._id === project?.author._id ? (
+        {user?._id === project?.author._id ? (
           <div className="invitees-drop font-noto">
             <div className=" flex items-center gap-0 cursor-pointer group transition-all select-none relative h-8 mb-1">
               <MdOutlineKeyboardArrowRight

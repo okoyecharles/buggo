@@ -26,7 +26,7 @@ const TicketRow: React.FC<TicketRowProps> = ({
   showTicketDetails,
   setTicketDetails,
 }) => {
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
   const project = useSelector((store: storeType) => store.project.project);
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
 
@@ -37,9 +37,9 @@ const TicketRow: React.FC<TicketRowProps> = ({
 
   const isInProjectTeam = useCallback(() => {
     return project?.team.some(
-      (member: any) => member._id === currentUser.user?._id
+      (member: any) => member._id === user?._id
     );
-  }, [project, currentUser.user?._id]);
+  }, [project, user?._id]);
 
   return (
     <li

@@ -12,7 +12,7 @@ import ProjectSection from "../src/features/projects";
 import { searchProjectByName } from "../src/utils/searchHelper";
 
 export default function Home() {
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
   const projects = useSelector((store: storeType) => store.projects);
   const tickets = useSelector((store: storeType) => store.tickets);
 
@@ -20,7 +20,7 @@ export default function Home() {
   const [pageLoaded, setPageLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!currentUser.user) return;
+    if (!user) return;
 
     // Fetch projects if user state updates
     if (!projects.loading && !projects.method.list)
@@ -32,7 +32,7 @@ export default function Home() {
     if (!tickets.loading) store.dispatch(fetchTickets());
 
     setPageLoaded(true);
-  }, [currentUser.user]);
+  }, [user]);
 
   return (
     <>

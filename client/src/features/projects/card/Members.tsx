@@ -20,7 +20,7 @@ const ProjectCardMembers: React.FC<ProjectCardMembersProps> = ({
   loading,
   method,
 }) => {
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
 
   return (
     <div className="flex mb-2 gap-2 lg:items-center text-ss lg:h-7">
@@ -28,7 +28,7 @@ const ProjectCardMembers: React.FC<ProjectCardMembersProps> = ({
       <ImageRow model={project} maxImages={3} />
       {
         // Display button if user does not exist in team
-        !isInTeam(project) && currentUser.user?._id === project.author._id ? (
+        !isInTeam(project) && user?._id === project.author._id ? (
           <button
             className="hidden lg:flex items-center h-full hover:underline text-orange-500/75 self-start disabled:opacity-75"
             onClick={handleAssign}

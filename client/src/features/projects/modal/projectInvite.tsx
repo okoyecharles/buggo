@@ -37,7 +37,7 @@ const ProjectInviteModal: React.FC<{
   loading: boolean;
   method: any;
 }> = ({ open, setOpen, project, loading, method }) => {
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState<string>("");
@@ -54,11 +54,11 @@ const ProjectInviteModal: React.FC<{
     setUsers(null);
     const { users } = await getUsers();
     let filteredUsers = searchByNameOrEmail(search, users);
-    filteredUsers = filteredUsers.filter((user) => {
+    filteredUsers = filteredUsers.filter((searchedUser) => {
       return (
-        user._id !== currentUser.user?._id &&
-        !project.invitees.find((invitee) => invitee.user._id === user._id) &&
-        !project.team.find((member) => member._id === user._id)
+        searchedUser._id !== user?._id &&
+        !project.invitees.find((invitee) => invitee.user._id === searchedUser._id) &&
+        !project.team.find((member) => member._id === searchedUser._id)
       );
     });
     setUsers(filteredUsers);

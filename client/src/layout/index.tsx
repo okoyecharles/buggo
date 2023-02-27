@@ -18,16 +18,9 @@ import { useSpring, a } from "@react-spring/web";
 import Pusher from "pusher-js";
 import { PUSHER_KEY } from "../data/backend-config";
 import {
-  pusherCommentOnTicket,
-  pusherCreateTicket,
-  pusherDeleteTicket,
-  pusherUpdateTicket,
-} from "../../redux/actions/ticketActions";
-import {
   connectPusher,
   disconnectPusher,
 } from "../../redux/actions/pusherActions";
-import { pusherUpdateProject } from "../../redux/actions/projectActions";
 import bindChannelEvents from "./pusher/channel";
 
 interface LayoutProps {

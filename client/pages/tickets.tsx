@@ -13,6 +13,7 @@ const tickets = () => {
   const [scrolledTicketGroup, setScrolledTicketGroup] = useState<null | { id: string }>(
     null
   );
+  const [detailsBarOpen, setDetailsBarOpen] = useState(false);
 
   useEffect(() => {
     store.dispatch(fetchTickets());
@@ -69,12 +70,15 @@ const tickets = () => {
       <Head>
         <title>Tickets</title>
       </Head>
-      <div className="flex flex-col lg:flex-row h-full isolate">
+      <div className="flex flex-col lg:flex-row h-full isolate relative">
         <MyTicketsDetailsBar
+          detailsBarOpen={detailsBarOpen}
+          setDetailsBarOpen={setDetailsBarOpen}
           scrollToTicketGroup={scrollToTicketGroup}
           group={groupTicketsByProjects(tickets.tickets)}
         />
         <MyTicketsSection
+          setDetailsBarOpen={setDetailsBarOpen}
           group={groupTicketsByProjects(tickets.tickets)}
           scrolledTicketGroup={scrolledTicketGroup}
         />

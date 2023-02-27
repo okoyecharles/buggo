@@ -24,7 +24,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
   loading,
   method,
 }) => {
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
 
   const [ticketDetailsOpen, setTicketDetailsOpen] = useState<boolean>(false);
   const [ticketDetails, setTicketDetails] = useState<Ticket | null>(null);
@@ -39,7 +39,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
 
   const filterByAuthor = (tickets: any[], author: string) => {
     if (author === "all") return tickets;
-    return tickets.filter((ticket) => ticket.author === currentUser.user?._id);
+    return tickets.filter((ticket) => ticket.author === user?._id);
   };
 
   const [ticketsPerPage] = useState(5);

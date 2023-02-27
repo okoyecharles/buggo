@@ -24,9 +24,9 @@ const isNextCommentFromSameAuthor = (
 };
 
 const TicketComments: React.FC<TicketCommentsProps> = ({ comments }) => {
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
   const isCommentAuthour = (comment: Comment) => {
-    return currentUser.user?._id === comment.author._id;
+    return user?._id === comment.author._id;
   };
 
   return (

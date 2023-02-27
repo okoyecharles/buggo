@@ -26,10 +26,10 @@ const ProjectOptionsPopup: React.FC<{
   setProjectDeleteConfirm,
   setProjectAssign,
 }) => {
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
   const isInTeam = (project: any) => {
     return !!project.team.filter(
-      (member: any) => member._id === currentUser.user?._id
+      (member: any) => member._id === user?._id
     ).length;
   };
 
@@ -82,7 +82,7 @@ const ProjectOptionsPopup: React.FC<{
             </>
           )}
         </button>
-        {currentUser.user?._id === project.author._id && (
+        {user?._id === project.author._id && (
           <>
             <button
               className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700  hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"

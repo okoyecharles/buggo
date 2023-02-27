@@ -97,9 +97,9 @@ const updateUser = (formData: {
     dispatch({
       type: types.USER_PROFILE_UPDATE_REQUEST,
     });
-    const currentUser = getState().currentUser;
+    const user = getState().currentUser.user;
     const { data } = await axios.put(
-      `${SERVER_URL}/users/${currentUser.user?._id}`,
+      `${SERVER_URL}/users/${user?._id}`,
       formData,
       generateConfig()
     );

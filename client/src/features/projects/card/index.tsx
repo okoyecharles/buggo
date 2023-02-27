@@ -46,7 +46,7 @@ const ProjectCard: React.FC<projectProps> = ({
   currentEdit,
   setCurrentEdit,
 }) => {
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
   const [optionsOpen, setOptionsOpen] = useState(false);
 
   const [editMode, setEditMode] = useState(false);
@@ -77,13 +77,13 @@ const ProjectCard: React.FC<projectProps> = ({
           id: project._id,
           project: {
             team: previousTeam.filter(
-              (id: string) => id !== currentUser.user?._id
+              (id: string) => id !== user?._id
             ),
           },
         })
       );
     } else {
-      if (previousTeam.includes(currentUser.user?._id as string)) {
+      if (previousTeam.includes(user?._id as string)) {
         store.dispatch(
           updateProject({
             id: project._id,
@@ -97,7 +97,7 @@ const ProjectCard: React.FC<projectProps> = ({
           updateProject({
             id: project._id,
             project: {
-              team: [...previousTeam, currentUser.user?._id],
+              team: [...previousTeam, user?._id],
             },
           })
         );
@@ -125,7 +125,7 @@ const ProjectCard: React.FC<projectProps> = ({
 
   const isInTeam = (project: any) => {
     return !!project.team.filter(
-      (member: any) => member._id === currentUser.user?._id
+      (member: any) => member._id === user?._id
     ).length;
   };
 
@@ -223,7 +223,7 @@ const ProjectCard: React.FC<projectProps> = ({
           editMode ? "hidden" : ""
         }`}
       >
-        {currentUser.user?._id === project.author._id && (
+        {user?._id === project.author._id && (
           <>
             <button
               id={`assign-self-${project._id}`}

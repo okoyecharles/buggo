@@ -30,7 +30,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
   open,
   setOpen,
 }) => {
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
   const project = useSelector((store: storeType) => store.project.project!);
   const { loading, method } = useSelector((store: storeType) => store.ticket);
 
@@ -55,7 +55,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
   const isInTeam = (model: any) => {
     return model.team.some(
-      (member: any) => member._id === currentUser.user?._id
+      (member: any) => member._id === user?._id
     );
   };
 
@@ -64,8 +64,8 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
     const previousTeam = ticket.team.map((member: any) => member._id);
 
     const newTeam: any = isInPreviousTeam
-      ? previousTeam.filter((member) => member !== currentUser.user?._id!)
-      : [...previousTeam, currentUser.user?._id];
+      ? previousTeam.filter((member) => member !== user?._id!)
+      : [...previousTeam, user?._id];
 
     store.dispatch(
       updateTicket(ticket._id, {
@@ -107,8 +107,8 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
             </>
           )}
         </OptionsButton>
-        {currentUser.user?._id === ticket?.author ||
-        currentUser.user?._id === project.author._id ? (
+        {user?._id === ticket?.author ||
+        user?._id === project.author._id ? (
           <>
             <OptionsButton
               processing={loading && method.update}

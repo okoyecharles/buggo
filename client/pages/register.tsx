@@ -37,7 +37,7 @@ const Register = () => {
 
   const [processing, setProcessing] = useState<boolean>(false);
   const registerStore = useSelector((store: storeType) => store.register);
-  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const user = useSelector((store: storeType) => store.currentUser.user);
 
   const [springs, api] = useSpring(() => ({
     opacity: 0.5,
@@ -62,10 +62,10 @@ const Register = () => {
     if (registerStore.error) {
       toast.error(registerStore.error.message);
     }
-    if (currentUser?.user) {
+    if (user) {
       router.replace("/");
     }
-  }, [registerStore, currentUser]);
+  }, [registerStore, user]);
 
   const throwError = (error: string | null, type: string) => {
     if (error) setProcessing(false);

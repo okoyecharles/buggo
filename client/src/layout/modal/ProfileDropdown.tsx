@@ -1,10 +1,9 @@
 import { useSpring, a } from "@react-spring/web";
 import { BsFillPencilFill } from "react-icons/bs";
 import { logout } from "../../../redux/actions/userActions";
-import store, { storeType } from "../../../redux/configureStore";
+import store from "../../../redux/configureStore";
 import { MdLogout } from "react-icons/md";
 import { User } from "../../types/models";
-import { useSelector } from "react-redux";
 
 const ProfileDropdown: React.FC<{
   open: boolean;
@@ -26,7 +25,6 @@ const ProfileDropdown: React.FC<{
       friction: 20,
     },
   });
-  const currentUser = useSelector((store: storeType) => store.currentUser.user);
 
   return (
     <a.div
@@ -45,15 +43,17 @@ const ProfileDropdown: React.FC<{
       <div className="flex flex-col gap-2 p-2 z-10 text-ss">
         <header className="px-2 text-sm text-gray-400">
           <h2>Signed in as</h2>
-          <h3 className={
-            `font-semibold font-noto truncate ${
-              (currentUser?.admin || false) === true ? "text-blue-400/90" : "text-orange-400/90"
-            }`
-          }>
-            {user?.name || 'User'}
+          <h3
+            className={`font-semibold font-noto truncate ${
+              (user?.admin || false) === true
+                ? "text-blue-400/90"
+                : "text-orange-400/90"
+            }`}
+          >
+            {user?.name || "User"}
           </h3>
           <h3 className="text-gray-500 text-xsm font-noto truncate">
-            {user?.email || 'user@gmail.com'}
+            {user?.email || "user@gmail.com"}
           </h3>
         </header>
         <hr className="border-gray-800 w-11/12 self-center" />

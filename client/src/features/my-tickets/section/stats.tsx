@@ -38,7 +38,7 @@ const MyTicketsStats: React.FC<MyTicketsStatsProps> = ({ group }) => {
   const tickets = useSelector((store: storeType) => store.tickets.tickets);
 
   return (
-    <ul className="flex gap-2 overflow-x-scroll px-4 mb-3">
+    <ul className="flex gap-2 overflow-x-scroll px-4 py-3">
       <li className="h-24 min-w-[7rem] rounded bg-gray-900 hover:bg-gray-950 flex flex-col justify-center items-center select-none transition-colors p-2">
         <p className="text-3xl font-bold text-blue-400">
           {returnWithTwoDigitsOrMore(

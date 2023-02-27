@@ -1,32 +1,38 @@
 import React, { useState } from "react";
-import MyTicketsSearch from "./search";
 import { GroupedTickets, Ticket } from "../../../types/models";
 import MyTicketsProjects from "./projects";
 
 interface MyTicketsDetailsBarProps {
   group: GroupedTickets[];
   scrollToTicketGroup: (id: string) => void;
+  detailsBarOpen: boolean;
+  setDetailsBarOpen: any;
 }
 
 const MyTicketsDetailsBar: React.FC<MyTicketsDetailsBarProps> = ({
   group,
   scrollToTicketGroup,
+  detailsBarOpen,
+  setDetailsBarOpen,
 }) => {
-  const [search, setSearch] = useState<string>("");
-
   return (
-    <aside className="my-tickets-details-bar w-full lg:w-60 bg-gray-850 z-50">
-      <header
-        className="
-        p-2 px-2 h-16 flex shadow-sm shadow-gray-950
-        "
-      >
-        <MyTicketsSearch search={search} setSearch={setSearch} />
+    <aside
+      className={`
+      my-tickets-details-bar
+      fixed top-[60px] bottom-[57px] lg:static
+      lg:translate-x-0 ${detailsBarOpen ? "translate-x-0" : "translate-x-full"}
+      w-screen lg:w-60 bg-gray-850 z-50
+      flex flex-col transition-all
+    `}
+    >
+      <header className="py-3 px-6 h-16 items-center shadow-gray-950 justify-between bg-gray-800 z-10 hidden lg:flex">
+        <h1 className="font-bold text-gray-100 text-lg z-50">My Tickets</h1>
       </header>
-      <div className="py-2 pl-2 overflow-y-auto">
+      <div className="flex flex-col flex-1">
         <MyTicketsProjects
           scrollToTicketGroup={scrollToTicketGroup}
           group={group}
+          setDetailsBarOpen={setDetailsBarOpen}
         />
       </div>
     </aside>

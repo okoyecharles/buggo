@@ -41,7 +41,6 @@ export const fetchProjectById =
         type: types.PROJECT_DETAILS_REQUEST,
       });
 
-      const currentUser = getState().currentUser;
       const { data } = await axios.get(`${SERVER_URL}/projects/${id}`, generateConfig());
 
       dispatch({
