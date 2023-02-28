@@ -53,6 +53,18 @@ const ProjectOptionsPopup: React.FC<{
         }}
       />
       <div className="flex flex-col gap-1">
+      <button
+          className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700 hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
+          disabled={loading && method.update}
+          onClick={() => {
+            setOpen(false);
+            handleEditMode();
+          }}
+        >
+          Edit Project
+          <BsFillPencilFill />
+        </button>
+
         <button
           className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700  hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
           disabled={loading && method.update}
@@ -65,17 +77,7 @@ const ProjectOptionsPopup: React.FC<{
           <BsFillPersonCheckFill />
         </button>
 
-        <button
-          className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700 hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
-          disabled={loading && method.update}
-          onClick={() => {
-            setOpen(false);
-            handleEditMode();
-          }}
-        >
-          Edit Project
-          <BsFillPencilFill />
-        </button>
+        <hr className="border-gray-800" />
 
         <button
           className="p-2 group text-red-500 hover:bg-red-500 active:bg-red-600 hover:text-red-50 flex justify-between items-center transition-colors rounded-sm text-sm"

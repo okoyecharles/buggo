@@ -87,7 +87,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       }}
     >
       <header className="flex flex-col sticky top-0 z-40">
-        <nav className="flex items-center shadow-sm shadow-gray-950 bg-gray-800 p-3 text-gray-100 font-open md:px-8 gap-4">
+        <nav className="flex items-center shadow-sm shadow-gray-950 bg-gray-800 p-3 text-gray-100 font-open md:px-8 gap-4 h-16">
           <div className="logo font-bold">
             <Link href="/">Bug Tracker</Link>
           </div>
@@ -114,7 +114,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               alt="profile__image"
               className="rounded-full h-8 w-8 object-center object-cover bg-gray-700"
             />
-            <div className="profile-info hidden sm:flex flex-col h-full justify-start">
+            <div className="profile-name hidden sm:flex flex-col h-fit justify-start">
               <p className="text-sm font-bold">
                 {restrictLength(currentUser.user?.name, 20) || "User"}
               </p>
@@ -132,7 +132,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               id="account-toggle"
               role="button"
               name="account toggle"
-              className={`text-3xl sm:text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none ${
+              className={`text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none ${
                 openDropdown && "rotate-180 bg-gray-700 text-gray-200"
               }`}
               onClick={() => setOpenDropdown((state) => !state)}
@@ -172,7 +172,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {children}
         </main>
         <aside
-          className={`bg-gray-950 border-t lg:border-none border-t-gray-700 px-2 py-1 flex gap-3 w-screen sticky bottom-0 z-50 lg:z-0 lg:flex-col lg:py-10 lg:fixed lg:left-0 lg:top-0 ${
+          className={`bg-gray-950 border-t lg:border-none border-t-gray-700 px-2 py-1 flex gap-3 w-screen sticky bottom-0 z-50 h-[60px] lg:h-auto lg:z-0 lg:flex-col lg:py-10 lg:fixed lg:left-0 lg:top-0 ${
             expandNav ? "lg:w-36" : "lg:w-[60px]"
           } lg:transition-all`}
         >

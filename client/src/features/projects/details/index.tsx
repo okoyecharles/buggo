@@ -80,11 +80,11 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   });
 
   return (
-    <aside className="project-details-bar w-full lg:w-60 bg-gray-850 sticky lg:relative z-30">
+    <aside className="project-details-bar w-full lg:w-60 bg-gray-850 lg:relative z-30">
       {/* Project details header */}
       <header
         className="
-         shadow-sm shadow-gray-950 font-semibold text-gray-300 cursor-pointer transition-colors bg-gray-850 z-10 hover:bg-gray-825 hover:text-gray-100 sticky top-[60px]
+         shadow-sm shadow-gray-950 font-semibold text-gray-300 cursor-pointer transition-colors bg-gray-850 z-10 hover:bg-gray-825 hover:text-gray-100 sticky top-[64px]
         "
         onClick={() => {
           if (!isAuthorized) return;

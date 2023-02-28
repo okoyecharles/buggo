@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import store, { storeType } from "../../../../redux/configureStore";
 import {
@@ -20,6 +20,7 @@ import TicketDeleteModal from "../modal/ticketDelete";
 import { BsCheck } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
 import Authorized from "../../../utils/authorization";
+import { FcCancel } from "react-icons/fc";
 
 interface TicketDetailsBarProps {
   ticket: Ticket | null;
@@ -75,9 +76,19 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
     }
   };
 
+  const isCommentAuthorized = useMemo(() => {
+    return Authorized(
+      "ticket",
+      "comment-create",
+      user,
+      project,
+      ticketDetails.ticket
+    );
+  }, [user, ticketDetails.ticket]);
+
   return (
     <aside
-      className={`bg-gray-850 fixed top-16 w-screen right-0 bottom-[58px] border-gray-700 lg:absolute lg:top-0 lg:w-80 lg:h-full lg:border-l z-50 ${
+      className={`bg-gray-850 fixed top-16 w-screen right-0 bottom-[60px] border-gray-700 lg:absolute lg:top-0 lg:w-80 lg:h-full lg:border-l z-50 ${
         open ? "translate-x-0" : "translate-x-full"
       } transition-all`}
     >
@@ -186,17 +197,29 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
                     comments={ticketDetails.ticket?.comments || []}
                   />
                 </div>
-                <form onSubmit={handleCommentSubmit}>
-                  <input
-                    className="absolute bottom-2 w-[calc(100%-1.5rem)] left-3 rounded-sm bg-gray-900 outline-none px-3 py-2 shadow-sm text-sm text-white font-medium placeholder:text-gray-300 font-noto"
-                    type="text"
-                    value={comment}
-                    onChange={(e) => {
-                      setComment(e.target.value);
-                    }}
-                    placeholder="Comment here"
-                  />
-                </form>
+                {isCommentAuthorized ? (
+                  <form onSubmit={handleCommentSubmit}>
+                    <input
+                      className="absolute bottom-2 w-[calc(100%-1.5rem)] left-3 rounded-sm bg-gray-900 outline-none px-3 py-2 shadow-sm text-sm text-white font-medium placeholder:text-gray-300 font-noto"
+                      type="text"
+                      value={comment}
+                      onChange={(e) => {
+                        setComment(e.target.value);
+                      }}
+                      placeholder="Comment here"
+                    />
+                  </form>
+                ) : (
+                  <div className="absolute bottom-2 w-[calc(100%-1.5rem)] left-3 bg-gray-900 rounded hover:cursor-text text-gray-300 font-noto font-medium text-sm select-none overflow-hidden group">
+                    <div className="relative px-3 py-2">
+                      Comment here
+                      <p className="absolute inset-0 bg-gray-900/50 backdrop-blur flex px-3 py-2 opacity-0 group-hover:opacity-100 transition-all truncate">
+                        <FcCancel className="text-lg mr-1" /> Only ticket
+                        members can comment
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

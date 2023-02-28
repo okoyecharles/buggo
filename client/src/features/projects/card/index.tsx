@@ -59,7 +59,7 @@ const ProjectCard: React.FC<projectProps> = ({
     }
   }, [currentEdit]);
 
-  const handleAssignMembers = async () => {
+  const handleInviteMembers = async () => {
     setProjectInvite(true);
   };
 
@@ -176,15 +176,6 @@ const ProjectCard: React.FC<projectProps> = ({
         {isAuthorized && (
           <>
             <button
-              id={`invite-project-${project._id}`}
-              className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
-              tabIndex={-1}
-              onClick={handleAssignMembers}
-              disabled={loading && method.update}
-            >
-              <BsFillPersonCheckFill />
-            </button>
-            <button
               id={`edit-project-${project._id}`}
               className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
               disabled={loading && method.update}
@@ -192,6 +183,15 @@ const ProjectCard: React.FC<projectProps> = ({
               onClick={handleEditMode}
             >
               <BsFillPencilFill />
+            </button>
+            <button
+              id={`invite-project-${project._id}`}
+              className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
+              tabIndex={-1}
+              onClick={handleInviteMembers}
+              disabled={loading && method.update}
+            >
+              <BsFillPersonCheckFill />
             </button>
             <button
               id={`delete-project-${project._id}`}

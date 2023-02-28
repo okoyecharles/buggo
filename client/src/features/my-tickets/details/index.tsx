@@ -19,7 +19,7 @@ const MyTicketsDetailsBar: React.FC<MyTicketsDetailsBarProps> = ({
     <aside
       className={`
       my-tickets-details-bar
-      fixed top-[60px] bottom-[57px] lg:static
+      fixed top-[64px] bottom-[60px] lg:static
       lg:translate-x-0 ${detailsBarOpen ? "translate-x-0" : "translate-x-full"}
       w-screen lg:w-60 bg-gray-850 z-50
       flex flex-col transition-all

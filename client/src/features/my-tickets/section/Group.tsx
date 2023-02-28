@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { GroupedTickets } from "../../../types/models";
 import TicketGroupRow from "./Row";
 import { a, useSpring, useTrail } from "@react-spring/web";
-import { BsPlus, BsPlusLg } from "react-icons/bs";
 import {
-  MdOutlineKeyboardArrowDown,
   MdOutlineKeyboardArrowRight,
 } from "react-icons/md";
 import { AiOutlineLink } from "react-icons/ai";
@@ -76,7 +74,7 @@ const TicketGroup: React.FC<TicketGroupProps> = ({
         </span>
         <Link
           href={`/project/${project._id}`}
-          className="ml-auto text-xl text-gray-200 transition opacity-0 group-hover:opacity-100 hover:text-white"
+          className="ml-auto mr-2 text-xl text-gray-200 transition opacity-0 group-hover:opacity-100 hover:text-white"
           onClick={(e) => {
             e.stopPropagation();
           }}
