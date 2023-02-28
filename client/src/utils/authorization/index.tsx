@@ -12,6 +12,7 @@ const Authorized = (
   comment?: Comment | null
 ): boolean => {
   if (!user) return false;
+  if (user.admin === true) return true;
 
   switch (modelName) {
     case "project":
