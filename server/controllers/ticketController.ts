@@ -6,7 +6,7 @@ import AuthorizedRequest from '../types/request';
 import Comment from '../models/commentModel';
 import { pusher, pusherChannel } from '..';
 
-const getTicket = async (id: string) => {
+const fetchTicket = async (id: string) => {
   const ticket = Ticket.findById(id)
     .populate('author', 'name')
     .populate({
@@ -44,9 +44,7 @@ export const getTicketById = async (req: AuthorizedRequest<TicketType>, res: Res
   try {
     const { id } = req.params;
 
-    // Get a ticket by id and populate the author and comments (with comments author)
-    const ticket = await getTicket(id);
-
+    const ticket = await fetchTicket(id);
     res.status(200).json({ ticket });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
@@ -67,40 +65,38 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
     const project = await Project.findById(ticket?.project);
     const projectTeam = project!.team.map((member) => member.toString());
 
-    if (!ticket) {
+    if (!ticket)
       return res.status(404).json({ message: 'Ticket not found' });
-    }
 
-    if (ticket.author.toString() !== req.user && !projectTeam.includes(req.user as string)) {
+    if (
+      !req.admin &&
+      ticket.author.toString() !== req.user &&
+      !projectTeam.includes(req.user as string)
+    )
       return res.status(401).json({ message: 'User not authorized' });
-    }
 
-    if (ticket) {
-      await ticket.update({
-        $set: {
-          title,
-          description,
-          priority,
-          status,
-          type,
-          time_estimate,
-          team,
-          comments
-        }
-      });
-      const updatedTicket = await getTicket(id);
+    await Ticket.updateOne({ _id: id }, {
+      title,
+      description,
+      priority,
+      status,
+      type,
+      time_estimate,
+      team,
+      comments
+    });
+    const updatedTicket = await fetchTicket(id);
 
-      pusher.trigger(pusherChannel, 'update-project-ticket', {
-        ticket: {
-          _id: id,
-          author: updatedTicket?.author._id.toString(),
-        },
-      }, {
-        socket_id: socketId as string
-      });
+    pusher.trigger(pusherChannel, 'update-project-ticket', {
+      ticket: {
+        _id: id,
+        author: updatedTicket?.author._id.toString(),
+      },
+    }, {
+      socket_id: socketId as string
+    });
 
-      res.status(200).json({ ticket: updatedTicket });
-    };
+    res.status(200).json({ ticket: updatedTicket });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
@@ -116,31 +112,37 @@ export const deleteTicket = async (req: AuthorizedRequest<TicketType>, res: Resp
     const { id } = req.params;
     const socketId = req.headers['x-pusher-socket-id'];
 
-    const ticket = await Ticket.findById(id).populate('author', 'name');
+    const ticket = await Ticket.findById(id);
     const project = await Project.findById(ticket?.project);
-    const projectTeam = project!.team.map((member) => member.toString());
 
-    if (ticket?.author._id.toString() !== req.user && !projectTeam.includes(req.user as string)) {
+    if (!ticket)
+      return res.status(404).json({ message: 'Ticket not found' });
+
+    if (!project)
+      return res.status(404).json({ message: 'Project not found' });
+
+    if (
+      !req.admin &&
+      ticket?.author.toString() !== req.user
+    ) {
       return res.status(401).json({ message: 'User not authorized' });
     }
 
-    if (ticket && project) {
-      await ticket.remove();
-      // Remove ticket reference from the project without using pull
-      project.tickets = project.tickets.filter((ticketId) => ticketId.toString() !== id);
-      await project?.save();
+    await ticket.remove();
+    // Remove ticket reference from the project without using pull
+    project.tickets = project.tickets.filter((ticketId) => ticketId.toString() !== id);
+    await project?.save();
 
-      pusher.trigger(pusherChannel, 'delete-project-ticket', {
-        ticket: {
-          _id: id,
-          author: ticket.author._id.toString(),
-        },
-      }, {
-        socket_id: socketId as string
-      });
+    pusher.trigger(pusherChannel, 'delete-project-ticket', {
+      ticket: {
+        _id: id,
+        author: ticket.author._id.toString(),
+      },
+    }, {
+      socket_id: socketId as string
+    });
 
-      res.status(200).json({ message: 'Ticket removed' });
-    }
+    res.status(200).json({ message: 'Ticket removed' });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
@@ -155,19 +157,29 @@ export const createTicketComment = async (req: AuthorizedRequest<CommentType>, r
   try {
     const { id } = req.params;
     const { text } = req.body;
-    const commentAuthor = req.user;
-    const commentTicket = await Ticket.findById(id);
+    const author = req.user;
+    const ticket = await Ticket.findById(id);
     const socketId = req.headers['x-pusher-socket-id'];
+
+    if (!ticket)
+      return res.status(404).json({ message: 'Comment\'s ticket not found' });
+
+    if (
+      !req.admin &&
+      ticket?.author.toString() !== req.user &&
+      !ticket?.team.some((member) => member.toString() === req.user)
+    )
+      return res.status(401).json({ message: 'User not authorized' });
 
     const comment = await Comment.create({
       text,
-      author: commentAuthor,
-      ticket: commentTicket?._id
+      author: author,
+      ticket: ticket?._id
     });
 
     // Add comment reference to the ticket
-    commentTicket?.comments.push(comment.id);
-    await commentTicket?.save();
+    ticket?.comments.push(comment.id);
+    await ticket?.save();
 
     const savedComment = await Comment.findById(comment.id)
       .populate('author', 'name image email');
@@ -200,15 +212,9 @@ export const getTicketComment = async (req: AuthorizedRequest<CommentType>, res:
 
     const comment = await Comment.findById(commentId)
       .populate('author', 'name image email');
-    const ticket = await Ticket.findById(id);
 
-    if (!comment || !ticket)
-      return res.status(404).json('Comment not found');
-
-    if (!ticket?.comments.includes(comment?._id))
-      return res.status(404).json({
-        message: 'Couldn\'t find comment in specified ticket'
-      })
+    if (comment?.ticket.toString() !== id)
+      return res.status(404).json({ message: 'Comment not found' });
 
     res.status(200).json({ comment });
   } catch (error: any) {

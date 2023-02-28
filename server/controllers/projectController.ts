@@ -5,7 +5,7 @@ import Project, { ProjectType } from './../models/projectModel';
 import { Types } from 'mongoose';
 import { pusher, pusherChannel } from '..';
 
-const getProject = async (id: Types.ObjectId | string) => {
+const fetchProject = async (id: Types.ObjectId | string) => {
   const project = await Project.findById(id)
     .populate('author', 'name')
     .populate('team', 'name image email')
@@ -19,6 +19,41 @@ const getProject = async (id: Types.ObjectId | string) => {
     .populate('invitees.user', 'name image email');
 
   return project;
+};
+
+/*
+ * @route   GET /projects
+ * @desc    Get all projects
+ * @access  Private
+ */
+export const getProjects = async (req: Request, res: Response) => {
+  try {
+    const projects = await Project.find()
+      .populate('author', 'name')
+      .populate('team', 'name email image')
+      .populate('invitees.user', 'name image email')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ projects });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+/*
+ * @route   GET /projects/:id
+ * @desc    Get a project by id
+ * @access  Private
+ */
+export const getProjectById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const project = await fetchProject(id);
+
+    res.status(200).json({ project });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
 /*
@@ -39,59 +74,9 @@ export const createProject = async (
 
   try {
     const newProject = await project.save();
-    const returnProject = await getProject(newProject._id);
+    const returnProject = await fetchProject(newProject._id);
 
     res.status(201).json({ project: returnProject });
-  } catch (error: any) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-/*
- * @route   GET /projects
- * @desc    Get all projects
- * @access  Private
- */
-export const getProjects = async (req: Request, res: Response) => {
-  try {
-    const projects = await Project.find()
-      .populate('author', 'name')
-      .populate('team', 'name email image')
-      .populate('invitees.user', 'name image email')
-      .sort({ createdAt: -1 });
-    res.status(200).json({ projects });
-  } catch (error: any) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-/*
- * @route   GET /projects/:id
- * @desc    Get a project by id
- * @access  Private
- */
-export const getProjectById = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const project = await getProject(id);
-
-    res.status(200).json({ project });
-  } catch (error: any) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-/*
- * @route   GET /projects/:id/team
- * @desc    Get a project's team by id
- * @access  Private
-*/
-export const getProjectTeam = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const project = await Project.findById(id);
-
-    res.status(200).json({ team: project?.team || [] });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
@@ -111,22 +96,18 @@ export const updateProject = async (
     const { title, team } = req.body;
     const project = await Project.findById(id).populate('author', 'name');
 
-    if (!project) {
+    if (!project)
       return res.status(404).json({ message: 'Project not found' });
-    }
 
-    if (project?.author.id !== req.user && title) {
+    if (project?.author._id.toString() !== req.user && !req.admin)
       return res.status(401).json({ message: 'User not authorized' });
-    }
 
-    if (project) {
-      if (title) project.title = title;
-      if (team) project.team = team;
+    if (title) project.title = title;
+    if (team) project.team = team;
 
-      const updatedProject = await project.save();
-      const returnProject = await getProject(updatedProject.id);
-      res.status(200).json({ project: returnProject });
-    }
+    const updatedProject = await project.save();
+    const returnProject = await fetchProject(updatedProject.id);
+    res.status(200).json({ project: returnProject });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
@@ -147,18 +128,16 @@ export const inviteToProject = async (
     const socketId = req.headers['x-pusher-socket-id'];
     const project = await Project.findById(id).populate('author', 'name');
 
-    if (!project) {
+    if (!project)
       return res.status(404).json({ message: 'Project not found' });
-    }
 
-    if (project?.author.id.toString() !== req.user) {
+    if (project?.author.id.toString() !== req.user && !req.admin)
       return res.status(401).json({ message: 'User not authorized' });
-    }
 
     project.invitees = [...project.invitees, ...invitees];
 
     const updatedProject = await project.save();
-    const returnProject = await getProject(updatedProject.id);
+    const returnProject = await fetchProject(updatedProject.id);
 
     pusher.trigger(
       pusherChannel,
@@ -179,8 +158,6 @@ export const inviteToProject = async (
   * @route   PUT /projects/:id/accept-invite
   * @desc    Accept an invite to a project
   * @access  Private
-  * @todo    Add user to project team
-  * @todo    Remove user from invitees
 */
 export const acceptInvite = async (
   req: AuthorizedRequest<ProjectType>,
@@ -205,7 +182,7 @@ export const acceptInvite = async (
 
       project.team.push(req.user as any);
       await project.save();
-      const returnProject = await getProject(project.id);
+      const returnProject = await fetchProject(project.id);
 
       pusher.trigger(
         pusherChannel,
@@ -238,14 +215,14 @@ export const deleteProject = async (
     const { id } = req.params;
     const project = await Project.findById(id).populate('author', 'name');
 
-    if (project?.author.id !== req.user) {
-      return res.status(401).json({ message: 'User not authorized' });
-    }
+    if (!project)
+      return res.status(404).json({ message: 'Project not found' });
 
-    if (project) {
-      await project.remove();
-      res.status(200).json({ message: 'Project removed' });
-    }
+    if (project.author._id.toString() !== req.user && !req.admin)
+      return res.status(401).json({ message: 'User not authorized' });
+
+    await project.remove();
+    res.status(200).json({ message: 'Project removed' });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
@@ -286,7 +263,8 @@ export const createTicket = async (
     const ticketProjectMembers = ticketProject?.team.map((member) => {
       return member.toString();
     });
-    if (!ticketProjectMembers?.some((member) => member === req.user)) {
+
+    if (!req.admin && !ticketProjectMembers?.some((member) => member === req.user)) {
       return res.status(401).json({ message: 'User not authorized' });
     }
 

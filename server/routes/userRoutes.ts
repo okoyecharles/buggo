@@ -5,13 +5,14 @@ import protect from '../middleware/authMiddleware';
 
 const router = express.Router();
 
-router.get('/', getUsers);
+router.get('/', protect, getUsers);
 router.post('/validate', protect, validateUser);
+router.put('/:id', protect, updateUser);
+router.delete('/:id', protect, deleteUser);
+
 router.post('/signup', register);
 router.post('/signin', login);
 router.post('/signout', logout);
-router.put('/:id', protect, updateUser);
-router.delete('/:id', deleteUser);
 router.post('/googleSignIn', googleSignIn);
 
 export default router;

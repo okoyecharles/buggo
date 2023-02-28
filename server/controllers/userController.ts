@@ -13,9 +13,13 @@ const tokenName = "bug-tracker-token";
  * @desc    Get all users
  * @access  Public
 */
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (req: AuthorizedRequest<any>, res: Response) => {
   try {
     const users = await User.find();
+
+    if (!req.admin)
+      return res.status(401).json({ message: 'Unauthorized Request' });
+
     res.status(200).json({ users });
   } catch (error) {
     res
@@ -29,14 +33,17 @@ export const getUsers = async (req: Request, res: Response) => {
  * @desc    Delete a user
  * @access  Public
 */
-export const deleteUser = async (req: Request, res: Response) => {
+export const deleteUser = async (req: AuthorizedRequest<any>, res: Response) => {
   const { id } = req.params;
 
   try {
     const userExists = await User.findById(id);
-    if (!userExists) {
+
+    if (!userExists)
       return res.status(404).json({ message: 'User not found' });
-    }
+
+    if (!req.admin)
+      return res.status(401).json({ message: 'Unauthorized Request' });
 
     await userExists.remove();
     res.status(200).json({ message: 'User deleted successfully' });
@@ -74,7 +81,7 @@ export const register = async (
       image,
     });
 
-    const token = generateToken(user._id);
+    const token = generateToken(user._id.toString(), user.admin);
     res.status(200)
       .cookie(tokenName, token, { httpOnly: true })
       .json({ user });
@@ -111,7 +118,7 @@ export const login = async (
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const token = generateToken(userExists._id);
+    const token = generateToken(userExists._id.toString(), userExists.admin);
     res
       .status(200)
       .cookie(tokenName, token, { httpOnly: true })
@@ -145,25 +152,20 @@ export const updateUser = async (
   const { id } = req.params;
   const { name, image } = req.body;
 
-  const userId = req.user;
-
   try {
     const userExists = await User.findById(id);
-    if (!userExists) {
-      return res.status(404).json({ message: 'User not found' });
-    };
 
-    if (userId !== userExists._id.toString()) {
+    if (!userExists)
+      return res.status(404).json({ message: 'User not found' });
+
+    if (req.user !== userExists._id.toString() && !req.admin)
       return res.status(401).json({ message: 'Unauthorized' });
-    };
 
     if (name) userExists.name = name;
     if (image) userExists.image = image;
 
     const updatedUser = await userExists.save();
-    res.status(200).json({
-      user: updatedUser
-    });
+    res.status(200).json({ user: updatedUser });
   } catch (error) {
     res
       .status(500)
@@ -178,19 +180,18 @@ export const updateUser = async (
 */
 export const validateUser = async (req: Request, res: Response) => {
   const token = req.cookies[tokenName];
-  if (!token) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
 
-  const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as {
+  if (!token)
+    return res.status(401).json({ message: 'Unauthorized' });
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
     id: string;
+    admin: boolean;
   };
+  const user = await User.findById(decoded.id);
 
-  const user = await User.findById(decodedToken.id);
-
-  if (!user) {
+  if (!user)
     return res.status(401).json({ message: 'Unauthorized' });
-  }
 
   res.status(200).json({ user });
 };
@@ -227,8 +228,8 @@ export const googleSignIn = async (
 /*
  * @desc    Genrate a token based on user id
  */
-const generateToken = (id: any) => {
-  const token = jwt.sign({ id }, secret, {
+const generateToken = (id: string, admin: boolean) => {
+  const token = jwt.sign({ id, admin }, secret, {
     expiresIn: tokenExpiration,
   });
   return token;

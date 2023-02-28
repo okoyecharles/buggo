@@ -17,6 +17,7 @@ const protect = async (
       const decoded: any = jwt.verify(requestToken, secret);
 
       req.user = decoded.id;
+      req.admin = decoded.admin;
 
       next();
     } catch (err: any) {
