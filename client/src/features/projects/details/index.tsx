@@ -6,7 +6,7 @@ import {
   MdOutlineKeyboardArrowDown,
   MdOutlineKeyboardArrowRight,
 } from "react-icons/md";
-import { IoMdClose } from "react-icons/io";
+import { IoIosArrowBack, IoMdClose } from "react-icons/io";
 import { FiCheckCircle } from "react-icons/fi";
 import getDate from "../../../utils/strings/date";
 import Image from "next/image";
@@ -18,6 +18,7 @@ import Button from "../../../components/Button";
 import { acceptInvite } from "../../../../redux/actions/projectActions";
 import { a, useSpring, useTrail } from "@react-spring/web";
 import Authorized from "../../../utils/authorization";
+import { useRouter } from "next/router";
 
 interface ProjectDetailsBarProps {
   project: Project | null;
@@ -38,6 +39,8 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   const [invitedMembersOpen, setInvitedMembersOpen] = useState(true);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
+
+  const router = useRouter();
 
   const user = useSelector((store: storeType) => store.currentUser.user);
 
@@ -91,8 +94,17 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
           setOptionsOpen(!optionsOpen);
         }}
       >
-        <div className="relative flex justify-between items-center p-3 px-6 h-16 lg:px-3">
-          <span className="truncate font-bold text-gray-100 text-lg">
+        <div className="relative flex items-center p-3 px-6 pl-3 h-16 lg:px-3">
+          <button
+            className="rounded p-1 bg-gray-900 active:bg-gray-950 transition-colors shadow-sm mr-[1ch] lg:hidden"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push("/");
+            }}
+          >
+            <IoIosArrowBack className="text-2xl text-white" />
+          </button>
+          <span className="truncate font-bold text-gray-100 text-lg mr-auto">
             {project?.title}
           </span>
           {isAuthorized && (
