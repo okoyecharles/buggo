@@ -7,8 +7,9 @@ import TicketsSection from "../../src/features/tickets/list";
 import ProjectDeleteModal from "../../src/features/projects/modal/projectDelete";
 import Head from "next/head";
 import ProjectDetailsBar from "../../src/features/projects/details";
+import Layout from "../../src/layout";
 
-const ProjectDetails: React.FC = () => {
+export default function ProjectDetails() {
   const router = useRouter();
   const { id } = router.query;
 
@@ -55,6 +56,8 @@ const ProjectDetails: React.FC = () => {
       </div>
     </>
   );
-};
+}
 
-export default ProjectDetails;
+ProjectDetails.getLayout = function getLayout(page: React.ReactNode) {
+  return <Layout>{page}</Layout>;
+};

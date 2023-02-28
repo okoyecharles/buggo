@@ -10,6 +10,7 @@ import TicketStats from "../src/features/tickets/statistics";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import ProjectSection from "../src/features/projects";
 import { searchProjectByName } from "../src/utils/strings/search";
+import Layout from "../src/layout";
 
 export default function Home() {
   const user = useSelector((store: storeType) => store.currentUser.user);
@@ -77,3 +78,7 @@ export default function Home() {
     </>
   );
 }
+
+Home.getLayout = function getLayout(page: React.ReactNode) {
+  return <Layout>{page}</Layout>;
+};

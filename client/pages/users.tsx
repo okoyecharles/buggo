@@ -1,7 +1,8 @@
 import Head from "next/head";
 import React from "react";
+import Layout from "../src/layout";
 
-const users = () => {
+export default function Users() {
   return (
     <>
       <Head>
@@ -12,6 +13,8 @@ const users = () => {
       <h1 className="text-gray-400 text-xl font-semibold font-open">Users</h1>
     </>
   );
-};
+}
 
-export default users;
+Users.getLayout = function getLayout(page: React.ReactNode) {
+  return <Layout>{page}</Layout>;
+};

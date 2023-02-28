@@ -6,13 +6,11 @@ import type { AppProps } from "next/app";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-tooltip/dist/react-tooltip.css";
-import Layout from "../src/layout/index";
 import { validateUserSession } from "../redux/actions/userActions";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const isLayoutNeeded =
-    Component.name !== "Login" && Component.name !== "Register";
-  const LayoutComponent = isLayoutNeeded ? Layout : React.Fragment;
+  // Use the layout defined at the page level, if defined
+  const getLayout = (Component as any).getLayout || ((page: any) => page);
 
   useEffect(() => {
     store.dispatch(validateUserSession());
@@ -22,9 +20,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       <ToastContainer position={"bottom-right"} />
       <Provider store={store}>
-        <LayoutComponent>
-          <Component {...pageProps} />
-        </LayoutComponent>
+        {getLayout(<Component {...pageProps} />)}
       </Provider>
     </>
   );

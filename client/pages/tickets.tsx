@@ -6,13 +6,14 @@ import MyTicketsSection from "../src/features/my-tickets/section";
 import { fetchTickets } from "../redux/actions/ticketActions";
 import { GroupedTickets, Ticket } from "../src/types/models";
 import Head from "next/head";
+import Layout from "../src/layout";
 
-const tickets = () => {
+export default function Tickets() {
   const tickets = useSelector((store: storeType) => store.tickets);
 
-  const [scrolledTicketGroup, setScrolledTicketGroup] = useState<null | { id: string }>(
-    null
-  );
+  const [scrolledTicketGroup, setScrolledTicketGroup] = useState<null | {
+    id: string;
+  }>(null);
   const [detailsBarOpen, setDetailsBarOpen] = useState(false);
 
   useEffect(() => {
@@ -85,6 +86,8 @@ const tickets = () => {
       </div>
     </>
   );
-};
+}
 
-export default tickets;
+Tickets.getLayout = function getLayout(page: React.ReactNode) {
+  return <Layout>{page}</Layout>;
+};
