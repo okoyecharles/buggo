@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
+    "start": "node index.ts",
     "server": "nodemon index.ts"
   },
   "keywords": [],
