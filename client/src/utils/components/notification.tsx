@@ -1,10 +1,5 @@
-import { useRef, useState } from "react";
-import { ThreeDotsLoader } from "../../features/loader";
-import { acceptInvite } from "../../../redux/actions/projectActions";
-import store from "../../../redux/configureStore";
 import { Notification } from "../../types/models";
-import { BsCheck, BsPersonPlusFill } from "react-icons/bs";
-import { randomUUID } from "crypto";
+import { BsPersonPlusFill } from "react-icons/bs";
 import Link from "next/link";
 
 export const getNotificationDescription = (notification: Notification) => {

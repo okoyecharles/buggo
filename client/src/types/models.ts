@@ -6,6 +6,7 @@ export type User = {
   password?: string;
   admin: boolean;
   googleId?: string | undefined;
+  createdAt: any;
 };
 
 

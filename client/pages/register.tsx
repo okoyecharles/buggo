@@ -17,6 +17,7 @@ import Head from "next/head";
 import Compressor from "compressorjs";
 import { toBase64 } from "../src/utils/strings/image";
 import Button from "../src/components/Button";
+import Image from "next/image";
 
 const Register = () => {
   const router = useRouter();
@@ -139,7 +140,7 @@ const Register = () => {
   return (
     <>
       <Head>
-        <title>Register</title>
+        <title>Buggo</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -149,7 +150,10 @@ const Register = () => {
           className="bg-gray-800 w-screen h-screen text-gray-300 font-noto flex flex-col p-6 sm:h-auto sm:rounded sm:max-w-[450px] sm:shadow-lg"
           style={springs}
         >
-          <h2 className="text-gray-100 text-xl font-semibold self-center mb-2">
+          <div className="self-center mb-4 sm:hidden">
+            <Image src={"/text-logo.png"} height={22} width={110} alt="buggo" />
+          </div>
+          <h2 className="text-gray-100 text-xl font-semibold self-center mb-1">
             Create an account
           </h2>
           <span className="self-center text-ss">

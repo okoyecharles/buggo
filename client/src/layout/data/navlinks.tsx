@@ -12,6 +12,7 @@ const navLinks = [
         <MdOutlineSpaceDashboard className={className} title="Dashboard" />
       ),
     href: "/",
+    admin: false
   },
   {
     name: "Tickets",
@@ -22,6 +23,7 @@ const navLinks = [
         <IoTicketOutline className={className} title="Tickets" />
       ),
     href: "/tickets",
+    admin: false
   },
   {
     name: "Users",
@@ -32,6 +34,7 @@ const navLinks = [
         <HiOutlineUsers className={className} title="Users" />
       ),
     href: "/users",
+    admin: true
   },
 ];
 

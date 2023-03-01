@@ -43,7 +43,6 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   const [processing, setProcessing] = useState<boolean>(false);
   const { query } = useRouter();
 
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -111,11 +110,19 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
 
   useEffect(() => {
     if (open) {
+      // Clear form
       setTitle("");
       setDescription("");
       setPriority("");
       setType("");
       setTimeEstimate("");
+
+      // Clear errors
+      setTitleError(null);
+      setDescriptionError(null);
+      setPriorityError(null);
+      setTypeError(null);
+      setTimeEstimateError(null);
     }
   }, [open]);
 

@@ -2,6 +2,7 @@ import { Channel } from "pusher-js";
 import store from "../../../redux/configureStore";
 import { pusherUpdateProject } from "../../../redux/actions/projectActions";
 import { pusherCommentOnTicket, pusherCreateTicket, pusherDeleteTicket, pusherUpdateTicket } from "../../../redux/actions/ticketActions";
+import { pusherDeleteUser } from "../../../redux/actions/userActions";
 
 const bindChannelEvents = (channel: Channel) => {
   // Project invite
@@ -49,6 +50,14 @@ const bindChannelEvents = (channel: Channel) => {
     "delete-project-ticket",
     ({ ticket }: { ticket: any }) => {
       store.dispatch(pusherDeleteTicket(ticket._id));
+    }
+  );
+
+  // Delete User
+  channel?.bind(
+    "delete-user",
+    ({ userId }: { userId: string }) => {
+      pusherDeleteUser(userId);
     }
   );
 }

@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { login } from "../redux/actions/userActions";
 import Head from "next/head";
 import Button from "../src/components/Button";
+import Image from "next/image";
 
 const Login = () => {
   const router = useRouter();
@@ -90,7 +91,7 @@ const Login = () => {
   return (
     <>
       <Head>
-        <title>Login</title>
+        <title>Buggo</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -100,7 +101,10 @@ const Login = () => {
           className="bg-gray-800 w-screen h-screen text-gray-300 font-noto flex flex-col p-6 sm:h-auto sm:rounded sm:max-w-[450px] sm:shadow-lg"
           style={springs}
         >
-          <h2 className="text-gray-100 text-xl font-semibold self-center mb-2">
+          <div className="self-center mb-4 sm:hidden">
+            <Image src={"/text-logo.png"} height={22} width={110} alt="buggo" />
+          </div>
+          <h2 className="text-gray-100 text-xl font-semibold self-center mb-1">
             Welcome back!
           </h2>
           <span className="self-center text-ss">

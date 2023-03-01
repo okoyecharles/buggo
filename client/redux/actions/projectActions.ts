@@ -1,5 +1,4 @@
 import { toast } from 'react-toastify';
-import { Project } from '../../src/types/models';
 import { storeType } from './../configureStore';
 import SERVER_URL from '../../src/data/backend-config';
 import * as types from '../constants/projectConstants';
@@ -128,15 +127,6 @@ export const pusherUpdateProject = (projectId: string) => async (
       payload: error.response?.data ? error.response.data : error.error,
     });
   }
-};
-
-
-export const getProjectTeamIds = async (project: Project) => {
-  const { data } = await axios.get(
-    `${SERVER_URL}/projects/${project._id}/team`,
-    generateConfig()
-  );
-  return data.team;
 };
 
 export const deleteProject =

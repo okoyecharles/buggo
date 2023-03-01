@@ -40,7 +40,6 @@ export default function Home() {
       <Head>
         <title>Dashboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <header className="m-4">
         <h2 className="text-lg lg:text-xl font-noto flex flex-col">

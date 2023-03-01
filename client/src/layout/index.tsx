@@ -3,12 +3,10 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import store, { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
-import { RiArrowRightSLine } from "react-icons/ri";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { useRouter } from "next/router";
 import { Tooltip } from "react-tooltip";
 import ProfileDropdown from "./modal/ProfileDropdown";
-import navLinks from "./data/navlinks";
 import { restrictLength } from "../utils/components/string";
 import EditProfileModal from "./modal/profileEdit";
 import defaultAvatar from "../assets/default-avatar";
@@ -22,6 +20,7 @@ import {
   disconnectPusher,
 } from "../../redux/actions/pusherActions";
 import bindChannelEvents from "./pusher/channel";
+import SideBar from "./sidebar";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -89,7 +88,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <header className="flex flex-col sticky top-0 z-40">
         <nav className="flex items-center shadow-sm shadow-gray-950 bg-gray-800 p-3 text-gray-100 font-open md:px-8 gap-4 h-16">
           <div className="logo font-bold">
-            <Link href="/">Bug Tracker</Link>
+            <Link href="/" className="flex items-center gap-2">
+              <Image src={'/text-logo.png'} height={22} width={100} alt="buggo"/>
+            </Link>
           </div>
           <button
             className="p-2 notifications ml-auto text-3xl lg:text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none"
@@ -171,73 +172,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         >
           {children}
         </main>
-        <aside
-          className={`bg-gray-950 border-t lg:border-none border-t-gray-700 px-2 py-1 flex gap-3 w-screen sticky bottom-0 z-50 h-[60px] lg:h-auto lg:z-0 lg:flex-col lg:py-10 lg:fixed lg:left-0 lg:top-0 ${
-            expandNav ? "lg:w-36" : "lg:w-[60px]"
-          } lg:transition-all`}
-        >
-          <ul
-            className="flex 
-        gap-8 md:gap-14 items-center font-noto justify-center w-full lg:flex-col lg:gap-3 lg:pt-16 lg:items-start"
-          >
-            {navLinks.map((link) => (
-              <li
-                key={link.name}
-                className={`w-20 items-center rounded-full group lg:active:bg-orange-700/90  lg:hover:bg-orange-600/90 transition-all overflow-hidden ${
-                  link.href === router.pathname
-                    ? "lg:bg-orange-600/90"
-                    : "lg:bg-gray-900"
-                } ${
-                  expandNav ? "lg:rounded-xl" : "lg:rounded-full"
-                } lg:cursor-pointer lg:height-auto lg:hover:rounded-xl lg:transition lg:w-full`}
-              >
-                <Link
-                  href={link.href}
-                  className={`p-1 flex flex-col justify-center items-center lg:p-3 lg:justify-start lg:flex-row`}
-                >
-                  {link.icon({
-                    className: `text-2xl group-hover:text-white transition ${
-                      link.href === router.pathname
-                        ? "text-white"
-                        : "text-white lg:text-orange-500/90"
-                    } lg:text-xl`,
-                    active: link.href === router.pathname,
-                  } as any)}
-                  <span
-                    className={`text-xsm group-hover:text-white transition ${
-                      link.href === router.pathname
-                        ? "text-white"
-                        : "text-gray-300"
-                    } ${
-                      expandNav ? "lg:opacity-100 lg:delay-75" : "lg:opacity-0"
-                    } lg:w-0 lg:transition lg:uppercase lg:font-semibold`}
-                  >
-                    <span className="hidden lg:inline">&nbsp;&nbsp;</span>
-                    {link.name}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <div className="relative hidden lg:block mt-auto w-full h-10">
-            <button
-              id="expand"
-              className="p-3 absolute right-0 translate-x-2/4 bottom-0 ring-1 ring-gray-700 bg-gray-850 text-2xl text-gray-300 rounded-lg hover:bg-gray-800 hover:ring-gray-600 active:bg-gray-850 hover:text-white transition-colors"
-              onClick={() => setExpandNav(!expandNav)}
-            >
-              <RiArrowRightSLine
-                className={`text-orange-500 text-2xl transition ${
-                  expandNav ? "rotate-180" : "rotate-0"
-                }`}
-              />
-            </button>
-            <Tooltip
-              anchorId="expand"
-              content={expandNav ? "Collapse" : "Expand"}
-              place="right"
-            />
-          </div>
-        </aside>
+        <SideBar expandNav={expandNav} setExpandNav={setExpandNav} />
       </div>
     </a.div>
   );

@@ -1,9 +1,9 @@
 import { toast } from 'react-toastify';
 import SERVER_URL from '../../src/data/backend-config';
 import * as types from '../constants/userConstants';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { DispatchType } from '../types';
-import { storeType } from '../configureStore';
+import store, { storeType } from '../configureStore';
 import generateConfig from './config/axios';
 
 const login =
@@ -56,12 +56,13 @@ const register = (formData: any) => async (dispatch: DispatchType) => {
   }
 };
 
-const logout = () => async (dispatch: DispatchType) => {
+const logout = (auto = false) => async (dispatch: DispatchType) => {
   dispatch({
     type: types.USER_LOGOUT,
   });
   await axios.post(`${SERVER_URL}/users/signout`, {}, generateConfig());
-  toast.success("Logged Out successfully");
+  if (!auto)
+    toast.success("Logged Out successfully");
 };
 
 const validateUserSession = () => async (dispatch: DispatchType) => {
@@ -120,9 +121,29 @@ const updateUser = (formData: {
 const getUsers = async () => {
   const { data } = await axios.get(`${SERVER_URL}/users`, generateConfig());
 
-  return data;
+  return data.users;
 };
 
+const deleteUser = async (id: string) => {
+  try {
+    const socketId = store.getState().pusher.socket;
+    const { data } = await axios.delete(
+      `${SERVER_URL}/users/${id}`,
+      generateConfig(socketId || '')
+    );
+    toast.success("User deleted successfully");
+    return data.users;
+  } catch (error: any) {
+    toast.error(error.response?.data ? error.response.data : error.error);
+  }
+};
 
+const pusherDeleteUser = (id: string) => {
+  const userId = store.getState().currentUser.user?._id;
+  if (userId === id) {
+    toast.warn("Due to policy violation, This account has been deleted");
+    store.dispatch(logout(true));
+  }
+};
 
-export { validateUserSession, login, register, logout, updateUser, getUsers };
+export { validateUserSession, login, register, logout, updateUser, getUsers, deleteUser, pusherDeleteUser };

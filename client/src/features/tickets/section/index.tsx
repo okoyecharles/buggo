@@ -166,6 +166,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
                 Assigned
               </div>
             </header>
+            <hr className="border-gray-700 lg:mx-4" />
             <ul className="lg:px-4 flex flex-col">
               {currentTickets.length ? (
                 currentTickets.map((ticket) => (

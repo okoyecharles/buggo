@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-type Format = 'calendar time' | 'on calendar' | 'from now' | 'L' | 'short calendar';
+type Format = 'calendar time' | 'on calendar' | 'from now' | 'L' | 'short calendar' | 'short month year';
 interface Options {
   format: Format;
 }
@@ -17,9 +17,12 @@ const getDate = (date: string | undefined, options: Options = {
   if (options.format === 'L')
     return dateMoment.format('L');
   if (options.format === 'short calendar') {
-    if (dateMoment.days() <= 28)
+    if (now.diff(dateMoment, 'days') < 28)
       return dateMoment.fromNow();
     return dateMoment.format('[on] MMM D, YYYY');
+  }
+  if (options.format === 'short month year') {
+    return dateMoment.format('MMM D, YYYY');
   }
 
   if (now.diff(dateMoment, 'days') < 1) {

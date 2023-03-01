@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User, { UserType } from '../models/userModel';
 import { Request, Response } from 'express';
 import AuthorizedRequest from '../types/request';
+import { pusher, pusherChannel } from '..';
 
 const secret = process.env.JWT_SECRET || '';
 const tokenExpiration = process.env.NODE_ENV === 'development' ? '1d' : '7d';
@@ -34,9 +35,10 @@ export const getUsers = async (req: AuthorizedRequest<any>, res: Response) => {
  * @access  Public
 */
 export const deleteUser = async (req: AuthorizedRequest<any>, res: Response) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
+    const socketId = req.headers['x-pusher-socket-id'];
+
     const userExists = await User.findById(id);
 
     if (!userExists)
@@ -46,7 +48,15 @@ export const deleteUser = async (req: AuthorizedRequest<any>, res: Response) => 
       return res.status(401).json({ message: 'Unauthorized Request' });
 
     await userExists.remove();
-    res.status(200).json({ message: 'User deleted successfully' });
+
+    pusher.trigger(pusherChannel, 'delete-user', {
+      userId: id,
+    }, {
+      socket_id: socketId as string
+    });
+    const users = await User.find();
+
+    res.status(200).json({ users, message: 'User deleted successfully' });
   } catch (error) {
     res
       .status(500)

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import store, { storeType } from "../../redux/configureStore";
 import { useSelector } from "react-redux";
 import { fetchProjectById } from "../../redux/actions/projectActions";
-import TicketsSection from "../../src/features/tickets/list";
+import TicketsSection from "../../src/features/tickets/section";
 import ProjectDeleteModal from "../../src/features/projects/modal/projectDelete";
 import Head from "next/head";
 import ProjectDetailsBar from "../../src/features/projects/details";
