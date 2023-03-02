@@ -93,7 +93,7 @@ export const register = async (
 
     const token = generateToken(user._id.toString(), user.admin);
     res.status(200)
-      .cookie(tokenName, token, { httpOnly: true })
+      .cookie(tokenName, token, { httpOnly: true, sameSite: 'none', secure: true })
       .json({ user });
   } catch (error) {
     res
@@ -131,7 +131,7 @@ export const login = async (
     const token = generateToken(userExists._id.toString(), userExists.admin);
     res
       .status(200)
-      .cookie(tokenName, token, { httpOnly: true })
+      .cookie(tokenName, token, { httpOnly: true, sameSite: 'none', secure: true })
       .json({ user: userExists });
   } catch (error) {
     res
@@ -147,7 +147,10 @@ export const login = async (
   */
 
 export const logout = async (req: Request, res: Response) => {
-  res.clearCookie(tokenName, { httpOnly: true }).send('Logged out');
+  res.clearCookie(
+    tokenName,
+    { httpOnly: true, sameSite: 'none', secure: true }
+  ).send('Logged out');
 };
 
 /*
