@@ -4,10 +4,12 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head />
-      <body className="bg-gray-800 overflow-x-hidden">
-        <Main />
-        <div id="portal" />
-        <NextScript />
+      <body className="bg-gray-800">
+        <div className="overflow-x-hidden">
+          <Main />
+          <div id="portal" />
+          <NextScript />
+        </div>
       </body>
     </Html>
   );

@@ -3,34 +3,25 @@ import { GroupedTickets, Ticket } from "../../../types/models";
 import { returnWithTwoDigitsOrMore } from "../../../utils/components/string";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
+import moment from "moment";
 
 interface MyTicketsStatsProps {
   group: GroupedTickets[];
 }
 
 const getTicketsCreatedThisWeek = (tickets: Ticket[]) => {
-  const today = new Date();
-  const lastWeek = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate() - 7
-  );
+  const now = moment().startOf("week");
   return tickets.filter((ticket) => {
-    const ticketDate = new Date(ticket.createdAt);
-    return ticketDate >= lastWeek && ticketDate <= today;
+    const ticketDate = moment(ticket.createdAt);
+    return ticketDate >= now;
   }).length;
 };
 
 const getTicketsCreatedThisMonth = (tickets: Ticket[]) => {
-  const today = new Date();
-  const lastMonth = new Date(
-    today.getFullYear(),
-    today.getMonth() - 1,
-    today.getDate()
-  );
+  const now = moment().startOf("month");
   return tickets.filter((ticket) => {
-    const ticketDate = new Date(ticket.createdAt);
-    return ticketDate >= lastMonth && ticketDate <= today;
+    const ticketDate = moment(ticket.createdAt);
+    return ticketDate >= now;
   }).length;
 };
 

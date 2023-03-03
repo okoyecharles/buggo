@@ -3,7 +3,7 @@ import { GroupedTickets } from "../../../types/models";
 import { Tooltip } from "react-tooltip";
 import { returnWithTwoDigitsOrMore } from "../../../utils/components/string";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
-import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 interface MyTicketsProjectsProps {
   group: GroupedTickets[];
@@ -25,7 +25,7 @@ const MyTicketsProjects: React.FC<MyTicketsProjectsProps> = ({
             setDetailsBarOpen(false);
           }}
         >
-          <IoIosArrowBack className="text-2xl text-white" />
+          <IoIosArrowForward className="text-2xl text-white" />
         </button>
         <span className="lg:uppercase text-white lg:text-gray-100 lg:text-sm font-semibold">
           Projects
@@ -49,7 +49,7 @@ const MyTicketsProjects: React.FC<MyTicketsProjectsProps> = ({
       </header>
       <div className="ticket-group-project-list flex-1 relative">
         <ul className="flex flex-col text-ss font-semibold overflow-y-scroll w-full absolute top-0 bottom-0 p-4 lg:px-0 lg:pl-2">
-          <li className="bg-gray-700 p-2 lg:rounded-l-md text-gray-100 flex gap-1 mb-4 select-none cursor-pointer transition-colors rounded">
+          <li className="bg-gray-700 p-2 rounded lg:rounded-l-md lg:rounded-r-none text-gray-100 flex gap-1 mb-4 select-none cursor-pointer transition-colors">
             <span>All Projects</span>
             <span className="ml-auto flex items-center justify-end w-6 truncate text-sm">
               {returnWithTwoDigitsOrMore(
@@ -64,7 +64,7 @@ const MyTicketsProjects: React.FC<MyTicketsProjectsProps> = ({
           </li>
           {group.map((project) => (
             <li
-              className="hover:bg-gray-750 active:bg-gray-700 p-2 lg:rounded-l-md text-gray-100 flex gap-1 select-none cursor-pointer transition-colors rounded"
+              className="hover:bg-gray-750 active:bg-gray-700 p-2 rounded lg:rounded-l-md lg:rounded-r-none text-gray-100 flex gap-1 select-none cursor-pointer transition-colors"
               key={project._id}
               onClick={() => {
                 setDetailsBarOpen(false);

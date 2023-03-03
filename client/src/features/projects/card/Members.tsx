@@ -12,10 +12,8 @@ interface ProjectCardMembersProps {
 const ProjectCardMembers: React.FC<ProjectCardMembersProps> = ({
   project,
 }) => {
-  const user = useSelector((store: storeType) => store.currentUser.user);
-
   return (
-    <div className="flex mb-2 gap-2 lg:items-center text-ss lg:h-7">
+    <div className="flex mb-2 gap-2 lg:items-center text-ss">
       <h4 className="font-bold text-gray-400 flex items-center">MEMBERS:</h4>
       <ImageRow model={project} maxImages={3} />
     </div>

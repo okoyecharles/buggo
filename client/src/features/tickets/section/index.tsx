@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
 import CreateTicketModal from "../modal/ticketCreate";
 import Authorized from "../../../utils/authorization";
+import { a, useSpring, useTrail } from "@react-spring/web";
 
 interface TicketsSectionProps {
   tickets: Ticket[] | undefined;
@@ -31,7 +32,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
   const [ticketDetailsOpen, setTicketDetailsOpen] = useState<boolean>(false);
   const [ticketDetails, setTicketDetails] = useState<Ticket | null>(null);
 
-  const [statusFilter, setStatusFilter] = useState<string>("open");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [authorFilter, setAuthorFilter] = useState<string>("all");
 
   const filterByStatus = (tickets: Ticket[], status: string) => {
@@ -66,6 +67,17 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
   const canCreateTicket = useMemo(() => {
     return Authorized("project", "ticket-create", user, project);
   }, [user, project]);
+
+  const ticketListTrail = useTrail(currentTickets.length, {
+    from: { y: 30 },
+    to: { y: 0 },
+    config: { mass: 1, tension: 1000, friction: 100 },
+  });
+  const ticketListSpring = useSpring({
+    from: { height: 0 },
+    to: { height: (70 * currentTickets.length) },
+    config: { mass: 1, tension: 1000, friction: 100 },
+  });
 
   return (
     <section className="project-tickets flex-1 relative">
@@ -167,15 +179,16 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
               </div>
             </header>
             <hr className="border-gray-700 lg:mx-4" />
-            <ul className="lg:px-4 flex flex-col">
+            <a.ul className="lg:px-4 flex flex-col overflow-hidden" style={ticketListSpring}>
               {currentTickets.length ? (
-                currentTickets.map((ticket) => (
+                currentTickets.map((ticket, index) => (
                   <TicketRow
                     key={ticket._id}
                     ticket={ticket}
                     showTicketDetails={setTicketDetailsOpen}
                     setTicketDetails={setTicketDetails}
                     ticketDetails={ticketDetails}
+                    ticketRowTrail={ticketListTrail[index]}
                   />
                 ))
               ) : (
@@ -191,7 +204,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
                   </p>
                 </div>
               )}
-            </ul>
+            </a.ul>
           </div>
         ) : (
           <div className="p-4 text-gray-300 flex flex-col items-center justify-center">

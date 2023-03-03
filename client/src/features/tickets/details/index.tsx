@@ -61,7 +61,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   useEffect(() => {
     const commentSection = commentsRef?.current as HTMLDivElement | null;
     if (commentSection) {
-      // Scroll to bottom of comments section
+      // Scroll to bottom of comments section when new comment is added
       commentSection.scrollTop = commentSection.scrollHeight;
     }
   }, [ticketDetails.ticket?.comments]);

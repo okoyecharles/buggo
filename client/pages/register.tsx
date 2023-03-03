@@ -1,7 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSpring, a } from "@react-spring/web";
-import { ThreeDotsLoader } from "../src/features/loader";
 import {
   validateName,
   validateEmail,
@@ -147,18 +146,15 @@ const Register = () => {
       <div className="bg-gray-900 form__container w-screen h-screen flex justify-center items-center sm:p-4">
         <a.form
           onSubmit={handleSubmit}
-          className="bg-gray-800 w-screen h-screen text-gray-300 font-noto flex flex-col p-6 sm:h-auto sm:rounded sm:max-w-[450px] sm:shadow-lg"
+          className="bg-gray-850 sm:bg-gray-800 w-screen h-screen text-gray-300 font-noto flex flex-col p-6 sm:h-auto sm:rounded sm:max-w-[450px] sm:shadow-lg"
           style={springs}
         >
-          <div className="self-center mb-4 sm:hidden">
+          <div className="self-center mb-4 mt-4 sm:hidden">
             <Image src={"/text-logo.png"} height={22} width={110} alt="buggo" />
           </div>
           <h2 className="text-gray-100 text-xl font-semibold self-center mb-1">
             Create an account
           </h2>
-          <span className="self-center text-ss">
-            One step closer to tracking bugs 😎
-          </span>
 
           {/* Name  Field */}
           <div className="flex flex-col mt-4">
@@ -178,7 +174,7 @@ const Register = () => {
               id="name"
               name="name"
               placeholder="Enter your full name"
-              className="p-3 text-ss bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
+              className="p-3 text-ss bg-gray-950 sm:bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
               value={name}
               onChange={(event) => setName(event.target.value)}
             />
@@ -202,7 +198,7 @@ const Register = () => {
               id="email"
               name="email"
               placeholder="Enter your email address"
-              className="p-3 text-ss bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
+              className="p-3 text-ss bg-gray-950 sm:bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
@@ -227,7 +223,7 @@ const Register = () => {
               id="password"
               name="password"
               placeholder="Enter your password"
-              className="p-3 text-ss bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
+              className="p-3 text-ss bg-gray-950 sm:bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
@@ -256,7 +252,7 @@ const Register = () => {
               id="passwordConfirmation"
               name="passwordConfirmation"
               placeholder="Confirm your password"
-              className="p-3 text-ss bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
+              className="p-3 text-ss bg-gray-950 sm:bg-gray-900 rounded outline-none text-gray-200 sm:p-2"
               value={passwordConfirmation}
               onChange={(event) => setPasswordConfirmation(event.target.value)}
             />
@@ -275,7 +271,7 @@ const Register = () => {
               id="avatar"
               name="avatar"
               accept="image/*"
-              className="block"
+              className="block bg-gray-950 sm:bg-gray-900"
               onChange={(event) => {
                 if (event.target.files?.length) {
                   // Compress image

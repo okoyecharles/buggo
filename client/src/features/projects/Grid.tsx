@@ -1,6 +1,7 @@
-import React from 'react';
-import ProjectCard from './card';
-import { Project } from '../../types/models';
+import React from "react";
+import ProjectCard from "./card";
+import { Project } from "../../types/models";
+import { useSpring, useTrail } from "@react-spring/web";
 interface ProjectsGridType {
   projects: Project[];
   loading: boolean;
@@ -16,7 +17,7 @@ const ProjectsGrid: React.FC<ProjectsGridType> = ({
   method,
   search,
 }) => {
-  const [currentEdit, setCurrentEdit] = React.useState<string>('');
+  const [currentEdit, setCurrentEdit] = React.useState<string>("");
 
   return (
     <>

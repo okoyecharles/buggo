@@ -14,12 +14,14 @@ import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
 import ImageRow from "../../../components/ImageRow";
 import Authorized from "../../../utils/authorization";
+import { a } from "@react-spring/web";
 
 interface TicketRowProps {
   ticket: Ticket | undefined;
   ticketDetails: Ticket | null;
   showTicketDetails: any;
   setTicketDetails: any;
+  ticketRowTrail: any;
 }
 
 const TicketRow: React.FC<TicketRowProps> = ({
@@ -27,6 +29,7 @@ const TicketRow: React.FC<TicketRowProps> = ({
   ticketDetails,
   showTicketDetails,
   setTicketDetails,
+  ticketRowTrail,
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
   const project = useSelector((store: storeType) => store.project.project);
@@ -42,15 +45,16 @@ const TicketRow: React.FC<TicketRowProps> = ({
   }, [project, user?._id]);
 
   return (
-    <li
-      className="ticket-row grid gap-2 grid-cols-6 lg:grid-cols-16 xl:grid-cols-15 pt-2 pb-4 border-b border-gray-600 hover:bg-gray-850 transition-all group relative cursor-pointer"
+    <a.li
+      className="ticket-row min-h-[70px] grid gap-2 grid-cols-6 lg:grid-cols-16 xl:grid-cols-15 border-b border-gray-600 hover:bg-gray-850 transition-colors group relative cursor-pointer"
       onClick={() => {
-        showTicketDetails(true);
         setTicketDetails(ticket);
+        showTicketDetails(true);
       }}
+      style={ticketRowTrail}
     >
-      <header className="flex flex-col gap-1 lg:col-span-4 px-1 pl-4 select-none">
-        <h3 className="font-semibold font-noto text-gray-100">
+      <header className="flex flex-col gap-1 lg:col-span-4 px-1 pl-4 select-none justify-center">
+        <h3 className="font-semibold font-noto text-gray-100 truncate">
           {ticket?.title}
         </h3>
         <div className="flex gap-4">
@@ -119,7 +123,7 @@ const TicketRow: React.FC<TicketRowProps> = ({
         setOpen={setOptionsOpen}
         ticket={ticket!}
       />
-    </li>
+    </a.li>
   );
 };
 

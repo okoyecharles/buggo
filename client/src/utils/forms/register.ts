@@ -3,6 +3,10 @@ export const validateName = (name: any) => {
   if (!name.trim('')) {
     return 'Name cannot be empty';
   };
+  // validate name is not shorter than 5 characters
+  if (name.length < 5) {
+    return 'Name must be at least 5 characters';
+  };
   return null;
 };
 

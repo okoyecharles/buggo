@@ -16,7 +16,7 @@ const SideBar: React.FC<SideBarProps> = ({ expandNav, setExpandNav }) => {
 
   return (
     <aside
-      className={`bg-gray-950 border-t lg:border-none border-t-gray-700 px-2 py-1 flex gap-3 w-screen sticky bottom-0 z-50 h-[60px] lg:h-auto lg:z-0 lg:flex-col lg:py-10 lg:fixed lg:left-0 lg:top-0 ${
+      className={`bg-gray-950 border-t lg:border-none border-t-gray-700 px-2 py-1 flex gap-3 w-screen fixed bottom-0 z-50 h-[60px] lg:h-auto lg:z-0 lg:flex-col lg:py-10 lg:left-0 lg:top-0 ${
         expandNav ? "lg:w-36" : "lg:w-[60px]"
       } lg:transition-all`}
     >

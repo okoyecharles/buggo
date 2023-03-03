@@ -1,13 +1,18 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User, { UserType } from '../models/userModel';
-import { Request, Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 import AuthorizedRequest from '../types/request';
 import { pusher, pusherChannel } from '..';
 
 const secret = process.env.JWT_SECRET || '';
 const tokenExpiration = process.env.NODE_ENV === 'development' ? '1d' : '7d';
 const tokenName = "bug-tracker-token";
+const cookieOptions: CookieOptions = {
+  httpOnly: true,
+  ...(process.env.NODE_ENV === 'development' ? {} : { sameSite: 'none' }),
+  secure: true,
+};
 
 /* 
  * @route   GET /users
@@ -17,10 +22,6 @@ const tokenName = "bug-tracker-token";
 export const getUsers = async (req: AuthorizedRequest<any>, res: Response) => {
   try {
     const users = await User.find();
-
-    if (!req.admin)
-      return res.status(401).json({ message: 'Unauthorized Request' });
-
     res.status(200).json({ users });
   } catch (error) {
     res
@@ -93,7 +94,7 @@ export const register = async (
 
     const token = generateToken(user._id.toString(), user.admin);
     res.status(200)
-      .cookie(tokenName, token, { httpOnly: true, sameSite: 'none', secure: true })
+      .cookie(tokenName, token, cookieOptions)
       .json({ user });
   } catch (error) {
     res
@@ -126,12 +127,14 @@ export const login = async (
     );
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: 'Invalid credentials' });
-    }
+    };
+
+    console.log(cookieOptions);
 
     const token = generateToken(userExists._id.toString(), userExists.admin);
     res
       .status(200)
-      .cookie(tokenName, token, { httpOnly: true, sameSite: 'none', secure: true })
+      .cookie(tokenName, token, cookieOptions)
       .json({ user: userExists });
   } catch (error) {
     res
@@ -149,8 +152,8 @@ export const login = async (
 export const logout = async (req: Request, res: Response) => {
   res.clearCookie(
     tokenName,
-    { httpOnly: true, sameSite: 'none', secure: true }
-  ).send('Logged out');
+    cookieOptions
+  ).send({ message: 'Logged out successfully' });
 };
 
 /*
