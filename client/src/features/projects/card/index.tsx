@@ -22,6 +22,7 @@ import Highlighter from "react-highlight-words";
 import Link from "next/link";
 import getDate from "../../../utils/strings/date";
 import Authorized from "../../../utils/authorization";
+import { useRouter } from "next/router";
 
 interface projectProps {
   project: Project;
@@ -43,6 +44,7 @@ const ProjectCard: React.FC<projectProps> = ({
   setCurrentEdit,
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
+  const router = useRouter();
 
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -86,13 +88,15 @@ const ProjectCard: React.FC<projectProps> = ({
   }, [user, project]);
 
   return (
-    <article
+    <li
       key={project._id}
-      className="project flex flex-col bg-gray-850 p-4 group hover:bg-gray-900 rounded relative"
+      className={`project flex flex-col bg-gray-850 p-4 group hover:bg-gray-900 rounded relative cursor-pointer`}
+      onClick={() => {
+        router.push(`/project/${project._id}`);
+      }}
     >
-      <Link
-        href={`/project/${project._id}`}
-        className={`font-bold text-gray-200 font-noto text-xl group-hover:underline cursor-pointer mb-2 ${
+      <h2
+        className={`font-bold text-gray-200 font-noto text-xl mb-2 ${
           editMode ? "hidden" : ""
         }`}
       >
@@ -102,8 +106,13 @@ const ProjectCard: React.FC<projectProps> = ({
           searchWords={[search]}
           highlightClassName="bg-orange-500/75 text-white"
         />
-      </Link>
-      <div className={`relative mb-2 ${editMode ? "" : "hidden"}`}>
+      </h2>
+      <div
+        className={`relative mb-2 ${editMode ? "" : "hidden"}`}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
         <input
           type="text"
           ref={editInputRef}
@@ -155,7 +164,7 @@ const ProjectCard: React.FC<projectProps> = ({
         </button>
       </div>
       <ProjectCardMembers project={project} />
-      <div className="flex flex-col mt-4 lg:flex-row lg:mt-0  lg:gap-4">
+      <div className="flex flex-col lg:flex-row lg:mt-0  lg:gap-4">
         <div className="text-gray-500 uppercase text-xsm flex items-center gap-2">
           <AiFillClockCircle className="text-orange-400" />
           {getDate(project.createdAt, { format: "from now" })}
@@ -172,6 +181,9 @@ const ProjectCard: React.FC<projectProps> = ({
         className={`options flex bg-gray-800 absolute rounded bottom-4 lg:top-4 right-4 h-8 hover:shadow-lg overflow-hidden transition-all lg:opacity-0 lg:pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto w-fit self-end ${
           editMode ? "hidden" : ""
         }`}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
       >
         {isAuthorized && (
           <>
@@ -246,7 +258,7 @@ const ProjectCard: React.FC<projectProps> = ({
         loading={loading}
         method={method}
       />
-    </article>
+    </li>
   );
 };
 

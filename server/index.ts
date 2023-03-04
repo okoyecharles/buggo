@@ -22,7 +22,7 @@ app.use(morgan('dev'));
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-  res.send('Hello to the bug tracker API');
+  res.send('Welcome to buggo\'s server!');
 });
 
 app.use('/api/users', userRouter);

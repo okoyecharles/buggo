@@ -69,8 +69,8 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
   }, [user, project]);
 
   const ticketListTrail = useTrail(currentTickets.length, {
-    from: { y: 30 },
-    to: { y: 0 },
+    from: { y: 30, opacity: 0 },
+    to: { y: 0, opacity: 1 },
     config: { mass: 1, tension: 1000, friction: 100 },
   });
   const ticketListSpring = useSpring({
@@ -179,7 +179,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
               </div>
             </header>
             <hr className="border-gray-700 lg:mx-4" />
-            <a.ul className="lg:px-4 flex flex-col overflow-hidden" style={ticketListSpring}>
+            <a.ul className="lg:px-4 flex flex-col" style={ticketListSpring}>
               {currentTickets.length ? (
                 currentTickets.map((ticket, index) => (
                   <TicketRow

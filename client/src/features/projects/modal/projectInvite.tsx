@@ -267,7 +267,7 @@ const ProjectInviteModal: React.FC<{
       <div className="flex gap-2 bg-gray-850 p-4 py-3 justify-end">
         <button
           className="px-6 p-2 bg-blue-600 text-blue-50 rounded-sm font-semibold hover:bg-blue-700 group transition disabled:opacity-75"
-          disabled={loading && method.update}
+          disabled={(loading && method.update) || !invitees.length}
           onClick={() => {
             store.dispatch(
               inviteToProject(

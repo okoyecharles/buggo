@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ProjectSearch from "./Search";
 import { BsPlusLg } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
-import ProjectsGrid from "./Grid";
+import ProjectsList from "./List";
 import Paginate from "../pagination";
 import { Project } from "../../types/models";
 import CreateProjectModal from "./modal/projectCreate";
@@ -41,7 +41,7 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
 
   return (
     <section className="projects flex flex-col xl:col-span-3">
-      <div className="p-4 bg-gray-750 relative rounded ring-1 ring-gray-700">
+      <div className="p-4 bg-gray-750 relative rounded ring-1 ring-gray-700 flex flex-col">
         <header className="flex gap-2 items-center">
           <h3 className="text-white text-xl font-bold mr-auto">
             Recent Projects
@@ -65,7 +65,7 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
         <div className="lg:hidden">
           <ProjectSearch search={search} setSearch={setSearch} />
         </div>
-        <ProjectsGrid
+        <ProjectsList
           projects={currentProjects}
           loading={loading}
           method={method}

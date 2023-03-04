@@ -45,6 +45,9 @@ const ProjectOptionsPopup: React.FC<{
         ...spring,
         pointerEvents: open ? "all" : "none",
       }}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
     >
       <div
         className={open ? "fixed top-0 left-0 h-screen w-screen -z-10" : ""}

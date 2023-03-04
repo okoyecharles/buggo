@@ -2,7 +2,7 @@ import React from "react";
 import ProjectCard from "./card";
 import { Project } from "../../types/models";
 import { useSpring, useTrail } from "@react-spring/web";
-interface ProjectsGridType {
+interface ProjectsListType {
   projects: Project[];
   loading: boolean;
   search: string;
@@ -11,7 +11,7 @@ interface ProjectsGridType {
   };
 }
 
-const ProjectsGrid: React.FC<ProjectsGridType> = ({
+const ProjectsList: React.FC<ProjectsListType> = ({
   projects,
   loading,
   method,
@@ -20,8 +20,7 @@ const ProjectsGrid: React.FC<ProjectsGridType> = ({
   const [currentEdit, setCurrentEdit] = React.useState<string>("");
 
   return (
-    <>
-      <div className="project__container flex flex-col gap-2 mt-4">
+      <ul className={`project__list flex flex-col gap-2 mt-4`}>
         {projects?.map((project) => (
           <ProjectCard
             key={project._id}
@@ -33,9 +32,8 @@ const ProjectsGrid: React.FC<ProjectsGridType> = ({
             setCurrentEdit={setCurrentEdit}
           />
         ))}
-      </div>
-    </>
+      </ul>
   );
 };
 
-export default ProjectsGrid;
+export default ProjectsList;
