@@ -11,13 +11,11 @@ import {
 } from "react-icons/bs";
 import { OptionsButton } from "../../../components/Button";
 import { TailSpinLoader } from "../../loader";
-import {
-  deleteTicket,
-  updateTicket,
-} from "../../../../redux/actions/ticketActions";
+import { updateTicket } from "../../../../redux/actions/ticketActions";
 import TicketAssignModal from "../modal/ticketAssign";
 import Authorized from "../../../utils/authorization";
 import { IoClose } from "react-icons/io5";
+import TicketDeleteModal from "../modal/ticketDelete";
 
 interface TicketOptionsPopupProps {
   ticket: Ticket;
@@ -34,9 +32,9 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
   const project = useSelector((store: storeType) => store.project.project!);
   const { loading, method } = useSelector((store: storeType) => store.ticket);
 
-  const [deleting, setDeleting] = useState<boolean>(false);
   const [closing, setClosing] = useState<boolean>(false);
   const [ticketAssignOpen, setTicketAssignOpen] = useState<boolean>(false);
+  const [deleteTicketOpen, setDeleteTicketOpen] = useState<boolean>(false);
 
   const spring = useSpring({
     opacity: 0,
@@ -147,18 +145,13 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
             <OptionsButton
               color="red-500"
-              processing={loading && method.delete}
               onClick={() => {
-                setDeleting(true);
-                store.dispatch(deleteTicket(ticket._id));
+                setDeleteTicketOpen(true);
+                setOpen(false);
               }}
             >
               Delete Ticket
-              {loading && method.delete && deleting ? (
-                <TailSpinLoader height="15" />
-              ) : (
-                <BsFillTrashFill />
-              )}
+              <BsFillTrashFill />
             </OptionsButton>
           </>
         ) : null}
@@ -166,6 +159,13 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
       <TicketAssignModal
         open={ticketAssignOpen}
         setOpen={setTicketAssignOpen}
+        ticket={ticket}
+        method={method}
+        loading={loading}
+      />
+      <TicketDeleteModal
+        open={deleteTicketOpen}
+        setOpen={setDeleteTicketOpen}
         ticket={ticket}
         method={method}
         loading={loading}
