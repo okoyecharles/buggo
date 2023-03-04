@@ -22,7 +22,7 @@ export default function ProjectDetails() {
     if (!project.loading && id) {
       store.dispatch(fetchProjectById(id as string));
     } else {
-      router.replace("/");
+      router.replace("/dashboard");
     }
   }, []);
 

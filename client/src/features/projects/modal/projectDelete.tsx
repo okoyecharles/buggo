@@ -28,7 +28,7 @@ const ProjectDeleteModal: React.FC<{
   useEffect(() => {
     if (open && loading === false && !method.delete) {
       setOpen(false);
-      router.replace("/");
+      router.replace("/dashboard");
     }
   }, [method.delete]);
 

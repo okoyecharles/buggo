@@ -27,7 +27,7 @@ const LandingHeader = () => {
               target="_blank"
               rel="norefferer noopener"
             >
-              The Creator <BiLinkExternal className="text-md" />
+              Creator <BiLinkExternal className="text-md" />
             </a>
           </li>
         </ul>

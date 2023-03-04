@@ -99,7 +99,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
             className="rounded p-1 bg-gray-900 active:bg-gray-950 transition-colors shadow-sm mr-[1ch] lg:hidden"
             onClick={(e) => {
               e.stopPropagation();
-              router.push("/");
+              router.push("/dashboard");
             }}
           >
             <IoIosArrowBack className="text-2xl text-white" />

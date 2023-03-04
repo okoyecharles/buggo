@@ -11,7 +11,7 @@ const navLinks = [
       ) : (
         <MdOutlineSpaceDashboard className={className} title="Dashboard" />
       ),
-    href: "/",
+    href: "/dashboard",
     admin: false
   },
   {

@@ -63,7 +63,7 @@ const Register = () => {
       toast.error(registerStore.error.message);
     }
     if (user) {
-      router.replace("/");
+      router.replace("/dashboard");
     }
   }, [registerStore, user]);
 
