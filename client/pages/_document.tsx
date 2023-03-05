@@ -5,7 +5,7 @@ export default function Document() {
     <Html lang="en">
       <Head />
       <body className="bg-gray-800 h-[100svh]">
-        <div className="overflow-x-hidden">
+        <div className="overflow-x-hidden scroll-smooth">
           <Main />
           <div id="portal" />
           <NextScript />

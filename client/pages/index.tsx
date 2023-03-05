@@ -12,7 +12,7 @@ const Landing = () => {
       </Head>
       <main>
         <Header />
-        <section className="hero-section text-white flex flex-col justify-center lg:items-center gap-8 p-4 min-h-[75vh]">
+        <section className="hero-section text-white flex flex-col justify-center lg:items-center gap-8 p-4 min-h-[75vh] bg-gradient-to-b from-orange-500 to-orange-600">
           <h1 className="font-black text-[clamp(1.5rem,2vw+1rem,3rem)] leading-10 uppercase">
             Track Issues & Bugs Like Never Before ...
           </h1>
@@ -31,7 +31,7 @@ const Landing = () => {
         </section>
         <div id="features" className="text-gray-200">
 
-          <section className="p-6 lg:p-12 flex flex-col lg:flex-row gap-4 min-h-[75vh] bg-gradient-to-r from-gray-850 to-gray-900 items-center">
+          <section className="p-6 lg:p-12 flex gap-8 flex-col lg:flex-row lg:min-h-[75vh] bg-gradient-to-r from-gray-850 to-gray-900 items-center">
             <article className="flex-1">
               <h2 className="font-bold text-[clamp(1.3rem,2vw+1rem,2.5rem)] bg-gradient-to-r from-orange-400 to-orange-600 inline-block text-transparent bg-clip-text">
                 Centralized Project Management
@@ -43,7 +43,7 @@ const Landing = () => {
               </p>
             </article>
             <div className="illustration flex-1">
-              <div className="wrapper w-fit ring-2 rounded overflow-hidden ring-orange-500 bg-black">
+              <div className="wrapper ring-2 rounded overflow-hidden ring-orange-500/80 bg-black flex justify-center">
                 <iframe
                   width="560"
                   height="315"
@@ -51,12 +51,13 @@ const Landing = () => {
                   title="YouTube video player"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
+                  className="w-full h-full aspect-[560/315] max-w-[600px]"
                 />
               </div>
             </div>
           </section>
 
-          <section className="p-6 lg:p-12 flex flex-col lg:flex-row-reverse gap-4 min-h-[75vh] bg-gradient-to-r from-gray-900 to-gray-950 items-center">
+          <section className="p-6 lg:p-12 flex gap-8 flex-col lg:flex-row-reverse lg:min-h-[75vh] bg-gradient-to-r from-gray-900 to-gray-950 items-center">
             <article className="flex-1">
               <h2 className="font-bold text-[clamp(1.3rem,2vw+1rem,2.5rem)] bg-gradient-to-r from-blue-400 to-blue-600 inline-block text-transparent bg-clip-text">
                 Powerful Collaboration Tools
@@ -67,7 +68,7 @@ const Landing = () => {
               </p>
             </article>
             <div className="illustration flex-1">
-              <div className="wrapper ring-2 rounded overflow-hidden ring-blue-500 w-fit bg-black">
+              <div className="wrapper ring-2 rounded overflow-hidden ring-blut-500/80 bg-black flex justify-center">
                 <iframe
                   width="560"
                   height="315"
@@ -75,12 +76,13 @@ const Landing = () => {
                   title="YouTube video player"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
+                  className="w-full h-full aspect-[560/315] max-w-[600px]"
                 />
               </div>
             </div>
           </section>
 
-          <section className="p-6 lg:p-12 flex gap-4 flex-col lg:flex-row min-h-[75vh] bg-gradient-to-r from-gray-850 to-gray-900 items-center">
+          <section className="p-6 lg:p-12 flex gap-8 flex-col lg:flex-row lg:min-h-[75vh] bg-gradient-to-r from-gray-850 to-gray-900 items-center">
             <article className="flex-1">
               <h2 className="font-bold text-[clamp(1.3rem,2vw+1rem,2.5rem)] bg-gradient-to-r from-orange-400 to-orange-600 inline-block text-transparent bg-clip-text">
                 Advanced Analytics
@@ -93,7 +95,7 @@ const Landing = () => {
               </p>
             </article>
             <div className="illustration flex-1">
-              <div className="wrapper w-fit ring-2 rounded overflow-hidden ring-orange-500 bg-black">
+              <div className="wrapper ring-2 rounded overflow-hidden ring-orange-500/80 bg-black flex justify-center">
                 <iframe
                   width="560"
                   height="315"
@@ -101,6 +103,7 @@ const Landing = () => {
                   title="YouTube video player"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
+                  className="w-full h-full aspect-[560/315] max-w-[600px]"
                 ></iframe>
               </div>
             </div>

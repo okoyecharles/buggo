@@ -9,7 +9,7 @@ const LandingHeader = () => {
   const [linksOpen, setLinksOpen] = React.useState(false);
 
   return (
-    <header className="flex flex-col z-40 text-white">
+    <header className="flex flex-col z-40 text-white bg-orange-600">
       <div className="flex items-center p-3 text-gray-100 font-open md:px-8 gap-4 h-20 ring-1 ring-orange-500">
         <div className="logo font-bold mr-auto">
           <Link href="/" className="flex items-center gap-2">
