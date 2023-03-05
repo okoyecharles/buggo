@@ -15,6 +15,10 @@
   /* box-shadow: 0 0 0 0.05rem #1ddc07 !important; */
 }
 
+body {
+  scroll-behavior: smooth;
+}
+
 .Toastify__toast {
   box-shadow: 0 0 0 0.05rem #53585f !important;
 }
