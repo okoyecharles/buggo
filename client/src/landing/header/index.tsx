@@ -4,15 +4,18 @@ import React from "react";
 import { BiLinkExternal } from "react-icons/bi";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
 import { IoMdClose } from "react-icons/io";
+import { useSelector } from "react-redux";
+import { storeType } from "../../../redux/configureStore";
 
 const LandingHeader = () => {
   const [linksOpen, setLinksOpen] = React.useState(false);
+  const currentUser = useSelector((store: storeType) => store.currentUser.user);
 
   return (
-    <header className="flex flex-col z-40 text-white bg-orange-600">
-      <div className="flex items-center p-3 text-gray-100 font-open md:px-8 gap-4 h-20 ring-1 ring-orange-500">
+    <header className="flex z-40 text-white bg-gray-950 justify-center">
+      <div className="flex items-center p-3 text-gray-100 font-open md:px-8 gap-4 h-20 w-[min(100%,1260px)]">
         <div className="logo font-bold mr-auto">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2" aria-label="Logo">
             <Image src={"/text-logo.png"} height={20} width={100} alt="buggo" />
           </Link>
         </div>
@@ -22,10 +25,10 @@ const LandingHeader = () => {
             linksOpen ? "-translate-x-0" : "-translate-x-full"
           } lg:translate-x-0 transition-all`}
         >
-          <li className="hover:underline">
+          <li className="hover:underline" onClick={() => setLinksOpen(false)}>
             <Link href="#features">Features</Link>
           </li>
-          <li className="hover:underline">
+          <li className="hover:underline" onClick={() => setLinksOpen(false)}>
             <a
               href="https://okoyecharles.com"
               className="flex gap-1 items-center"
@@ -46,9 +49,9 @@ const LandingHeader = () => {
           }}
         />
 
-        <Link href="/login" className="ml-auto">
+        <Link href={currentUser ? "/dashboard" : "/login"} className="ml-auto">
           <button
-            className="font-open font-semibold text-ss text-gray-900 flex justify-center items-center rounded-full py-1 px-3 bg-white"
+            className="font-open font-semibold text-sm text-white flex justify-center items-center rounded-full py-2 px-4 bg-blue-600 active:bg-blue-700 transition-colors relative"
             tabIndex={-1}
           >
             Login
@@ -59,6 +62,7 @@ const LandingHeader = () => {
           onClick={() => {
             setLinksOpen((prev) => !prev);
           }}
+          aria-label="menu toggle"
         >
           <HiOutlineMenuAlt3
             className={`text-2xl absolute top-1 left-1 ${

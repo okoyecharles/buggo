@@ -175,7 +175,7 @@ const Login = () => {
 
           <div className="text-ss text-gray-400 mt-4">
             Need an account?{" "}
-            <Link href="/register" className="text-blue-500 hover:underline">
+            <Link href="/register" className="text-blue-400 hover:underline">
               Register
             </Link>
           </div>

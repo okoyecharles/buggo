@@ -29,7 +29,7 @@ export default function ProjectDetails() {
   return (
     <>
       <Head>
-        <title>Project - {project?.project?.title}</title>
+        <title>Buggo | Project - {project?.project?.title}</title>
       </Head>
       <div className="flex flex-col lg:flex-row h-full isolate">
         <ProjectDetailsBar
