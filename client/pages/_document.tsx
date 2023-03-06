@@ -12,6 +12,12 @@ export default function Document() {
         <meta name="author" content="Okoye Charles" />
         <meta name="theme-color" content="#f47b2a" />
 
+        {/* Google Site Verification */}
+        <meta
+          name="google-site-verification"
+          content="z5SFKw4krYcywUCQGVVNYW1F2NpGL-9BNDt0en4iwfM"
+        />
+
         {/* Apple touch icons */}
         <link
           rel="apple-touch-icon"
