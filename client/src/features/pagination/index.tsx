@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import ReactPaginate from "react-paginate";
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
 import Pluralize from "react-pluralize";
+import { useSpring, a } from "@react-spring/web";
 
 interface PaginateProps {
   pageCount: number;
@@ -22,10 +23,20 @@ const Paginate: React.FC<PaginateProps> = ({
 }) => {
   const paginateRef = useRef(null);
 
+  const [spring, api] = useSpring(() => ({
+    opacity: 0,
+  }));
+
+  useEffect(() => {
+    api.start({
+      opacity: 1,
+    });
+  }, []);
+
   return (
-    <nav className="flex flex-col lg:flex-row items-center gap-4 lg:w-fit lg:self-end mt-4">
+    <a.nav className="flex flex-col lg:flex-row items-center gap-4 lg:w-fit lg:self-end mt-4" style={spring}>
       <p className="font-semibold text-ss text-gray-400">
-        Showing {indexOfFirstItem + 1} - {Math.min(totalItems, indexOfLastItem)}{" "}
+        Showing {indexOfFirstItem} - {Math.min(totalItems, indexOfLastItem)}{" "}
         of <Pluralize singular={itemName} count={totalItems} />
       </p>
       <ReactPaginate
@@ -43,7 +54,7 @@ const Paginate: React.FC<PaginateProps> = ({
         nextLinkClassName="flex items-center justify-center"
         nextClassName="bg-gray-850 text-2xl text-gray-500 font-semibold rounded-sm hover:bg-gray-800 hover:text-gray-100 active:bg-gray-700 overflow-hidden rounded transition"
       />
-    </nav>
+    </a.nav>
   );
 };
 

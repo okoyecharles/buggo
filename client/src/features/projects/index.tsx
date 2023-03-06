@@ -41,7 +41,7 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
 
   return (
     <section className="projects flex flex-col xl:col-span-3">
-      <div className="p-4 bg-gray-750 relative rounded ring-1 ring-gray-700 flex flex-col">
+      <div className="p-3 lg:p-4 bg-gray-750 relative rounded ring-1 ring-gray-700 flex flex-col">
         <header className="flex gap-2 items-center">
           <h3 className="text-white text-xl font-bold mr-auto">
             Recent Projects

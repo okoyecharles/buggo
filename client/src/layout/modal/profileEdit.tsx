@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Modal from "../../features/modal";
 import Image from "next/image";
 import Compressor from "compressorjs";
@@ -57,17 +57,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     store.dispatch(updateUser(userData));
   };
 
-  const isChanged = () => {
-    if (name !== user?.name) {
-      return true;
-    }
-
-    if (base64Image !== user?.image) {
-      return true;
-    }
-
-    return false;
-  };
+  const isEdited = useMemo(() => {
+    return base64Image !== user?.image || name !== user?.name;
+  }, [name, user]);
 
   const openImageSelector = (event: any) => {
     event.preventDefault();
@@ -79,8 +71,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
     if (open && !loading && !method.update) {
       setOpen(false);
-    };
-  }, [loading, method])
+    }
+  }, [loading, method]);
 
   useEffect(() => {
     if (open) {
@@ -112,7 +104,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
         </header>
 
         <div className="content mt-2">
-          <form action="" className="flex flex-col" ref={formRef} onSubmit={handleEdit}>
+          <form
+            action=""
+            className="flex flex-col"
+            ref={formRef}
+            onSubmit={handleEdit}
+          >
             <div className="flex flex-col mt-4">
               <label
                 htmlFor="name"
@@ -188,7 +185,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 </label>
                 <div>
                   <button
-                    className="flex gap-1 items-center px-3 p-2 bg-blue-600 text-green-50 rounded-sm font-semibold text-sm hover:bg-blue-700 transition-colors"
+                    className="flex gap-1 items-center px-3 p-2 bg-blue-600 text-green-50 rounded-sm font-semibold text-sm hover:bg-blue-700 active:bg-blue-800 transition-colors"
                     onClick={openImageSelector}
                   >
                     Change Avatar
@@ -208,8 +205,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
           Cancel
         </button>
         <button
-          className="px-6 p-2 bg-blue-600 text-green-50 rounded-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-75"
-          disabled={(processing && method.delete) || !isChanged()}
+          className="px-6 p-2 bg-blue-600 text-green-50 rounded-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
+          disabled={(processing && method.delete) || !isEdited}
           onClick={() => formRef.current?.requestSubmit()}
         >
           {processing && method.update ? <ThreeDotsLoader /> : "Save"}

@@ -13,12 +13,14 @@ const TicketGroupChart: React.FC<Props> = ({ tickets, subject }) => {
   const data = useMemo(() => {
     const data: any[] = [];
     for (const ticket of tickets) {
-      const ts = ticket[subject];
-      const tsIndex = data.findIndex((obj) => obj.name === ts);
-      if (tsIndex === -1) {
-        data.push({ name: ts, count: 1 });
+      const ticketField = ticket[subject];
+      const ticketFieldIndex = data.findIndex(
+        (obj) => obj.name === ticketField
+      );
+      if (ticketFieldIndex === -1) {
+        data.push({ name: ticketField, count: 1 });
       } else {
-        data[tsIndex].count++;
+        data[ticketFieldIndex].count++;
       }
     }
     return data;

@@ -1,28 +1,33 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { incrementColor } from "../../../utils/components/string";
 import ButtonProps from "../types";
 
 const OptionsButton: React.FC<ButtonProps> = ({
   id,
-  color = "blue-500",
+  color = "blue-600",
   processing,
   children,
   onClick,
   overrideStyle,
 }) => {
+  const colors = useMemo(() => ({
+    text: color.split("-")[0] === "red" ? "text-red-500" : "text-gray-300",
+    textHover: "text-white",
+    bgHover: `bg-${color}`,
+  }), [color]);
+
   return (
     <button
       id={id}
       className={`
-        group rounded-sm p-2
-        flex justify-between items-center 
+        group rounded-sm p-2 text-sm
+        flex justify-between items-center
 
-        text-${color.split("-")[0] === "red" ? "red-500" : "gray-300"} text-sm
-        hover:bg-${color}
-        hover:text-${color.split("-")[0] + "-50"}
-        active:bg-${incrementColor(color, 100)}
+        ${colors.text}
+        hover:${colors.bgHover}
+        hover:${colors.textHover}
+
         disabled:opacity-90 disabled:cursor-not-allowed
-        
         transition-colors
         ${overrideStyle}
       `}

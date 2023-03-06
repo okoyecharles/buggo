@@ -16,6 +16,7 @@ import TicketAssignModal from "../modal/ticketAssign";
 import Authorized from "../../../utils/authorization";
 import { IoClose } from "react-icons/io5";
 import TicketDeleteModal from "../modal/ticketDelete";
+import OptionsPopup from "../../../components/Options";
 
 interface TicketOptionsPopupProps {
   ticket: Ticket;
@@ -35,21 +36,6 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
   const [closing, setClosing] = useState<boolean>(false);
   const [ticketAssignOpen, setTicketAssignOpen] = useState<boolean>(false);
   const [deleteTicketOpen, setDeleteTicketOpen] = useState<boolean>(false);
-
-  const spring = useSpring({
-    opacity: 0,
-    y: -10,
-    scale: 0.8,
-    to: {
-      opacity: open ? 1 : 0,
-      y: open ? 0 : -10,
-      scale: open ? 1 : 0.8,
-    },
-    config: {
-      tension: 350,
-      friction: 25,
-    },
-  });
 
   const isInTeam = (model: any) => {
     return model.team.some((member: any) => member._id === user?._id);
@@ -77,21 +63,8 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
   }, [user, project, ticket]);
 
   return (
-    <a.div
-      className={`ticketOptionsPopup absolute right-3 top-3 w-48 bg-gray-950 shadow-lg shadow-gray-950/40 rounded-md p-2 z-40 isolate hidden lg:block`}
-      style={{
-        ...spring,
-        pointerEvents: open ? "all" : "none",
-      }}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <div
-        className={open ? "fixed top-0 left-0 h-screen w-screen -z-10" : ""}
-        onClick={() => {
-          setOpen(false);
-        }}
-      />
-      <div className="flex flex-col gap-1">
+    <>
+      <OptionsPopup open={open} setOpen={setOpen}>
         <OptionsButton
           id={`remove-self-${ticket._id}`}
           processing={loading && method.update}
@@ -111,7 +84,6 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
           <>
             <OptionsButton
               processing={loading && method.update}
-              color="blue-500"
               onClick={() => {
                 setOpen(false);
                 setTicketAssignOpen((prev) => !prev);
@@ -126,7 +98,6 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
             {ticket.status !== "closed" ? (
               <OptionsButton
                 processing={loading && method.update}
-                color="blue-500"
                 onClick={() => {
                   setClosing(true);
                   store.dispatch(
@@ -155,7 +126,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
             </OptionsButton>
           </>
         ) : null}
-      </div>
+      </OptionsPopup>
       <TicketAssignModal
         open={ticketAssignOpen}
         setOpen={setTicketAssignOpen}
@@ -170,7 +141,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
         method={method}
         loading={loading}
       />
-    </a.div>
+    </>
   );
 };
 

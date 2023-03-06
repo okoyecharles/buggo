@@ -9,7 +9,7 @@ interface Props {
 }
 
 const TicketStats: React.FC<Props> = ({
-  ticketStore: { error, loading, tickets },
+  ticketStore: { loading, tickets },
 }) => {
   const trail = useTrail(3, {
     from: { opacity: 0, y: 40 },

@@ -104,7 +104,7 @@ const LandingFooter = () => {
           </div>
 
           <Link
-            href={currentUser ? "/dashboard" : "/signup"}
+            href={currentUser ? "/dashboard" : "/register"}
             className="ml-auto"
           >
             <button

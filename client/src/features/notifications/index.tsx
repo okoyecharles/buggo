@@ -139,7 +139,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             </ul>
           ) : (
             <div className="flex flex-col gap-1 items-center font-noto flex-1">
-              <IoMdNotificationsOff className="text-[10rem] text-gray-600 mt-32" />
+              <IoMdNotificationsOff className="text-[10rem] text-gray-400 mt-32" />
               <h3 className="text-blue-500 text-lg font-bold text-center">
                 No Notifications Yet
               </h3>

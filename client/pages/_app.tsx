@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-tooltip/dist/react-tooltip.css";
 import { validateUserSession } from "../redux/actions/userActions";
 import Head from "next/head";
+import UnAuthorized from "../src/features/unauthorized";
 
 export default function App({ Component, pageProps }: AppProps) {
   // Use the layout defined at the page level, if defined
@@ -31,7 +32,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <ToastContainer position={"bottom-right"} />
       <Provider store={store}>
         {protectedRoute && !admin
-          ? getLayout(<h1>Not authorized</h1>)
+          ? getLayout(<UnAuthorized />)
           : getLayout(<Component {...pageProps} />)}
       </Provider>
     </>

@@ -1,10 +1,11 @@
 import React from "react";
-import { useSpring, a } from "@react-spring/web";
 import {
   BsFillPencilFill,
   BsFillPersonCheckFill,
   BsFillTrashFill,
 } from "react-icons/bs";
+import { OptionsButton } from "../../../components/Button";
+import OptionsPopup from "../../../components/Options";
 
 const ProjectOptionsPopup: React.FC<{
   open: boolean;
@@ -23,74 +24,41 @@ const ProjectOptionsPopup: React.FC<{
   setProjectDeleteConfirm,
   setProjectAssign,
 }) => {
-  const spring = useSpring({
-    opacity: 0,
-    y: -10,
-    scale: 0.8,
-    to: {
-      opacity: open ? 1 : 0,
-      y: open ? 0 : -10,
-      scale: open ? 1 : 0.8,
-    },
-    config: {
-      tension: 350,
-      friction: 25,
-    },
-  });
-
   return (
-    <a.div
-      className={`projectOptionsPopup absolute top-4 right-4 w-48 bg-gray-950 shadow-lg shadow-gray-950/40 rounded-md p-2 z-40 isolate`}
-      style={{
-        ...spring,
-        pointerEvents: open ? "all" : "none",
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-      }}
-    >
-      <div
-        className={open ? "fixed top-0 left-0 h-screen w-screen -z-10" : ""}
+    <OptionsPopup open={open} setOpen={setOpen}>
+      <OptionsButton
+        processing={loading && method.update}
         onClick={() => {
           setOpen(false);
+          handleEditMode();
         }}
-      />
-      <div className="flex flex-col gap-1">
-      <button
-          className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700 hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
-          disabled={loading && method.update}
-          onClick={() => {
-            setOpen(false);
-            handleEditMode();
-          }}
-        >
-          Edit Project
-          <BsFillPencilFill />
-        </button>
+      >
+        Edit Project
+        <BsFillPencilFill />
+      </OptionsButton>
 
-        <button
-          className="p-2 group text-gray-300 hover:bg-blue-600 active:bg-blue-700  hover:text-blue-50 flex justify-between items-center transition-colors rounded-sm text-sm disabled:opacity-50"
-          disabled={loading && method.update}
-          onClick={() => {
-            setProjectAssign(true);
-            setOpen(false);
-          }}
-        >
-          Invite Members
-          <BsFillPersonCheckFill />
-        </button>
+      <OptionsButton
+        processing={loading && method.update}
+        onClick={() => {
+          setProjectAssign(true);
+          setOpen(false);
+        }}
+      >
+        Invite Members
+        <BsFillPersonCheckFill />
+      </OptionsButton>
 
-        <hr className="border-gray-800" />
+      <hr className="border-gray-800" />
 
-        <button
-          className="p-2 group text-red-500 hover:bg-red-500 active:bg-red-600 hover:text-red-50 flex justify-between items-center transition-colors rounded-sm text-sm"
-          onClick={() => setProjectDeleteConfirm(true)}
-        >
-          Delete Project
-          <BsFillTrashFill />
-        </button>
-      </div>
-    </a.div>
+      <OptionsButton
+        color="red-500"
+        processing={loading && method.delete}
+        onClick={() => setProjectDeleteConfirm(true)}
+      >
+        Delete Project
+        <BsFillTrashFill />
+      </OptionsButton>
+    </OptionsPopup>
   );
 };
 
