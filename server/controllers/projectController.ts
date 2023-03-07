@@ -137,16 +137,16 @@ export const inviteToProject = async (
     project.invitees = [...project.invitees, ...invitees];
 
     const updatedProject = await project.save();
-    const returnProject = await fetchProject(updatedProject.id);
-
     pusher.trigger(
       pusherChannel,
       'project-invite',
       {
-        projectId: returnProject?._id.toString(),
+        projectId: updatedProject?._id.toString(),
       },
       { socket_id: socketId as string }
     );
+
+    const returnProject = await fetchProject(updatedProject.id);
 
     res.status(200).json({ project: returnProject });
   } catch (error: any) {
@@ -182,16 +182,16 @@ export const acceptInvite = async (
 
       project.team.push(req.user as any);
       await project.save();
-      const returnProject = await fetchProject(project.id);
-
       pusher.trigger(
         pusherChannel,
         'accept-project-invite',
         {
-          projectId: returnProject?._id.toString(),
+          projectId: project?._id.toString(),
         },
         { socket_id: socketId as string }
       );
+
+      const returnProject = await fetchProject(project.id);
 
       res.status(200).json({ project: returnProject });
     } else {
@@ -269,11 +269,6 @@ export const createTicket = async (
     }
 
     ticket = await ticket.save();
-
-    // Assign ticket to project's relationship
-    ticketProject?.tickets.unshift(ticket._id);
-    await ticketProject?.save();
-
     pusher.trigger(
       pusherChannel,
       'create-project-ticket',
@@ -285,6 +280,10 @@ export const createTicket = async (
       },
       { socket_id: socketId as string }
     );
+
+    // Assign ticket to project's relationship
+    ticketProject?.tickets.unshift(ticket._id);
+    await ticketProject?.save();
 
     res.status(200).json({ ticket });
   } catch (error: any) {

@@ -85,16 +85,16 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
       team,
       comments
     });
-    const updatedTicket = await fetchTicket(id);
-
     pusher.trigger(pusherChannel, 'update-project-ticket', {
       ticket: {
         _id: id,
-        author: updatedTicket?.author._id.toString(),
+        author: ticket?.author._id.toString(),
       },
     }, {
       socket_id: socketId as string
     });
+
+    const updatedTicket = await fetchTicket(id);
 
     res.status(200).json({ ticket: updatedTicket });
   } catch (error: any) {
@@ -129,10 +129,6 @@ export const deleteTicket = async (req: AuthorizedRequest<TicketType>, res: Resp
     }
 
     await ticket.remove();
-    // Remove ticket reference from the project without using pull
-    project.tickets = project.tickets.filter((ticketId) => ticketId.toString() !== id);
-    await project?.save();
-
     pusher.trigger(pusherChannel, 'delete-project-ticket', {
       ticket: {
         _id: id,
@@ -141,6 +137,11 @@ export const deleteTicket = async (req: AuthorizedRequest<TicketType>, res: Resp
     }, {
       socket_id: socketId as string
     });
+
+
+    // Remove ticket reference from the project without using pull
+    project.tickets = project.tickets.filter((ticketId) => ticketId.toString() !== id);
+    await project?.save();
 
     res.status(200).json({ message: 'Ticket removed' });
   } catch (error: any) {
@@ -176,6 +177,15 @@ export const createTicketComment = async (req: AuthorizedRequest<CommentType>, r
       author: author,
       ticket: ticket?._id
     });
+    pusher.trigger(pusherChannel, 'new-ticket-comment', {
+      ticketId: id,
+      comment: {
+        _id: comment?._id.toString(),
+        author: comment?.author.toString(),
+      }
+    }, {
+      socket_id: socketId as string
+    });
 
     // Add comment reference to the ticket
     ticket?.comments.push(comment.id);
@@ -183,16 +193,6 @@ export const createTicketComment = async (req: AuthorizedRequest<CommentType>, r
 
     const savedComment = await Comment.findById(comment.id)
       .populate('author', 'name image email');
-
-    pusher.trigger(pusherChannel, 'new-ticket-comment', {
-      ticketId: id,
-      comment: {
-        _id: savedComment?._id.toString(),
-        author: savedComment?.author._id.toString(),
-      }
-    }, {
-      socket_id: socketId as string
-    });
 
     res.status(200).json({ comment: savedComment });
   } catch (error: any) {

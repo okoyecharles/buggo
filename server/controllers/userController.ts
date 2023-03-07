@@ -10,7 +10,7 @@ const tokenExpiration = process.env.NODE_ENV === 'development' ? '1d' : '7d';
 const tokenName = "bug-tracker-token";
 const cookieOptions: CookieOptions = {
   httpOnly: true,
-  ...(process.env.NODE_ENV === 'development' ? {} : { sameSite: 'none' }),
+  sameSite: 'none',
   secure: true,
 };
 
@@ -49,12 +49,12 @@ export const deleteUser = async (req: AuthorizedRequest<any>, res: Response) => 
       return res.status(401).json({ message: 'Unauthorized Request' });
 
     await userExists.remove();
-
     pusher.trigger(pusherChannel, 'delete-user', {
       userId: id,
     }, {
       socket_id: socketId as string
     });
+  
     const users = await User.find();
 
     res.status(200).json({ users, message: 'User deleted successfully' });
