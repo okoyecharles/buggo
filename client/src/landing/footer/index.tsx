@@ -15,15 +15,15 @@ const LandingFooter = () => {
   const currentUser = useSelector((store: storeType) => store.currentUser.user);
 
   return (
-    <footer className="flex justify-center text-gray-200 bg-gray-950 py-4 px-4 lg:p-10">
+    <footer className="flex justify-center text-gray-200 bg-gray-950 py-4 px-6 md:px-[40px]">
       <div className="w-[min(100%,1260px)]">
-        <div className="grid md:grid-cols-5 gap-4">
+        <div className="grid md:grid-cols-5 gap-5 mb-4">
           <section className="flex-1 flex flex-col gap-2 md:col-span-2">
             <h2 className="font-black text-[clamp(1.25rem,1.5vw+0.5rem,1.5rem)] text-blue-400 leading-7 ">
               TRACK BUGS AND ISSUES LIKE NEVER BEFORE
             </h2>
           </section>
-          <section className="flex-1 flex flex-col gap-2 mb-4 md:col-span-3">
+          <section className="flex-1 flex flex-col md:items-end gap-2 md:col-span-3">
             <h3 className="font-noto text-ss font-medium text-blue-400">
               Creator's Links
             </h3>

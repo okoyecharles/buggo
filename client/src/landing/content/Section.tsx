@@ -16,21 +16,29 @@ const LandingSection: React.FC<Props> = ({
   youtubeId,
   reverse,
   youtubeRing = "ring-orange-500/80",
-  bg = "bg-gray-850",
+  bg = "bg-gray-900",
 }) => {
   const [facadeClicked, setFacadeClicked] = React.useState(false);
 
   return (
-    <section className={`p-6 py-12 lg:p-12 ${bg} flex justify-center`}>
+    <section className={`${bg} flex justify-center`}>
       <div
-        className={`flex gap-8 flex-col ${
-          reverse ? "lg:flex-row-reverse" : "lg:flex-row"
-        } lg:min-h-[75vh] items-center w-[min(100%,1260px)]`}
+        className={` 
+        w-[min(100%,1260px)]
+        py-14 px-6 grid gap-5 grid-cols-4
+        md:px-[40px] md:py-[80px] md:grid-cols-8
+        lg:py-[120px] lg:grid-cols-12`}
       >
-        <article className="flex-1">{children}</article>
-        <div className="illustration flex-1 w-full flex justify-center">
+        <div
+          className={`
+          section-video w-full flex justify-center items-center
+          col-span-4 
+          lg:col-span-7
+          ${reverse ? "md:col-start-5 lg:col-start-6" : "lg:col-start-1"}
+        `}
+        >
           <div
-            className={`wrapper ring-1 rounded overflow-hidden ${youtubeRing} bg-black flex justify-center w-[min(100%,600px)]`}
+            className={`wrapper ring-1 rounded h-fit overflow-hidden ${youtubeRing} bg-black flex justify-center w-[min(100%,600px)]`}
           >
             {facadeClicked ? (
               <iframe
@@ -44,7 +52,7 @@ const LandingSection: React.FC<Props> = ({
               />
             ) : (
               <div
-                className="relative flex justify-center cursor-pointer w-full aspect-[560/315] max-w-[600px]"
+                className="relative flex justify-center cursor-pointer w-full aspect-[560/315] max-w-[600px] h-[min(337.5px,100%)]"
                 onClick={() => {
                   setFacadeClicked(true);
                 }}
@@ -76,6 +84,16 @@ const LandingSection: React.FC<Props> = ({
             )}
           </div>
         </div>
+        <article
+          className={`
+          flex flex-col justify-center
+          mt-6 md:mt-0
+          col-span-4 lg:col-span-4 md:row-start-1
+          ${reverse ? "md:col-start-1 lg:col-start-1" : "lg:col-start-9"}
+        `}
+        >
+          {children}
+        </article>
       </div>
     </section>
   );

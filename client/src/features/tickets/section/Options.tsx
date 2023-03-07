@@ -64,7 +64,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
   return (
     <>
-      <OptionsPopup open={open} setOpen={setOpen}>
+      <OptionsPopup open={open} setOpen={setOpen} style="hidden lg:block">
         <OptionsButton
           id={`remove-self-${ticket._id}`}
           processing={loading && method.update}

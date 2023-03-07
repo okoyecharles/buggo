@@ -4,7 +4,7 @@ import ButtonProps from "../types";
 
 const OptionsButton: React.FC<ButtonProps> = ({
   id,
-  color = "blue-600",
+  color="blue-600",
   processing,
   children,
   onClick,
@@ -13,7 +13,7 @@ const OptionsButton: React.FC<ButtonProps> = ({
   const colors = useMemo(() => ({
     text: color.split("-")[0] === "red" ? "text-red-500" : "text-gray-300",
     textHover: "text-white",
-    bgHover: `bg-${color}`,
+    bgHover: color.split("-")[0] === "red" ? "bg-red-600" : `bg-${color}`,
   }), [color]);
 
   return (
