@@ -15,6 +15,7 @@ import { storeType } from "../../../../redux/configureStore";
 import ImageRow from "../../../components/ImageRow";
 import Authorized from "../../../utils/authorization";
 import { a } from "@react-spring/web";
+import { Tooltip } from "react-tooltip";
 
 interface TicketRowProps {
   ticket: Ticket | undefined;
@@ -54,9 +55,17 @@ const TicketRow: React.FC<TicketRowProps> = ({
       style={ticketRowTrail}
     >
       <header className="flex flex-col gap-1 lg:col-span-4 px-1 pl-4 select-none justify-center">
-        <h3 className="font-semibold font-noto text-gray-100 truncate">
+        <h3
+          className="font-semibold font-noto text-gray-100 truncate"
+          id={`ticket-title-${ticket?._id}`}
+        >
           {ticket?.title}
         </h3>
+        <Tooltip
+          anchorId={`ticket-title-${ticket?._id}`}
+          content={ticket?.title}
+          delayShow={1000}
+        />
         <div className="flex gap-4">
           <span className="text-gray-200 text-sm font-semibold flex items-center gap-1">
             <FaCommentAlt className="text-base text-orange-500/80" />

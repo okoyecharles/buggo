@@ -16,7 +16,7 @@ const TicketStats: React.FC<Props> = ({
     to: { opacity: 1, y: 0 },
   });
 
-  return tickets.length && !loading ? (
+  return tickets.length ? (
     <div className="flex flex-col md:flex-row xl:flex-col gap-4">
       <a.div
         style={trail[0]}
@@ -37,13 +37,6 @@ const TicketStats: React.FC<Props> = ({
         <TicketGroupChart tickets={tickets} subject="priority" />
       </a.div>
     </div>
-  ) : loading ? (
-    <TailSpinLoader
-      className="self-center mt-auto mb-auto"
-      color="#ea580b"
-      width="60"
-      height="60"
-    />
   ) : (
     <div className="no-tickets flex flex-col justify-center xl:flex-1">
       <h3 className="text-blue-500/90 text-lg mb-4 font-bold text-center">

@@ -60,7 +60,7 @@ The perfect solution for anyone looking to streamline their problem-solving proc
 
 #### Live link
 
-Experience the magic of [Buggo](https://buggo.vercel.app/) for yourself! Join buggo today and discover a world of exciting features and unparalleled convenience at your fingertips. Whether you're looking to learn, connect, or simply explore. [Click here to view it live](https://buggo.vercel.app/).
+Experience the magic of **Buggo** for yourself! Join buggo today and discover a world of exciting features and unparalleled convenience at your fingertips. Whether you're looking to learn, connect, or simply explore. [Click here to view it live](https://buggo.vercel.app/).
 
 #### Built With
 

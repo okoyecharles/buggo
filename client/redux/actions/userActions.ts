@@ -107,7 +107,7 @@ const updateUser = (formData: {
     toast.success("User updated successfully");
 
     dispatch({
-      type: types.USER_LOGIN_SUCCESS,
+      type: types.USER_PROFILE_UPDATE_SUCCESS,
       payload: data,
     });
   } catch (error: any) {

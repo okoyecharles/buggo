@@ -3,9 +3,15 @@ export const validateTicketTitle = (title: string) => {
   if (!title.trim()) {
     return 'Title cannot be empty';
   };
+
+  // validate title is not shorter than 5 characters
+  if (title.length < 5) {
+    return 'Title cannot be shorter than 5 characters';
+  }
+
   // validate title is not longer than 50 characters
-  if (title.length > 25) {
-    return 'Title cannot be longer than 25 characters';
+  if (title.length > 50) {
+    return 'Title cannot be longer than 50 characters';
   }
   return null;
 }

@@ -19,7 +19,6 @@ import ProjectInviteModal from "../modal/projectInvite";
 import ProjectOptionsPopup from "./Options";
 import ProjectCardMembers from "./Members";
 import Highlighter from "react-highlight-words";
-import Link from "next/link";
 import getDate from "../../../utils/strings/date";
 import Authorized from "../../../utils/authorization";
 import { useRouter } from "next/router";
@@ -123,7 +122,7 @@ const ProjectCard: React.FC<projectProps> = ({
           }}
           onKeyDown={(event: KeyboardEvent) => {
             if (event.key === "Enter") {
-              if (project.title !== editTitle)
+              if (project.title !== editTitle && editTitle.length >= 5)
                 editProject(project._id, { title: editTitle });
               setEditMode(false);
             }

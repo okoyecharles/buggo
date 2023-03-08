@@ -33,6 +33,9 @@ const Authorized = (
       if (!ticket) return false;
       const ticketAuthor =
         typeof ticket.author === "string" ? ticket.author : ticket.author._id;
+      const projectAuthor =
+        typeof project?.author === "string" ? project?.author : project?.author._id;
+
       switch (action) {
         case "update": {
           return user._id === ticketAuthor || user._id === project?.author._id;
@@ -41,6 +44,7 @@ const Authorized = (
           return user._id === ticketAuthor || user._id === project?.author._id;
         case "comment-create":
           return (
+            user._id === projectAuthor ||
             user._id === ticketAuthor ||
             ticket.team.some((member) => member._id === user._id)
           );

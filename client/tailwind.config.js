@@ -2,6 +2,7 @@
 module.exports = {
   mode: "jit",
   content: ["./pages/**/*.{js,ts,jsx,tsx}", "./src/**/*.{js,ts,jsx,tsx}"],
+  plugins: [require("@tailwindcss/line-clamp")],
   theme: {
     fontSize: {
       xsm: "0.7rem",
@@ -54,11 +55,14 @@ module.exports = {
           900: "#014e7f",
           950: "#002f4c",
         },
+        red: {
+          600: "rgb(239 68 68)"
+        }
       },
       gridTemplateColumns: {
-        '15': 'repeat(15, minmax(0, 1fr))',
-        '16': 'repeat(16, minmax(0, 1fr))',
-      }
+        15: "repeat(15, minmax(0, 1fr))",
+        16: "repeat(16, minmax(0, 1fr))",
+      },
     },
     plugins: [],
   },

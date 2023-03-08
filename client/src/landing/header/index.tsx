@@ -51,7 +51,7 @@ const LandingHeader = () => {
 
         <Link href={currentUser ? "/dashboard" : "/login"} className="ml-auto">
           <button
-            className="font-open font-semibold text-sm text-gray-900 flex justify-center items-center rounded-full py-2 px-4 bg-white active:bg-blue-700 transition-colors relative"
+            className="font-open font-semibold text-sm text-gray-900 flex justify-center items-center rounded-full py-2 px-4 bg-white active:bg-blue-100 transition-colors relative"
             tabIndex={-1}
           >
             Login

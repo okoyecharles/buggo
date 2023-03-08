@@ -36,8 +36,6 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   const user = useSelector((store: storeType) => store.currentUser.user);
   const ticketDetails = useSelector((store: storeType) => store.ticket);
   const project = useSelector((store: storeType) => store.project.project);
-
-  const [showAllDescription, setShowAllDescription] = useState(false);
   const [projectDeleteModalOpen, setProjectDeleteModalOpen] = useState(false);
 
   const [comment, setComment] = useState("");
@@ -165,22 +163,8 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
               <h3 className="font-semibold text-sm text-gray-400">
                 Description
               </h3>
-              <p>
-                {returnWithLineBreaks(
-                  showAllDescription
-                    ? ticketDetails.ticket?.description
-                    : restrictLength(ticketDetails.ticket?.description, 200)
-                )}
-                {(ticketDetails.ticket?.description?.length || 0) > 200 && (
-                  <button
-                    className="text-orange-400 ml-1"
-                    onClick={() => {
-                      setShowAllDescription(!showAllDescription);
-                    }}
-                  >
-                    {showAllDescription ? "less" : "more"}
-                  </button>
-                )}
+              <p className="line-clamp-5">
+                {returnWithLineBreaks(ticketDetails.ticket?.description)}
               </p>
             </div>
 

@@ -56,7 +56,7 @@ const ProjectInviteModal: React.FC<{
     let filteredUsers = searchByNameOrEmail(search, users);
     filteredUsers = filteredUsers.filter((searchedUser) => {
       return (
-        searchedUser._id !== user?._id &&
+        searchedUser._id !== project.author._id &&
         !project.invitees.find((invitee) => invitee.user._id === searchedUser._id) &&
         !project.team.find((member) => member._id === searchedUser._id)
       );

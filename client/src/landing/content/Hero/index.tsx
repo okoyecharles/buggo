@@ -2,8 +2,13 @@ import Link from "next/link";
 import React from "react";
 import { CgArrowLongRight } from "react-icons/cg";
 import Image from "next/image";
+import { useSelector } from "react-redux";
+import { storeType } from "../../../../redux/configureStore";
+import { a, useSpring } from "@react-spring/web";
 
 const LandingHero = () => {
+  const currentUser = useSelector((store: storeType) => store.currentUser.user);
+
   return (
     <section className="hero-section text-white bg-gradient-to-b from-[#007BCD] to-blue-700">
       <div
@@ -35,10 +40,14 @@ const LandingHero = () => {
             </p>
 
             <div className="buttons mt-6 flex gap-6 lg:justify-center">
-              <Link href="/register" tabIndex={-1} className="rounded-full">
+              <Link
+                href={currentUser ? "/dashboard" : "/register"}
+                tabIndex={-1}
+                className="rounded-full"
+              >
                 <button
                   name="Get Started"
-                  className="bg-gray-50 font-medium py-2 px-12 rounded-full text-gray-900 transition-all hover:shadow-xl text-[16px] md:text-[18px] hover:text-black flex items-center relative isolate group"
+                  className="bg-white font-medium py-2 px-12 rounded-full text-gray-900 transition-all hover:shadow-xl text-[16px] md:text-[18px] hover:text-black flex items-center relative isolate group"
                 >
                   <span className="bg-white px-1 group-hover:text-blue-600 transition-colors">
                     Get Started
@@ -49,12 +58,15 @@ const LandingHero = () => {
             </div>
           </div>
         </div>
-        <div className="
+        <div
+          className="
           hero-section-illustrations w-full px-4 flex justify-center items-end
           pointer-events-none select-none
           md:-mt-[175px] md:justify-end
           lg:w-[1200px] lg:justify-between lg:-mt-[200px]
-        ">
+          overflow-y-hidden
+        "
+        >
           <Image
             src={"/hero/illustration-1.svg"}
             alt="Hero Illustration"

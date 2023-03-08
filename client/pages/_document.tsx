@@ -3,7 +3,7 @@ import Script from "next/script";
 
 export default function Document() {
   return (
-    <Html lang="en">
+    <Html lang="en" className="scroll-smooth">
       <Head>
         <meta name="image" content="https://buggo.vercel.app/og.png" />
         <link rel="canonical" href="https://buggo.vercel.app/" />
@@ -74,8 +74,8 @@ export default function Document() {
           `}
         </Script>
       </Head>
-      <body className="bg-gray-800 h-[100svh]">
-        <div className="overflow-x-hidden scroll-smooth">
+      <body className="bg-gray-800">
+        <div className="overflow-x-hidden">
           <Main />
           <div id="portal" />
           <NextScript />
