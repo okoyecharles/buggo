@@ -5,12 +5,12 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import colors from '@colors/colors/safe';
 
 import userRouter from './routes/userRoutes';
 import projectRouter from './routes/projectRoutes';
 import ticketRouter from './routes/ticketRoutes';
 import connectToPusher from './config/Pusher';
-import colors from '@colors/colors/safe';
 
 const app = express();
 const pusher = connectToPusher();

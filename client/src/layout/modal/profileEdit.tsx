@@ -3,11 +3,11 @@ import Modal from "../../features/modal";
 import Image from "next/image";
 import Compressor from "compressorjs";
 import { toBase64 } from "../../utils/strings/image";
-import defaultAvatar from "../../assets/default-avatar";
 import store from "../../../redux/configureStore";
 import { updateUser } from "../../../redux/actions/userActions";
 import { ThreeDotsLoader } from "../../features/loader";
 import { User } from "../../types/models";
+import avatars from "../../assets/avatar";
 
 interface EditProfileModalProps {
   open: boolean;
@@ -42,12 +42,10 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
       setNameError("Name is required");
       return;
     }
-
     if (name.length < 5) {
       setNameError("Name must be at least 5 characters");
       return;
     }
-
     if (name.length > 25) {
       setNameError("Name cannot exceed 25 characters");
       return;
@@ -58,8 +56,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   };
 
   const isEdited = useMemo(() => {
-    return base64Image !== user?.image || name !== user?.name;
-  }, [name, user]);
+    return name !== user?.name || base64Image !== user?.image;
+  }, [name, user, base64Image]);
 
   const openImageSelector = (event: any) => {
     event.preventDefault();
@@ -68,7 +66,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   useEffect(() => {
     setProcessing(loading);
-
     if (open && !loading && !method.update) {
       setOpen(false);
     }
@@ -76,7 +73,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   useEffect(() => {
     if (open) {
-      imageInputRef.current?.focus();
       setName(user?.name || "");
       setBase64Image(user?.image || "");
       setNameError(null);
@@ -90,7 +86,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
         const imageFile = await toBase64(image as File | Blob);
         setBase64Image(imageFile as string);
       } else {
-        setBase64Image("");
+        setBase64Image(avatars[Math.floor(Math.random() * avatars.length)]);
       }
     }
     convertImage();
@@ -151,7 +147,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   className="relative flex w-fit rounded-full"
                 >
                   <Image
-                    src={base64Image || defaultAvatar}
+                    src={base64Image || avatars[0]}
                     alt="Profile image"
                     width={75}
                     height={75}
@@ -177,8 +173,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                             setImage(result);
                           },
                         });
-                      } else {
-                        setBase64Image(defaultAvatar);
                       }
                     }}
                   />

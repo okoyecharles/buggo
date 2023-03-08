@@ -94,7 +94,9 @@ const ticketReducer = (state: TicketState = initialState, action: ActionType): T
           comment: false,
         }, ticket: {
           ...state.ticket,
-          comments: [...state.ticket.comments, payload.comment]
+          comments: [...state.ticket.comments, payload.comment].sort((a, b) => {
+            return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          })
         }
       };
     case types.TICKET_COMMENT_FAIL:

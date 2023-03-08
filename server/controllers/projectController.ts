@@ -269,7 +269,7 @@ export const createTicket = async (
     }
 
     ticket = await ticket.save();
-    pusher.trigger(
+    await pusher.trigger(
       pusherChannel,
       'create-project-ticket',
       {
@@ -280,6 +280,7 @@ export const createTicket = async (
       },
       { socket_id: socketId as string }
     );
+    console.log('Pusher triggered');
 
     // Assign ticket to project's relationship
     ticketProject?.tickets.unshift(ticket._id);

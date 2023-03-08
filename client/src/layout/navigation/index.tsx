@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FaBell } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../redux/configureStore";
-import defaultAvatar from "../../assets/default-avatar";
+import avatars from "../../assets/avatar";
 import { restrictLength } from "../../utils/components/string";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { Tooltip } from "react-tooltip";
@@ -54,7 +54,7 @@ const Navigation: React.FC<NavigationProps> = ({
         </button>
         <div className="profile flex items-center gap-2 relative select-none">
           <Image
-            src={currentUser.user?.image || defaultAvatar}
+            src={currentUser.user?.image || avatars[0]}
             width="200"
             height="200"
             alt="profile__image"

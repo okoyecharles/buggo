@@ -31,7 +31,7 @@ const TicketGroupChart: React.FC<Props> = ({ tickets, subject }) => {
       <h3 className="mb-2 font-bold text-gray-300 flex justify-between">
         Tickets by {subject}{" "}
         <AiFillInfoCircle
-          className="text-gray-500 text-xl hover:text-blue-600 hover:scale-105 outline-none transition"
+          className="text-gray-500 text-xl hover:text-blue-400 hover:scale-105 outline-none transition"
           id={`ticketStat${subject}__info`}
         />
       </h3>

@@ -17,6 +17,7 @@ import Compressor from "compressorjs";
 import { toBase64 } from "../src/utils/strings/image";
 import Button from "../src/components/Button";
 import Image from "next/image";
+import avatars from "../src/assets/avatar";
 
 const Register = () => {
   const router = useRouter();
@@ -111,15 +112,19 @@ const Register = () => {
 
     // If errors exist, return
     if (
+      nameValidationError ||
       emailValidationError ||
       passwordValidationError ||
-      passwordConfirmationValidationError ||
-      nameError ||
-      !image
+      passwordConfirmationValidationError
     )
       return;
 
-    const formData = { name, email, password, image: base64Image };
+    const formData = {
+      name,
+      email,
+      password,
+      image: base64Image || avatars[Math.floor(Math.random() * avatars.length)],
+    };
     store.dispatch(register(formData));
   };
 

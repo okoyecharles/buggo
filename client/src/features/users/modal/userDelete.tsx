@@ -34,8 +34,8 @@ const UserDeleteModal: React.FC<{
           </p>
         </header>
         <div className="shadow-lg gap-2 bg-gray-700 p-2 rounded mb-2">
-          <p className="text-sm text-blue-400 capitalize">
-            Joined {getDate(user?.createdAt, { format: "short month year" })}
+          <p className="text-sm text-blue-400">
+            Joined {getDate(user?.createdAt, { format: "calendar time" })}
           </p>
           <p className="font-semibold text-gray-100">{user?.name}</p>
         </div>

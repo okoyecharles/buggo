@@ -1,7 +1,6 @@
 import React from "react";
 import { storeType } from "../../../redux/configureStore";
 import { a, useTrail } from "@react-spring/web";
-import { TailSpinLoader } from "../loader";
 import TicketGroupChart from "./charts";
 
 interface Props {

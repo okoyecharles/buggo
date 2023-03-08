@@ -14,8 +14,8 @@ const UsersSection: React.FC<UsersSectionProps> = ({
   setUsers,
   search,
 }) => {
-  const [sort, setSort] = useState<"asc" | "desc" | null>(null);
-  const [sortBy, setSortBy] = useState<"name" | "joined" | null>(null);
+  const [sort, setSort] = useState<"asc" | "desc" | null>("desc");
+  const [sortBy, setSortBy] = useState<"name" | "joined" | null>("joined");
 
   const sortedUsers = useMemo(() => {
     const sortField = sortBy === "name" ? "name" : "createdAt";
@@ -41,9 +41,8 @@ const UsersSection: React.FC<UsersSectionProps> = ({
     }
 
     // Switch sort modes
-    if (!sort) setSort("asc");
-    else if (sort === "asc") setSort("desc");
-    else if (sort === "desc") setSort(null);
+    if (sort === "asc") setSort("desc")
+    else if (sort === "desc") setSort("asc");
   };
 
   return (

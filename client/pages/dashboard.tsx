@@ -62,7 +62,7 @@ export default function Home() {
             <h3 className="text-xl font-bold text-white  flex items-center justify-between">
               Ticket Stats{" "}
               <AiFillQuestionCircle
-                className="text-gray-500 hover:text-blue-600 text-2xl hover:scale-105 outline-none transition"
+                className="text-gray-500 hover:text-blue-400 text-2xl hover:scale-105 outline-none transition"
                 id="ticketStats__info"
               />
             </h3>
