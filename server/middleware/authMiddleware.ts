@@ -10,7 +10,9 @@ const protect = async (
   res: Response,
   next: NextFunction
 ) => {
-  const requestToken = req.cookies[tokenName];
+  // If system doesn't support cookies, use authorization header
+  const cookieToken = req.cookies[tokenName];
+  const requestToken = cookieToken || req.headers.authorization?.split(' ')[1];
 
   if (requestToken) {
     try {

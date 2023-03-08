@@ -71,6 +71,7 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
     if (
       !req.admin &&
       ticket.author.toString() !== req.user &&
+      project?.author.toString() !== req.user &&
       !projectTeam.includes(req.user as string)
     )
       return res.status(401).json({ message: 'User not authorized' });
@@ -123,7 +124,8 @@ export const deleteTicket = async (req: AuthorizedRequest<TicketType>, res: Resp
 
     if (
       !req.admin &&
-      ticket?.author.toString() !== req.user
+      ticket?.author.toString() !== req.user &&
+      project?.author.toString() !== req.user
     ) {
       return res.status(401).json({ message: 'User not authorized' });
     }
@@ -159,7 +161,8 @@ export const createTicketComment = async (req: AuthorizedRequest<CommentType>, r
     const { id } = req.params;
     const { text } = req.body;
     const author = req.user;
-    const ticket = await Ticket.findById(id);
+    const ticket: any = await Ticket.findById(id).populate('project', 'author');
+    const project = ticket?.project;
     const socketId = req.headers['x-pusher-socket-id'];
 
     if (!ticket)
@@ -168,7 +171,8 @@ export const createTicketComment = async (req: AuthorizedRequest<CommentType>, r
     if (
       !req.admin &&
       ticket?.author.toString() !== req.user &&
-      !ticket?.team.some((member) => member.toString() === req.user)
+      project?.author.toString() !== req.user &&
+      !ticket?.team.some((member: any) => member.toString() === req.user)
     )
       return res.status(401).json({ message: 'User not authorized' });
 

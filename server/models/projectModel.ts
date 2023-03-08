@@ -29,7 +29,6 @@ projectSchema.pre('remove', { document: true }, async function (next) {
   const project: any = this;
   const tickets = await Ticket.find({ project: project._id });
   tickets.forEach(async (ticket) => {
-    console.log('ticket removed');
     await ticket.remove();
   });
   next();

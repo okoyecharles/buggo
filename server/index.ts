@@ -10,6 +10,7 @@ import userRouter from './routes/userRoutes';
 import projectRouter from './routes/projectRoutes';
 import ticketRouter from './routes/ticketRoutes';
 import connectToPusher from './config/Pusher';
+import colors from '@colors/colors/safe';
 
 const app = express();
 const pusher = connectToPusher();
@@ -22,7 +23,7 @@ app.use(morgan('dev'));
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-  res.send('Welcome to buggo\'s server!');
+  res.send('Welcome to the Bug Tracker API!');
 });
 
 app.use('/api/users', userRouter);
@@ -34,12 +35,15 @@ const CONNECTION_URI = process.env.MONGO_URI || '';
 
 mongoose.set('strictQuery', false);
 mongoose.connect(CONNECTION_URI)
-  .then(() => {
+  .then((conn) => {
     app.listen(PORT, () => {
-      console.log('Server running on port', PORT);
+      console.log(`Connected to ${conn.connection.name} successfully...`);
+      console.log('Host:', colors.cyan(conn.connection.host));
+      console.log('Port:', colors.cyan(PORT.toString()));
     })
   }).catch((err) => {
-    console.log(`Connection error: ${err}`);
+    console.log('\nError connecting to MongoDB...');
+    console.log('Message:', colors.red(err.message || err), '\n');
   });
 
 export { pusher, pusherChannel };

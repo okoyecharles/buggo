@@ -5,7 +5,7 @@ import { CookieOptions, Request, Response } from 'express';
 import AuthorizedRequest from '../types/request';
 import { pusher, pusherChannel } from '..';
 
-const secret = process.env.JWT_SECRET || '';
+const secret = process.env.JWT_SECRET!;
 const tokenExpiration = process.env.NODE_ENV === 'development' ? '1d' : '7d';
 const tokenName = "bug-tracker-token";
 const cookieOptions: CookieOptions = {
@@ -54,7 +54,7 @@ export const deleteUser = async (req: AuthorizedRequest<any>, res: Response) => 
     }, {
       socket_id: socketId as string
     });
-  
+
     const users = await User.find();
 
     res.status(200).json({ users, message: 'User deleted successfully' });
@@ -95,7 +95,7 @@ export const register = async (
     const token = generateToken(user._id.toString(), user.admin);
     res.status(200)
       .cookie(tokenName, token, cookieOptions)
-      .json({ user });
+      .json({ user, token });
   } catch (error) {
     res
       .status(500)
@@ -129,13 +129,11 @@ export const login = async (
       return res.status(400).json({ message: 'Invalid credentials' });
     };
 
-    console.log(cookieOptions);
-
     const token = generateToken(userExists._id.toString(), userExists.admin);
     res
       .status(200)
       .cookie(tokenName, token, cookieOptions)
-      .json({ user: userExists });
+      .json({ user: userExists, token });
   } catch (error) {
     res
       .status(500)
@@ -154,6 +152,30 @@ export const logout = async (req: Request, res: Response) => {
     tokenName,
     cookieOptions
   ).send({ message: 'Logged out successfully' });
+};
+
+/*
+  * @route   POST /users/validate
+  * @desc    Validate a user
+  * @access  Public
+*/
+export const validateUser = async (req: Request, res: Response) => {
+  const token = req.cookies[tokenName];
+
+  if (!token)
+    return res.status(401).json({ message: 'Unauthorized' });
+
+  const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+    id: string;
+    admin: boolean;
+  };
+  const user = await User.findById(decoded.id);
+  if (!user)
+    return res.status(401).json({ message: 'Unauthorized' });
+
+  res.status(200).json({
+    user, token
+  });
 };
 
 /*
@@ -181,59 +203,8 @@ export const updateUser = async (
     if (image) userExists.image = image;
 
     const updatedUser = await userExists.save();
+
     res.status(200).json({ user: updatedUser });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Something went wrong... Please try again' });
-  }
-};
-
-/*
-  * @route   POST /users/validate
-  * @desc    Validate a user
-  * @access  Public
-*/
-export const validateUser = async (req: Request, res: Response) => {
-  const token = req.cookies[tokenName];
-
-  if (!token)
-    return res.status(401).json({ message: 'Unauthorized' });
-
-  const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-    id: string;
-    admin: boolean;
-  };
-  const user = await User.findById(decoded.id);
-
-  if (!user)
-    return res.status(401).json({ message: 'Unauthorized' });
-
-  res.status(200).json({ user });
-};
-
-
-export const googleSignIn = async (
-  req: Request<never, never, UserType>,
-  res: Response
-) => {
-  const { name, email, googleId } = req.body;
-
-  try {
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res
-        .status(200)
-        .json({ user: userExists });
-    }
-
-    const user = await User.create({
-      name,
-      email,
-      googleId,
-    });
-
-    res.status(200).json({ user });
   } catch (error) {
     res
       .status(500)
