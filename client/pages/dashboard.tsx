@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
 import { fetchProjects } from "../redux/actions/projectActions";
 import { fetchTickets } from "../redux/actions/ticketActions";
-import { getGreeting } from "../src/utils/strings/greeting";
+import getGreeting from "../src/utils/strings/greeting";
 import { Tooltip } from "react-tooltip";
 import TicketStats from "../src/features/tickets/Stats";
 import { AiFillQuestionCircle } from "react-icons/ai";
