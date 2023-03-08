@@ -137,7 +137,7 @@ export const inviteToProject = async (
     project.invitees = [...project.invitees, ...invitees];
 
     const updatedProject = await project.save();
-    pusher.trigger(
+    await pusher.trigger(
       pusherChannel,
       'project-invite',
       {
@@ -182,7 +182,7 @@ export const acceptInvite = async (
 
       project.team.push(req.user as any);
       await project.save();
-      pusher.trigger(
+      await pusher.trigger(
         pusherChannel,
         'accept-project-invite',
         {
@@ -213,6 +213,7 @@ export const deleteProject = async (
 ) => {
   try {
     const { id } = req.params;
+    const socketId = req.headers['x-pusher-socket-id'];
     const project = await Project.findById(id).populate('author', 'name');
 
     if (!project)
@@ -222,6 +223,12 @@ export const deleteProject = async (
       return res.status(401).json({ message: 'User not authorized' });
 
     await project.remove();
+    await pusher.trigger(pusherChannel, 'delete-project', {
+      projectId: id,
+    }, {
+      socket_id: socketId as string
+    });
+
     res.status(200).json({ message: 'Project removed' });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
@@ -280,7 +287,6 @@ export const createTicket = async (
       },
       { socket_id: socketId as string }
     );
-    console.log('Pusher triggered');
 
     // Assign ticket to project's relationship
     ticketProject?.tickets.unshift(ticket._id);

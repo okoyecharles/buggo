@@ -86,7 +86,7 @@ export const updateTicketById = async (req: AuthorizedRequest<TicketType>, res: 
       team,
       comments
     });
-    pusher.trigger(pusherChannel, 'update-project-ticket', {
+    await pusher.trigger(pusherChannel, 'update-project-ticket', {
       ticket: {
         _id: id,
         author: ticket?.author._id.toString(),
@@ -131,7 +131,7 @@ export const deleteTicket = async (req: AuthorizedRequest<TicketType>, res: Resp
     }
 
     await ticket.remove();
-    pusher.trigger(pusherChannel, 'delete-project-ticket', {
+    await pusher.trigger(pusherChannel, 'delete-project-ticket', {
       ticket: {
         _id: id,
         author: ticket.author._id.toString(),
@@ -181,7 +181,7 @@ export const createTicketComment = async (req: AuthorizedRequest<CommentType>, r
       author: author,
       ticket: ticket?._id
     });
-    pusher.trigger(pusherChannel, 'new-ticket-comment', {
+    await pusher.trigger(pusherChannel, 'new-ticket-comment', {
       ticketId: id,
       comment: {
         _id: comment?._id.toString(),

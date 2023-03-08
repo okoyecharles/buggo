@@ -1,10 +1,18 @@
 import { Channel } from "pusher-js";
 import store from "../../../redux/configureStore";
-import { pusherUpdateProject } from "../../../redux/actions/projectActions";
+import { pusherDeleteProject, pusherUpdateProject } from "../../../redux/actions/projectActions";
 import { pusherCommentOnTicket, pusherCreateTicket, pusherDeleteTicket, pusherUpdateTicket } from "../../../redux/actions/ticketActions";
 import { pusherDeleteUser } from "../../../redux/actions/userActions";
 
 const bindChannelEvents = (channel: Channel) => {
+  // Project delete
+  channel?.bind(
+    "delete-project",
+    ({ projectId }: { projectId: string }) => {
+      store.dispatch(pusherDeleteProject(projectId));
+    }
+  );
+
   // Project invite
   channel?.bind(
     "project-invite",

@@ -130,12 +130,13 @@ export const pusherUpdateProject = (projectId: string) => async (
 };
 
 export const deleteProject =
-  (id: string) => async (dispatch: DispatchType) => {
+  (id: string) => async (dispatch: DispatchType, getState: () => storeType) => {
     try {
       dispatch({
         type: types.PROJECT_DELETE_REQUEST,
       });
-      await axios.delete(`${SERVER_URL}/projects/${id}`, generateConfig());
+      const socketId = getState().pusher.socket;
+      await axios.delete(`${SERVER_URL}/projects/${id}`, generateConfig(socketId || ""));
       toast.success("Project deleted successfully");
 
       dispatch({
@@ -149,6 +150,13 @@ export const deleteProject =
       });
     }
   };
+
+export const pusherDeleteProject = (projectId: string) => {
+  return {
+    type: types.PROJECT_DELETE_SUCCESS,
+    payload: projectId,
+  };
+}
 
 export const inviteToProject = (id: string, invitees: {
   _id: string;

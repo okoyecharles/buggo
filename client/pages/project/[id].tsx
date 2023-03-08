@@ -13,6 +13,8 @@ export default function ProjectDetails() {
   const router = useRouter();
   const { id } = router.query;
 
+  const [pageLoaded, setPageLoaded] = useState<boolean>(false);
+
   const project = useSelector((store: storeType) => store.project);
 
   const [ticketCreateOpen, setTicketCreateOpen] = useState<boolean>(false);
@@ -21,10 +23,17 @@ export default function ProjectDetails() {
   useEffect(() => {
     if (!project.loading && id) {
       store.dispatch(fetchProjectById(id as string));
+      setPageLoaded(true);
     } else {
-      router.replace("/dashboard");
+      router.replace('/dashboard');
     }
   }, []);
+
+  useEffect(() => {
+    if (!project.project && !project.loading && pageLoaded) {
+      router.replace('/dashboard');
+    }
+  }, [project.project]);
 
   return (
     <>

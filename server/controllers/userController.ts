@@ -49,7 +49,7 @@ export const deleteUser = async (req: AuthorizedRequest<any>, res: Response) => 
       return res.status(401).json({ message: 'Unauthorized Request' });
 
     await userExists.remove();
-    pusher.trigger(pusherChannel, 'delete-user', {
+    await pusher.trigger(pusherChannel, 'delete-user', {
       userId: id,
     }, {
       socket_id: socketId as string
