@@ -65,17 +65,25 @@ export const createProject = async (
   req: AuthorizedRequest<ProjectType>,
   res: Response
 ) => {
-  const { title } = req.body;
-  const project = new Project({
-    title,
-    author: req.user,
-    team: [req.user],
-  });
-
   try {
-    const newProject = await project.save();
-    const returnProject = await fetchProject(newProject._id);
+    const { title } = req.body;
+    const socketId = req.headers['x-pusher-socket-id'];
+    const project = new Project({
+      title,
+      author: req.user,
+      team: [req.user],
+    });
 
+    const newProject = await project.save();
+    await pusher.trigger(
+      pusherChannel,
+      'project-create',
+      {
+        projectId: newProject?._id.toString(),
+      },
+      { socket_id: socketId as string }
+    );
+    const returnProject = await fetchProject(newProject._id);
     res.status(201).json({ project: returnProject });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
@@ -94,6 +102,7 @@ export const updateProject = async (
   try {
     const { id } = req.params;
     const { title, team } = req.body;
+    const socketId = req.headers['x-pusher-socket-id'];
     const project = await Project.findById(id).populate('author', 'name');
 
     if (!project)
@@ -106,6 +115,14 @@ export const updateProject = async (
     if (team) project.team = team;
 
     const updatedProject = await project.save();
+    await pusher.trigger(
+      pusherChannel,
+      'project-update',
+      {
+        projectId: updatedProject?._id.toString(),
+      },
+      { socket_id: socketId as string }
+    );
     const returnProject = await fetchProject(updatedProject.id);
     res.status(200).json({ project: returnProject });
   } catch (error: any) {

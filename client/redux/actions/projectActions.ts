@@ -56,15 +56,17 @@ export const fetchProjectById =
 
 export const createProject =
   (project: any) =>
-    async (dispatch: DispatchType) => {
+    async (dispatch: DispatchType, getState: () => storeType) => {
       try {
         dispatch({
           type: types.PROJECT_CREATE_REQUEST,
         });
+
+        const socketId = getState().pusher.socket;
         const { data } = await axios.post(
           `${SERVER_URL}/projects`,
           project,
-          generateConfig()
+          generateConfig(socketId || '')
         );
         toast.success('Project created successfully');
 
@@ -80,17 +82,40 @@ export const createProject =
       }
     };
 
+export const pusherCreateProject = (projectId: string) => async (
+  dispatch: DispatchType
+) => {
+  try {
+    const { data } = await axios.get(
+      `${SERVER_URL}/projects/${projectId}`,
+      generateConfig()
+    );
+
+    dispatch({
+      type: types.PROJECT_CREATE_SUCCESS,
+      payload: data,
+    });
+  } catch (error: any) {
+    dispatch({
+      type: types.PROJECT_CREATE_FAIL,
+      payload: error.response?.data ? error.response.data : error.error,
+    });
+  }
+};
+
 export const updateProject =
   ({ id, project }: { id: string; project: any }) =>
-    async (dispatch: DispatchType) => {
+    async (dispatch: DispatchType, getState: () => storeType) => {
       try {
         dispatch({
           type: types.PROJECT_UPDATE_REQUEST,
         });
+
+        const socketId = getState().pusher.socket;
         const { data } = await axios.put(
           `${SERVER_URL}/projects/${id}`,
           project,
-          generateConfig()
+          generateConfig(socketId || '')
         );
 
         dispatch({

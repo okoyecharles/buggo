@@ -1,6 +1,7 @@
 import { ActionType } from "../../types";
 import * as types from "../../constants/ticketConstants";
-import * as userTypes from "../../constants/userConstants"
+import * as projectTypes from "../../constants/projectConstants";
+import * as userTypes from "../../constants/userConstants";
 import { Ticket } from "../../../src/types/models";
 
 interface TicketsState {
@@ -35,6 +36,18 @@ const ticketsReducer = (state: TicketsState = initialState, action: ActionType):
           }
           return ticket;
         }),
+      };
+    
+    case types.TICKET_DELETE_SUCCESS:
+      return {
+        ...state,
+        tickets: state.tickets.filter((ticket) => ticket._id !== payload.ticketId),
+      };
+  
+    case projectTypes.PROJECT_DELETE_SUCCESS:
+      return {
+        ...state,
+        tickets: state.tickets.filter((ticket) => ticket.project._id !== payload),
       };
     
     case types.TICKET_COMMENT_SUCCESS:

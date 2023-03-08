@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
 import MyTicketsDetailsBar from "../src/features/my-tickets/details";
@@ -20,9 +20,9 @@ export default function Tickets() {
     store.dispatch(fetchTickets());
   }, []);
 
-  const groupTicketsByProjects = (tickets: Ticket[]) => {
+  const ticketsByProjects = useMemo(() => {
     const projects: GroupedTickets[] = [];
-    tickets.forEach((ticket) => {
+    tickets.tickets.forEach((ticket) => {
       const projectExists = projects.some(
         (project) => project._id === ticket.project._id
       );
@@ -51,7 +51,7 @@ export default function Tickets() {
       projects[projectIndex].tickets.push(ticket);
     });
     return projects;
-  };
+  }, [tickets.tickets]);
 
   const scrollToTicketGroup = (id: string) => {
     const sectionHeader = document.getElementById(id);
@@ -76,11 +76,11 @@ export default function Tickets() {
           detailsBarOpen={detailsBarOpen}
           setDetailsBarOpen={setDetailsBarOpen}
           scrollToTicketGroup={scrollToTicketGroup}
-          group={groupTicketsByProjects(tickets.tickets)}
+          group={ticketsByProjects}
         />
         <MyTicketsSection
           setDetailsBarOpen={setDetailsBarOpen}
-          group={groupTicketsByProjects(tickets.tickets)}
+          group={ticketsByProjects}
           scrolledTicketGroup={scrolledTicketGroup}
         />
       </div>

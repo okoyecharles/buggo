@@ -139,6 +139,11 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
     case ticketTypes.TICKET_CREATE_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, createTicket: false } };
 
+      
+
+
+      
+
     case ticketTypes.TICKET_UPDATE_SUCCESS:
       if (!state.project) return state;
       return {
