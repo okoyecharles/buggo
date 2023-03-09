@@ -45,7 +45,7 @@ export const deleteUser = async (req: AuthorizedRequest<any>, res: Response) => 
     if (!userExists)
       return res.status(404).json({ message: 'User not found' });
 
-    if (!req.admin && req.user !== userExists._id.toString())
+    if (req.admin !== true || req.user === userExists._id.toString() || userExists.admin)
       return res.status(401).json({ message: 'Unauthorized Request' });
 
     await userExists.remove();

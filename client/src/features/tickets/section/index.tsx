@@ -75,7 +75,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
   });
   const ticketListSpring = useSpring({
     from: { height: 0 },
-    to: { height: (70 * currentTickets.length) },
+    to: { height: currentTickets.length ? (70 * currentTickets.length) : 80 },
     config: { mass: 1, tension: 1000, friction: 100 },
   });
 
@@ -192,11 +192,11 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
                   />
                 ))
               ) : (
-                <div className="p-4 text-gray-300 flex flex-col items-center justify-center">
+                <div className="p-4 text-gray-300 flex flex-col  lg:items-center justify-center">
                   <h3 className="text-lg font-semibold text-orange-500">
                     No tickets matched the current filter
                   </h3>
-                  <p className="text-ss text-gray-400 text-center">
+                  <p className="text-ss text-gray-400">
                     This means that no{" "}
                     {statusFilter === "open" ? "open" : "closed"} tickets
                     created by {authorFilter === "me" ? "you" : "anyone"} were

@@ -120,7 +120,6 @@ const updateUser = (formData: {
 
 const getUsers = async () => {
   const { data } = await axios.get(`${SERVER_URL}/users`, generateConfig());
-
   return data;
 };
 

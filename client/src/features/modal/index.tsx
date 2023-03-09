@@ -29,7 +29,7 @@ const Modal: React.FC<ModalProps> = ({ open, setOpen, children, style }) => {
         }}
       >
         <div
-          className={`outclick fixed top-0 left-0 w-screen h-screen flex justify-center items-end sm:items-center bg-black/50 backdrop-blur-sm sm:backdrop-blur-0 sm:bg-black/75 z-0 transition ${
+          className={`outclick fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-black/50 z-0 transition ${
             open ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
           onClick={(e) => {
@@ -39,7 +39,7 @@ const Modal: React.FC<ModalProps> = ({ open, setOpen, children, style }) => {
           }}
         >
           <animated.div
-            className="modal-content z-50 bg-gray-800 w-full sm:w-96 p-3 pt-5 sm:pt-3 rounded-t-lg sm:rounded overflow-hidden"
+            className="modal-content z-50 bg-gray-800 w-[calc(100vw-2rem)] sm:w-96 p-3 rounded-md sm:rounded overflow-hidden"
             style={{ ...spring, ...style }}
           >
             {children}

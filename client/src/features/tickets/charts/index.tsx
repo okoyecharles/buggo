@@ -28,13 +28,10 @@ const TicketGroupChart: React.FC<Props> = ({ tickets, subject }) => {
 
   return (
     <>
-      <h3 className="mb-2 font-bold text-gray-300 flex justify-between">
-        Tickets by {subject}{" "}
-        <AiFillInfoCircle
-          className="text-gray-500 text-xl hover:text-blue-400 hover:scale-105 outline-none transition"
-          id={`ticketStat${subject}__info`}
-        />
-      </h3>
+      <AiFillInfoCircle
+        className="text-gray-500 text-xl hover:text-blue-400 hover:scale-105 outline-none transition absolute right-3 top-3"
+        id={`ticketStat${subject}__info`}
+      />
       <Tooltip
         anchorId={`ticketStat${subject}__info`}
         html={`<div class="text-center">Percentage of tickets you've created,<br> grouped by ${subject}.</div>`}
@@ -72,6 +69,9 @@ const TicketGroupChart: React.FC<Props> = ({ tickets, subject }) => {
           />
         </PieChart>
       </div>
+      <p className="font-bold text-xsm uppercase text-gray-200 flex justify-between absolute bottom-2 left-2 select-none">
+        {subject}
+      </p>
     </>
   );
 };

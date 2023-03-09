@@ -24,8 +24,8 @@ export default function Users() {
   async function fetchUsers() {
     setLoading(true);
     const { users } = await getUsers();
-    setLoading(false);
     setUsers(users);
+    setLoading(false);
   }
 
   useEffect(() => {

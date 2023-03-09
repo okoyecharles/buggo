@@ -34,7 +34,6 @@
         <li><a href="#clone-locally">Clone Locally</a></li>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#development">Development</a></li>
-        <li><a href="#testing">Testing</a></li>
       </ul>
     </li>
     <li><a href="#contributing">Contributing</a></li>
@@ -189,18 +188,6 @@ Experience the magic of **Buggo** for yourself! Join buggo today and discover a 
     ```sh
     cd server
     npm run dev
-    ```
-
-#### Testing
-
-In order to run tests for this project make sure you followed all steps in the [prerequisites](#prerequisites) section, then run the code below.
-
-- Run all tests
-  - This should run all tests in for client
-  from **_../buggo_**
-    ```sh
-    cd client
-    npm run test
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

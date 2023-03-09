@@ -67,16 +67,23 @@ const UserRow: React.FC<UserRowProps> = ({ user, setUsers, search }) => {
       </div>
 
       <div className="absolute top-2 right-2 lg:right-4 flex bg-gray-850 lg:bg-gray-700 rounded-md">
-        <button
-          id={`delete-user-${user._id}`}
-          className="p-2 text-gray-400 hover:text-white transition-all"
-          onClick={() => {
-            setDeleteOpen(true);
-          }}
-        >
-          <BsTrashFill />
-        </button>
-        <Tooltip anchorId={`delete-user-${user._id}`} content="Delete user" />
+        {!user.admin ? (
+          <>
+            <button
+              id={`delete-user-${user._id}`}
+              className="p-2 text-gray-400 hover:text-white transition-all"
+              onClick={() => {
+                setDeleteOpen(true);
+              }}
+            >
+              <BsTrashFill />
+            </button>
+            <Tooltip
+              anchorId={`delete-user-${user._id}`}
+              content="Delete user"
+            />
+          </>
+        ) : null}
       </div>
 
       <UserDeleteModal
