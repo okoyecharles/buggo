@@ -22,6 +22,7 @@ import Highlighter from "react-highlight-words";
 import getDate from "../../../utils/strings/date";
 import Authorized from "../../../utils/authorization";
 import { useRouter } from "next/router";
+import { a } from "@react-spring/web";
 
 interface projectProps {
   project: Project;
@@ -32,6 +33,7 @@ interface projectProps {
   };
   currentEdit: string;
   setCurrentEdit: (id: string) => void;
+  projectCardTrail: any
 }
 
 const ProjectCard: React.FC<projectProps> = ({
@@ -41,6 +43,7 @@ const ProjectCard: React.FC<projectProps> = ({
   method,
   currentEdit,
   setCurrentEdit,
+  projectCardTrail
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
   const router = useRouter();
@@ -87,9 +90,10 @@ const ProjectCard: React.FC<projectProps> = ({
   }, [user, project]);
 
   return (
-    <li
+    <a.li
       key={project._id}
       className={`project flex flex-col bg-gray-850 p-4 group hover:bg-gray-900 rounded relative cursor-pointer`}
+      style={projectCardTrail}
       onClick={() => {
         router.push(`/project/${project._id}`);
       }}
@@ -257,7 +261,7 @@ const ProjectCard: React.FC<projectProps> = ({
         loading={loading}
         method={method}
       />
-    </li>
+    </a.li>
   );
 };
 
