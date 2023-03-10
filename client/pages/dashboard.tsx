@@ -57,7 +57,7 @@ export default function Home() {
           search={projectSearch}
           setSearch={setProjectSearch}
         />
-        <section className="ticketStats xl:col-span-1 bg-gray-850 rounded flex flex-col p-4">
+        <section className="ticketStats xl:col-span-1 bg-gray-850 rounded flex flex-col p-4 h-fit">
           <header className="mb-4">
             <h3 className="text-xl font-bold text-white  flex items-center justify-between">
               Ticket Stats{" "}
