@@ -34,15 +34,27 @@ app.use('/api/projects', projectRoutes_1.default);
 app.use('/api/tickets', ticketRoutes_1.default);
 const PORT = +process.env.PORT;
 const CONNECTION_URI = process.env.MONGO_URI || '';
-mongoose_1.default.set('strictQuery', false);
-mongoose_1.default.connect(CONNECTION_URI)
-    .then((conn) => {
-    app.listen(PORT, () => {
-        console.log(`Connected to ${conn.connection.name} successfully...`);
-        console.log('Host:', safe_1.default.cyan(conn.connection.host));
-        console.log('Port:', safe_1.default.cyan(PORT.toString()));
-    });
-}).catch((err) => {
-    console.log('\nError connecting to MongoDB...');
-    console.log('Message:', safe_1.default.red(err.message || err), '\n');
-});
+// ---
+let cachedDb = null;
+async function connectDB() {
+    if (cachedDb)
+        return cachedDb;
+    mongoose_1.default.set("strictQuery", false);
+    const conn = await mongoose_1.default.connect(CONNECTION_URI);
+    console.log(safe_1.default.green(`Connected to ${conn.connection.name}`));
+    cachedDb = conn;
+    return conn;
+}
+// 🔑 Handler for Vercel
+const handler = async (req, res) => {
+    try {
+        await connectDB(); // ensure DB connected
+        app(req, res); // pass request into Express
+    }
+    catch (err) {
+        console.error("MongoDB connection error:", err);
+        res.status(500).send("Database connection error");
+    }
+};
+// ---
+exports.default = handler;

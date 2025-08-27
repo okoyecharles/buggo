@@ -11,6 +11,7 @@ import userRouter from './routes/userRoutes';
 import projectRouter from './routes/projectRoutes';
 import ticketRouter from './routes/ticketRoutes';
 import connectToPusher from './config/Pusher';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 
 const app = express();
 const pusher = connectToPusher();
@@ -33,17 +34,31 @@ app.use('/api/tickets', ticketRouter);
 const PORT = +process.env.PORT!;
 const CONNECTION_URI = process.env.MONGO_URI || '';
 
-mongoose.set('strictQuery', false);
-mongoose.connect(CONNECTION_URI)
-  .then((conn) => {
-    app.listen(PORT, () => {
-      console.log(`Connected to ${conn.connection.name} successfully...`);
-      console.log('Host:', colors.cyan(conn.connection.host));
-      console.log('Port:', colors.cyan(PORT.toString()));
-    })
-  }).catch((err) => {
-    console.log('\nError connecting to MongoDB...');
-    console.log('Message:', colors.red(err.message || err), '\n');
-  });
+// ---
+let cachedDb: typeof mongoose | null = null;
 
+async function connectDB() {
+  if (cachedDb) return cachedDb;
+
+  mongoose.set("strictQuery", false);
+  const conn = await mongoose.connect(CONNECTION_URI);
+
+  console.log(colors.green(`Connected to ${conn.connection.name}`));
+  cachedDb = conn;
+  return conn;
+}
+
+// 🔑 Handler for Vercel
+const handler = async (req: VercelRequest, res: VercelResponse) => {
+  try {
+    await connectDB(); // ensure DB connected
+    app(req as any, res as any); // pass request into Express
+  } catch (err: any) {
+    console.error("MongoDB connection error:", err);
+    res.status(500).send("Database connection error");
+  }
+};
+// ---
+
+export default handler;
 export { pusher, pusherChannel };
