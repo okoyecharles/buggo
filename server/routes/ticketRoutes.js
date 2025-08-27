@@ -1,0 +1,14 @@
+"use strict";
+exports.__esModule = true;
+var ticketController_1 = require("./../controllers/ticketController");
+var express_1 = require("express");
+var authMiddleware_1 = require("../middleware/authMiddleware");
+var ticketController_2 = require("../controllers/ticketController");
+var router = express_1["default"].Router();
+router.get('/', authMiddleware_1["default"], ticketController_2.getUserTickets);
+router.get('/:id', authMiddleware_1["default"], ticketController_2.getTicketById);
+router.put('/:id', authMiddleware_1["default"], ticketController_2.updateTicketById);
+router["delete"]('/:id', authMiddleware_1["default"], ticketController_2.deleteTicket);
+router.post('/:id/comments', authMiddleware_1["default"], ticketController_2.createTicketComment);
+router.get('/:id/comments/:commentId', authMiddleware_1["default"], ticketController_1.getTicketComment);
+exports["default"] = router;

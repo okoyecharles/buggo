@@ -7,6 +7,7 @@
     "node": "22.x"
   },
   "scripts": {
+		"build": "tsc",
     "start": "node index.ts",
     "server": "nodemon index.ts"
   },
