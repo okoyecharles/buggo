@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-		"build": "tsc",
-		"start": "node dist/index.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
     "server": "nodemon index.ts"
   },
   "keywords": [],
@@ -21,8 +21,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.2",
     "morgan": "^1.10.0",
-    "pusher": "^5.1.2",
-    "react-file-base64": "^1.0.3"
+    "pusher": "^5.1.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
