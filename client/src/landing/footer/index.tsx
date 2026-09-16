@@ -2,11 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import {
-  FaAngellist,
   FaGithub,
   FaGlobe,
   FaLinkedin,
-  FaTwitter,
 } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../redux/configureStore";
