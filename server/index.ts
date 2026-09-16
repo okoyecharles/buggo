@@ -37,10 +37,10 @@ app.use(
 app.use(morgan("dev"));
 app.use(cookieParser());
 
-app.get("/", (req, res) => {
+app.get("/", (_, res) => {
   res.send("Welcome to the Bug Tracker API!");
 });
-
+app.get("/api/health", (_, res) => res.json({ ok: true }));
 app.use("/api/users", userRouter);
 app.use("/api/projects", projectRouter);
 app.use("/api/tickets", ticketRouter);
