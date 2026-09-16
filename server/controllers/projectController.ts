@@ -4,6 +4,12 @@ import Ticket, { TicketType } from "../models/ticketModel";
 import Project, { ProjectType } from "./../models/projectModel";
 import { Types } from "mongoose";
 import { pusher, pusherChannel } from "..";
+import {
+  CreateProjectBody,
+  InviteToProjectBody,
+  UpdateProjectBody,
+} from "../types/project";
+import { CreateTicketBody } from "../types/ticket";
 
 const fetchProject = async (id: Types.ObjectId | string) => {
   const project = await Project.findById(id)
@@ -67,7 +73,7 @@ export const getProjectById = async (
  * @access  Private
  */
 export const createProject = async (
-  req: ProtectedRequest<ProjectType>,
+  req: ProtectedRequest<CreateProjectBody>,
   res: Response,
 ) => {
   try {
@@ -101,7 +107,7 @@ export const createProject = async (
  * @access  Private
  */
 export const updateProject = async (
-  req: ProtectedRequest<ProjectType, { id: string }>,
+  req: ProtectedRequest<UpdateProjectBody, { id: string }>,
   res: Response,
 ) => {
   try {
@@ -116,7 +122,8 @@ export const updateProject = async (
       return res.status(401).json({ message: "User not authorized" });
 
     if (title) project.title = title;
-    if (team) project.team = team;
+    // The body carries validated id strings; the document expects ObjectIds.
+    if (team) project.team = team.map((member) => new Types.ObjectId(member));
 
     const updatedProject = await project.save();
     await pusher.trigger(
@@ -140,7 +147,7 @@ export const updateProject = async (
  * @access  Private
  */
 export const inviteToProject = async (
-  req: ProtectedRequest<ProjectType, { id: string }>,
+  req: ProtectedRequest<InviteToProjectBody, { id: string }>,
   res: Response,
 ) => {
   try {
@@ -154,7 +161,14 @@ export const inviteToProject = async (
     if (project?.author.id.toString() !== req.user && !req.admin)
       return res.status(401).json({ message: "User not authorized" });
 
-    project.invitees = [...project.invitees, ...invitees];
+    project.invitees = [
+      ...project.invitees,
+      ...invitees.map((invitee) => ({
+        user: new Types.ObjectId(invitee.user),
+        email: invitee.email,
+        createdAt: new Date(),
+      })),
+    ];
 
     const updatedProject = await project.save();
     await pusher.trigger(
@@ -264,7 +278,7 @@ export const deleteProject = async (
  *  @access  Private
  */
 export const createTicket = async (
-  req: ProtectedRequest<TicketType, { id: string }>,
+  req: ProtectedRequest<CreateTicketBody, { id: string }>,
   res: Response,
 ) => {
   const { priority, status, type, time_estimate, title, description } =

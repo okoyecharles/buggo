@@ -1,10 +1,11 @@
-import { CommentType } from "./../models/commentModel";
 import { Response } from "express";
 import Ticket, { TicketType } from "../models/ticketModel";
 import Project from "../models/projectModel";
 import Comment from "../models/commentModel";
 import { pusher, pusherChannel } from "..";
 import { ProtectedRequest } from "../types/request";
+import { UpdateTicketBody } from "../types/ticket";
+import { CreateCommentBody } from "../types/comment";
 
 const fetchTicket = async (id: string) => {
   const ticket = Ticket.findById(id)
@@ -66,7 +67,7 @@ export const getTicketById = async (
  * @access   Private
  */
 export const updateTicketById = async (
-  req: ProtectedRequest<TicketType, { id: string }>,
+  req: ProtectedRequest<UpdateTicketBody, { id: string }>,
   res: Response,
 ) => {
   try {
@@ -192,7 +193,7 @@ export const deleteTicket = async (
  * @access   Private
  */
 export const createTicketComment = async (
-  req: ProtectedRequest<CommentType, { id: string }>,
+  req: ProtectedRequest<CreateCommentBody, { id: string }>,
   res: Response,
 ) => {
   try {

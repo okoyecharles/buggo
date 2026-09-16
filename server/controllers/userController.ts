@@ -1,9 +1,10 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User, { UserType } from "../models/userModel";
+import User from "../models/userModel";
 import { CookieOptions, Response } from "express";
 import { pusher, pusherChannel } from "..";
 import { DefaultRequest, ProtectedRequest } from "../types/request";
+import { LoginBody, RegisterBody, UpdateUserBody } from "../types/user";
 const secret = process.env.JWT_SECRET!;
 const tokenExpiration = process.env.NODE_ENV === "development" ? "1d" : "7d";
 const tokenName = "bug-tracker-token";
@@ -51,7 +52,7 @@ export const deleteUser = async (
       req.user === userExists._id.toString() ||
       userExists.admin
     )
-      return res.status(401).json({ message: "Unauthorized Request" });
+      return res.status(403).json({ message: "Unauthorized Request" });
 
     await userExists.remove();
     await pusher.trigger(
@@ -81,7 +82,7 @@ export const deleteUser = async (
  * @access  Private
  */
 export const updateUser = async (
-  req: ProtectedRequest<UserType, { id: string }>,
+  req: ProtectedRequest<UpdateUserBody, { id: string }>,
   res: Response,
 ) => {
   const { id } = req.params;
@@ -137,7 +138,7 @@ export const validateUser = async (req: ProtectedRequest, res: Response) => {
  * @access  Public
  */
 export const register = async (
-  req: DefaultRequest<UserType>,
+  req: DefaultRequest<RegisterBody>,
   res: Response,
 ) => {
   const { name, image, email, password } = req.body;
@@ -176,7 +177,7 @@ export const register = async (
  * @access  Public
  */
 export const login = async (
-  req: DefaultRequest<UserType>,
+  req: DefaultRequest<LoginBody>,
   res: Response,
 ) => {
   const { email, password } = req.body;
