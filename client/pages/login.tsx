@@ -4,7 +4,6 @@ import { useSpring, a } from "@react-spring/web";
 import { validateEmail, validatePassword } from "../src/utils/forms/register";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
-import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { login } from "../redux/actions/userActions";
 import Head from "next/head";
@@ -44,9 +43,6 @@ const Login = () => {
 
   useEffect(() => {
     setProcessing(loginStore.loading);
-    if (loginStore.error) {
-      toast.error(loginStore.error.message);
-    }
   }, [loginStore, currentUser]);
 
   useEffect(() => {
