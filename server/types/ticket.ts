@@ -8,15 +8,14 @@ export const ticketPriority = z.enum(["low", "medium", "high"]);
 export const ticketType = z.enum(["issue", "feature", "bug", "other"]);
 
 const title = z.string().trim().min(5).max(50);
-const description = z.string().trim().max(500);
+const description = z.string().trim().min(1).max(500);
 // The create form keeps its number input's value as a string, so coerce
 // rather than reject it.
 const timeEstimate = z.coerce.number().positive();
 
 export const createTicketSchema = z.object({
   title,
-  // Optional in the model, though the create form always sends it.
-  description: description.optional(),
+  description,
   status: ticketStatus,
   priority: ticketPriority,
   type: ticketType,

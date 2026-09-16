@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Modal from "../../modal";
 import { IoMdClose } from "react-icons/io";
 import {
+  ticketStatus,
   validateTicketDescription,
   validateTicketPriority,
   validateTicketTimeEstimate,
@@ -93,7 +94,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
           priority,
           type,
           time_estimate: timeEstimate,
-          status: "open",
+          status: ticketStatus.open,
         },
         query.id as string
       )

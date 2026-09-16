@@ -1,6 +1,7 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { createProject } from "../../../../redux/actions/projectActions";
 import store from "../../../../redux/configureStore";
+import { validateProjectTitle } from "../../../utils/forms/project";
 import Modal from "../../modal";
 import { IoMdClose } from "react-icons/io";
 import { ThreeDotsLoader } from "../../loader";
@@ -27,18 +28,9 @@ const CreateProjectModal = ({
     event.preventDefault();
     setTitleError(null);
 
-    if (!title) {
-      setTitleError("Title is required");
-      return;
-    }
-
-    if (title.length < 5) {
-      setTitleError("Title must be at least 5 characters");
-      return;
-    }
-
-    if (title.length > 25) {
-      setTitleError("Title must be less than 25 characters");
+    const titleValidationError = validateProjectTitle(title);
+    if (titleValidationError) {
+      setTitleError(titleValidationError);
       return;
     }
 

@@ -5,9 +5,14 @@ import Compressor from "compressorjs";
 import { toBase64 } from "../../utils/strings/image";
 import store from "../../../redux/configureStore";
 import { updateUser } from "../../../redux/actions/userActions";
+import {
+  validateProfileImage,
+  validateProfileName,
+} from "../../utils/forms/profile";
 import { ThreeDotsLoader } from "../../features/loader";
 import { User } from "../../types/models";
 import avatars from "../../assets/avatar";
+import { toast } from "react-toastify";
 
 interface EditProfileModalProps {
   open: boolean;
@@ -38,16 +43,16 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     event.preventDefault();
     setNameError(null);
 
-    if (!name) {
-      setNameError("Name is required");
+    const nameValidationError = validateProfileName(name);
+    if (nameValidationError) {
+      setNameError(nameValidationError);
       return;
     }
-    if (name.length < 5) {
-      setNameError("Name must be at least 5 characters");
-      return;
-    }
-    if (name.length > 25) {
-      setNameError("Name cannot exceed 25 characters");
+
+    // There is no field to hang an image error on, so surface it as a toast.
+    const imageValidationError = validateProfileImage(base64Image);
+    if (imageValidationError) {
+      toast.error(imageValidationError);
       return;
     }
 

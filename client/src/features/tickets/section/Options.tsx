@@ -17,6 +17,11 @@ import Authorized from "../../../utils/authorization";
 import { IoClose } from "react-icons/io5";
 import TicketDeleteModal from "../modal/ticketDelete";
 import OptionsPopup from "../../../components/Options";
+import {
+  ticketStatus,
+  validateTicketTeam,
+} from "../../../utils/forms/ticket";
+import { toast } from "react-toastify";
 
 interface TicketOptionsPopupProps {
   ticket: Ticket;
@@ -48,6 +53,12 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
     const newTeam: any = isInPreviousTeam
       ? previousTeam.filter((member) => member !== user?._id!)
       : [...previousTeam, user?._id];
+
+    const teamValidationError = validateTicketTeam(newTeam);
+    if (teamValidationError) {
+      toast.error(teamValidationError);
+      return;
+    }
 
     store.dispatch(
       updateTicket(ticket._id, {
@@ -95,13 +106,13 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
             <hr className="border-gray-800" />
 
-            {ticket.status !== "closed" ? (
+            {ticket.status !== ticketStatus.closed ? (
               <OptionsButton
                 processing={loading && method.update}
                 onClick={() => {
                   setClosing(true);
                   store.dispatch(
-                    updateTicket(ticket._id, { status: "closed" })
+                    updateTicket(ticket._id, { status: ticketStatus.closed })
                   );
                 }}
               >

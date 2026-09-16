@@ -14,6 +14,8 @@ import {
 } from "../../../utils/components/string";
 import Pluralize from "react-pluralize";
 import TicketComments from "./comments";
+import { validateCommentText } from "../../../utils/forms/comment";
+import { ticketStatus } from "../../../utils/forms/ticket";
 import { Ticket } from "../../../types/models";
 import getDate from "../../../utils/strings/date";
 import TicketDeleteModal from "../modal/ticketDelete";
@@ -67,7 +69,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (comment.trim() && !ticketDetails.method.comment) {
+    if (!validateCommentText(comment) && !ticketDetails.method.comment) {
       const ticket = ticketDetails.ticket!;
       store.dispatch(commentOnTicket(ticket._id, comment));
       setComment("");
@@ -228,7 +230,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
             onClick={() => {
               store.dispatch(
                 updateTicket(ticketDetails.ticket?._id!, {
-                  status: "closed",
+                  status: ticketStatus.closed,
                 })
               );
             }}

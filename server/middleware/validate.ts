@@ -3,13 +3,21 @@ import { ZodObject } from "zod";
 
 export function validate(schema: ZodObject) {
   return (req: Request, res: Response, next: NextFunction) => {
-    try {
-      // Hand the controller the parsed body so coercions apply and unknown
-      // keys are dropped, matching the type it infers from the schema.
-      req.body = schema.parse(req.body);
-      next();
-    } catch (error) {
-      res.status(400).json({ error });
+    const result = schema.safeParse(req.body);
+
+    if (!result.success) {
+      // The client reads `message` off every error response, so lead with the
+      const [issue] = result.error.issues;
+      const field = issue.path.join(".");
+
+      return res.status(400).json({
+        message: field ? `${field}: ${issue.message}` : issue.message,
+        issues: result.error.issues,
+      });
     }
+
+		// coersion applies
+    req.body = result.data;
+    next();
   };
 }

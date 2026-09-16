@@ -13,6 +13,7 @@ import { Project } from "../../../types/models";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../../../../redux/configureStore";
 import { updateProject } from "../../../../redux/actions/projectActions";
+import { validateProjectTitle } from "../../../utils/forms/project";
 import ProjectDeleteModal from "../modal/projectDelete";
 import { restrictLength } from "../../../utils/components/string";
 import ProjectInviteModal from "../modal/projectInvite";
@@ -126,7 +127,10 @@ const ProjectCard: React.FC<projectProps> = ({
           }}
           onKeyDown={(event: KeyboardEvent) => {
             if (event.key === "Enter") {
-              if (project.title !== editTitle && editTitle.length >= 5)
+              if (
+                project.title !== editTitle &&
+                !validateProjectTitle(editTitle)
+              )
                 editProject(project._id, { title: editTitle });
               setEditMode(false);
             }

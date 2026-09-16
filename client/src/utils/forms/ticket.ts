@@ -1,3 +1,11 @@
+import { validateIdList } from './common';
+
+// The values the selects offer, and the only ones the server accepts.
+export const ticketStatus = { open: 'open', closed: 'closed' };
+export const ticketStatuses = Object.values(ticketStatus);
+export const ticketPriorities = ['low', 'medium', 'high'];
+export const ticketTypes = ['issue', 'feature', 'bug', 'other'];
+
 export const validateTicketTitle = (title: string) => {
   // validate title is not empty
   if (!title.trim()) {
@@ -33,6 +41,11 @@ export const validateTicketPriority = (priority: string) => {
   if (!priority.trim()) {
     return 'Please select one';
   };
+
+  // validate priority is one of the offered options
+  if (!ticketPriorities.includes(priority)) {
+    return 'Please select one';
+  }
   return null;
 }
 
@@ -41,7 +54,24 @@ export const validateTicketType = (type: string) => {
   if (!type.trim()) {
     return 'Please select one';
   };
+
+  // validate type is one of the offered options
+  if (!ticketTypes.includes(type)) {
+    return 'Please select one';
+  }
   return null;
+}
+
+export const validateTicketStatus = (status: string) => {
+  // validate status is one of the offered options
+  if (!ticketStatuses.includes(status)) {
+    return 'Please select one';
+  }
+  return null;
+}
+
+export const validateTicketTeam = (team: any) => {
+  return validateIdList(team, 'Team');
 }
 
 export const validateTicketTimeEstimate = (timeEstimate: number | string) => {

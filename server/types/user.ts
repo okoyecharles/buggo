@@ -1,6 +1,9 @@
 import * as z from "zod";
 
-const name = z.string().trim().min(2).max(50);
+// Matches validateName in client/src/utils/forms/register.ts
+const name = z.string().trim().min(5).max(50);
+// The profile modal is stricter about length than signup is.
+const profileName = z.string().trim().min(5).max(25);
 const image = z.string().min(1);
 const email = z.email().max(50);
 const password = z.string().min(6);
@@ -16,14 +19,13 @@ export type RegisterBody = z.infer<typeof registerSchema>;
 
 export const loginSchema = z.object({
   email,
-  // Not the register rules: an existing password only has to be present.
-  password: z.string().min(1),
+  password,
 });
 export type LoginBody = z.infer<typeof loginSchema>;
 
 // Only name and image are writable, and only when truthy.
 export const updateUserSchema = z.object({
-  name: name.optional(),
+  name: profileName.optional(),
   image: image.optional(),
 });
 export type UpdateUserBody = z.infer<typeof updateUserSchema>;
