@@ -1,22 +1,22 @@
-import { Request, Response } from 'express';
-import AuthorizedRequest from '../types/request';
-import Ticket, { TicketType } from '../models/ticketModel';
-import Project, { ProjectType } from './../models/projectModel';
-import { Types } from 'mongoose';
-import { pusher, pusherChannel } from '..';
+import { Response } from "express";
+import { ProtectedRequest } from "../types/request";
+import Ticket, { TicketType } from "../models/ticketModel";
+import Project, { ProjectType } from "./../models/projectModel";
+import { Types } from "mongoose";
+import { pusher, pusherChannel } from "..";
 
 const fetchProject = async (id: Types.ObjectId | string) => {
   const project = await Project.findById(id)
-    .populate('author', 'name')
-    .populate('team', 'name image email')
+    .populate("author", "name")
+    .populate("team", "name image email")
     .populate({
-      path: 'tickets',
+      path: "tickets",
       populate: {
-        path: 'team',
-        select: 'name image email',
+        path: "team",
+        select: "name image email",
       },
     })
-    .populate('invitees.user', 'name image email');
+    .populate("invitees.user", "name image email");
 
   return project;
 };
@@ -26,12 +26,14 @@ const fetchProject = async (id: Types.ObjectId | string) => {
  * @desc    Get all projects
  * @access  Private
  */
-export const getProjects = async (req: Request, res: Response) => {
+export const getProjects = async (req: ProtectedRequest, res: Response) => {
   try {
-    const projects = await Project.find()
-      .populate('author', 'name')
-      .populate('team', 'name email image')
-      .populate('invitees.user', 'name image email')
+    const projects = await Project.find({
+      $or: [{ author: req.user }, { team: req.user }],
+    })
+      .populate("author", "name")
+      .populate("team", "name email image")
+      .populate("invitees.user", "name image email")
       .sort({ createdAt: -1 });
 
     res.status(200).json({ projects });
@@ -45,7 +47,10 @@ export const getProjects = async (req: Request, res: Response) => {
  * @desc    Get a project by id
  * @access  Private
  */
-export const getProjectById = async (req: Request, res: Response) => {
+export const getProjectById = async (
+  req: ProtectedRequest<undefined, { id: string }>,
+  res: Response,
+) => {
   try {
     const { id } = req.params;
     const project = await fetchProject(id);
@@ -62,12 +67,12 @@ export const getProjectById = async (req: Request, res: Response) => {
  * @access  Private
  */
 export const createProject = async (
-  req: AuthorizedRequest<ProjectType>,
-  res: Response
+  req: ProtectedRequest<ProjectType>,
+  res: Response,
 ) => {
   try {
     const { title } = req.body;
-    const socketId = req.headers['x-pusher-socket-id'];
+    const socketId = req.headers["x-pusher-socket-id"];
     const project = new Project({
       title,
       author: req.user,
@@ -77,11 +82,11 @@ export const createProject = async (
     const newProject = await project.save();
     await pusher.trigger(
       pusherChannel,
-      'project-create',
+      "project-create",
       {
         projectId: newProject?._id.toString(),
       },
-      { socket_id: socketId as string }
+      { socket_id: socketId as string },
     );
     const returnProject = await fetchProject(newProject._id);
     res.status(201).json({ project: returnProject });
@@ -96,20 +101,19 @@ export const createProject = async (
  * @access  Private
  */
 export const updateProject = async (
-  req: AuthorizedRequest<ProjectType>,
-  res: Response
+  req: ProtectedRequest<ProjectType, { id: string }>,
+  res: Response,
 ) => {
   try {
     const { id } = req.params;
     const { title, team } = req.body;
-    const socketId = req.headers['x-pusher-socket-id'];
-    const project = await Project.findById(id).populate('author', 'name');
+    const socketId = req.headers["x-pusher-socket-id"];
+    const project = await Project.findById(id).populate("author", "name");
 
-    if (!project)
-      return res.status(404).json({ message: 'Project not found' });
+    if (!project) return res.status(404).json({ message: "Project not found" });
 
     if (project?.author._id.toString() !== req.user && !req.admin)
-      return res.status(401).json({ message: 'User not authorized' });
+      return res.status(401).json({ message: "User not authorized" });
 
     if (title) project.title = title;
     if (team) project.team = team;
@@ -117,11 +121,11 @@ export const updateProject = async (
     const updatedProject = await project.save();
     await pusher.trigger(
       pusherChannel,
-      'project-update',
+      "project-update",
       {
         projectId: updatedProject?._id.toString(),
       },
-      { socket_id: socketId as string }
+      { socket_id: socketId as string },
     );
     const returnProject = await fetchProject(updatedProject.id);
     res.status(200).json({ project: returnProject });
@@ -131,36 +135,35 @@ export const updateProject = async (
 };
 
 /*
-  * @route   PUT /projects/:id/invite
-  * @desc    Invite users to a project
-  * @access  Private
-*/
+ * @route   PUT /projects/:id/invite
+ * @desc    Invite users to a project
+ * @access  Private
+ */
 export const inviteToProject = async (
-  req: AuthorizedRequest<ProjectType>,
-  res: Response
+  req: ProtectedRequest<ProjectType, { id: string }>,
+  res: Response,
 ) => {
   try {
     const { id } = req.params;
     const { invitees } = req.body;
-    const socketId = req.headers['x-pusher-socket-id'];
-    const project = await Project.findById(id).populate('author', 'name');
+    const socketId = req.headers["x-pusher-socket-id"];
+    const project = await Project.findById(id).populate("author", "name");
 
-    if (!project)
-      return res.status(404).json({ message: 'Project not found' });
+    if (!project) return res.status(404).json({ message: "Project not found" });
 
     if (project?.author.id.toString() !== req.user && !req.admin)
-      return res.status(401).json({ message: 'User not authorized' });
+      return res.status(401).json({ message: "User not authorized" });
 
     project.invitees = [...project.invitees, ...invitees];
 
     const updatedProject = await project.save();
     await pusher.trigger(
       pusherChannel,
-      'project-invite',
+      "project-invite",
       {
         projectId: updatedProject?._id.toString(),
       },
-      { socket_id: socketId as string }
+      { socket_id: socketId as string },
     );
 
     const returnProject = await fetchProject(updatedProject.id);
@@ -172,21 +175,20 @@ export const inviteToProject = async (
 };
 
 /*
-  * @route   PUT /projects/:id/accept-invite
-  * @desc    Accept an invite to a project
-  * @access  Private
-*/
+ * @route   PUT /projects/:id/accept-invite
+ * @desc    Accept an invite to a project
+ * @access  Private
+ */
 export const acceptInvite = async (
-  req: AuthorizedRequest<ProjectType>,
-  res: Response
+  req: ProtectedRequest<undefined, { id: string }>,
+  res: Response,
 ) => {
   try {
     const { id } = req.params;
-    const socketId = req.headers['x-pusher-socket-id'];
-    const project = await Project.findById(id).populate('author', 'name');
+    const socketId = req.headers["x-pusher-socket-id"];
+    const project = await Project.findById(id).populate("author", "name");
 
-    if (!project)
-      return res.status(404).json({ message: 'Project not found' });
+    if (!project) return res.status(404).json({ message: "Project not found" });
 
     const invitees = project.invitees.map((invitee) => {
       return invitee.user.toString();
@@ -194,25 +196,25 @@ export const acceptInvite = async (
 
     if (invitees.includes(req.user as string)) {
       project.invitees = project.invitees.filter(
-        (invitee) => invitee.user.toString() !== req.user
+        (invitee) => invitee.user.toString() !== req.user,
       );
 
       project.team.push(req.user as any);
       await project.save();
       await pusher.trigger(
         pusherChannel,
-        'accept-project-invite',
+        "accept-project-invite",
         {
           projectId: project?._id.toString(),
         },
-        { socket_id: socketId as string }
+        { socket_id: socketId as string },
       );
 
       const returnProject = await fetchProject(project.id);
 
       res.status(200).json({ project: returnProject });
     } else {
-      res.status(400).json({ message: 'Invitation invalid or expired' });
+      res.status(400).json({ message: "Invitation invalid or expired" });
     }
   } catch (error: any) {
     res.status(400).json({ message: error.message });
@@ -225,28 +227,32 @@ export const acceptInvite = async (
  * @access  Private
  */
 export const deleteProject = async (
-  req: AuthorizedRequest<ProjectType>,
-  res: Response
+  req: ProtectedRequest<undefined, { id: string }>,
+  res: Response,
 ) => {
   try {
     const { id } = req.params;
-    const socketId = req.headers['x-pusher-socket-id'];
-    const project = await Project.findById(id).populate('author', 'name');
+    const socketId = req.headers["x-pusher-socket-id"];
+    const project = await Project.findById(id).populate("author", "name");
 
-    if (!project)
-      return res.status(404).json({ message: 'Project not found' });
+    if (!project) return res.status(404).json({ message: "Project not found" });
 
     if (project.author._id.toString() !== req.user && !req.admin)
-      return res.status(401).json({ message: 'User not authorized' });
+      return res.status(401).json({ message: "User not authorized" });
 
     await project.remove();
-    await pusher.trigger(pusherChannel, 'delete-project', {
-      projectId: id,
-    }, {
-      socket_id: socketId as string
-    });
+    await pusher.trigger(
+      pusherChannel,
+      "delete-project",
+      {
+        projectId: id,
+      },
+      {
+        socket_id: socketId as string,
+      },
+    );
 
-    res.status(200).json({ message: 'Project removed' });
+    res.status(200).json({ message: "Project removed" });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
@@ -258,13 +264,13 @@ export const deleteProject = async (
  *  @access  Private
  */
 export const createTicket = async (
-  req: AuthorizedRequest<TicketType & { socketId: string }>,
-  res: Response
+  req: ProtectedRequest<TicketType, { id: string }>,
+  res: Response,
 ) => {
   const { priority, status, type, time_estimate, title, description } =
     req.body;
   const { id } = req.params;
-  const socketId = req.headers['x-pusher-socket-id'];
+  const socketId = req.headers["x-pusher-socket-id"];
 
   try {
     // Get ticket's project and author
@@ -288,21 +294,24 @@ export const createTicket = async (
       return member.toString();
     });
 
-    if (!req.admin && !ticketProjectMembers?.some((member) => member === req.user)) {
-      return res.status(401).json({ message: 'User not authorized' });
+    if (
+      !req.admin &&
+      !ticketProjectMembers?.some((member) => member === req.user)
+    ) {
+      return res.status(401).json({ message: "User not authorized" });
     }
 
     ticket = await ticket.save();
     await pusher.trigger(
       pusherChannel,
-      'create-project-ticket',
+      "create-project-ticket",
       {
         ticket: {
           _id: ticket.id.toString(),
           author: ticket.author.toString(),
         },
       },
-      { socket_id: socketId as string }
+      { socket_id: socketId as string },
     );
 
     // Assign ticket to project's relationship

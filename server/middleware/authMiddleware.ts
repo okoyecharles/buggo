@@ -1,15 +1,10 @@
-import { NextFunction, Response } from 'express';
-import AuthorizedRequest from '../types/request';
 import jwt from 'jsonwebtoken';
+import { Middleware } from '../types/request';
 
 const secret = process.env.JWT_SECRET || '';
 const tokenName = "bug-tracker-token";
 
-const protect = async (
-  req: AuthorizedRequest<any>,
-  res: Response,
-  next: NextFunction
-) => {
+const protect: Middleware = async (req, res, next) => {
   // If system doesn't support cookies, use authorization header
   const cookieToken = req.cookies[tokenName];
   const requestToken = cookieToken || req.headers.authorization?.split(' ')[1];
