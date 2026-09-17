@@ -20,7 +20,7 @@ const allowed = (process.env.ALLOWED_ORIGINS || "")
   .split(",")
   .map((s) => s.trim());
 
-console.log(`CORS allowed origins: ${allowed}`);
+console.log("CORS allowed origins:", colors.brightGreen(allowed.join(", ")));
 
 app.use(express.json({ limit: "30mb" }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
