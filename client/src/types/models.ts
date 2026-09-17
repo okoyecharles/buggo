@@ -18,6 +18,12 @@ export type Project = {
   tickets: any[];
   invitees: any[];
   createdAt: any;
+  /**
+   * Set by GET /projects on a project the user has only been invited to.
+   * Those come back partial (no `team`, `tickets` or `createdAt`), so they
+   * feed the invite notification and must be kept out of the project list.
+   */
+  invitePending?: boolean;
 };
 
 export type Ticket = {
@@ -53,12 +59,20 @@ export type Comment = {
   createdAt: any;
 };
 
+export enum NotificationType {
+	PROJECT_INVITE = "Project Invite",
+}
+
 export type Notification = {
   _id: string;
-  type: string;
-  subject: string;
-  date: any;
-  ref: {
-    [key: string]: any;
-  };
+  type: NotificationType;
+  date: string;
+  /**
+   * Keyed by the domain the `type` belongs to: a PROJECT_* notification holds
+   * only `{ project }`, a TICKET_* one only `{ ticket }`, and so on. The
+   * notification reducer keys off the presence of that field to decide which
+   * notifications to drop and recalculate, so a type must not reach outside
+   * its own domain here.
+   */
+  data: Record<string, any>;
 };

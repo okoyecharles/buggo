@@ -2,17 +2,17 @@ import React, { useEffect } from "react";
 import { User } from "../../types/models";
 import { IoMdClose, IoMdNotificationsOff } from "react-icons/io";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../../../redux/configureStore";
+import { storeType } from "../../../redux/configureStore";
 import { BsCheck } from "react-icons/bs";
 import getDate from "../../utils/strings/date";
 import Portal from "../portal";
 import { useSpring, a } from "@react-spring/web";
 import {
+  getNotificationAction,
   getNotificationDescription,
   getNotificationIcon,
 } from "../../utils/components/notification";
 import { ThreeDotsLoader } from "../loader";
-import { acceptInvite } from "../../../redux/actions/projectActions";
 import { useRouter } from "next/router";
 
 interface NotificationModalProps {
@@ -26,12 +26,14 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   setOpen,
 }) => {
   const notifications = useSelector(
-    (store: storeType) => store.notifications.notifications
+    (store: storeType) => store.notifications.notifications,
   );
   const projects = useSelector((store: storeType) => store.projects);
   const router = useRouter();
 
-  const [currentAction, setCurrentAction] = React.useState<string | null>(null);
+  const [processedActions, setProcessedActions] = React.useState<Array<string>>(
+    [],
+  );
 
   useEffect(() => {
     // Close notification modal when route changes
@@ -81,61 +83,61 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         <div className="flex flex-1">
           {notifications?.length > 0 ? (
             <ul className="mb-4 flex-1">
-              {notifications?.map((notification) => (
-                <li
-                  key={notification._id}
-                  className="p-3 lg:px-6 flex items-center gap-3 bg-gray-800 hover:bg-gray-750 border-l-2 border-b border-b-gray-700 first:border-t border-t-gray-700 border-l-gray-800 hover:border-l-blue-500 group"
-                >
-                  <div className="notification-icon text-xl self-start mt-1">
-                    {getNotificationIcon(notification)}
-                  </div>
-                  <div className="flex-1">
-                    <div className="notification-title text-gray-100 font-semibold capitalize  font-noto group-hover:text-white">
-                      {`${notification.type} ${notification.subject}`}
+              {notifications?.map((notification) => {
+                const action = getNotificationAction(
+                  notification,
+                  processedActions,
+                  setProcessedActions,
+                );
+                return (
+                  <li
+                    key={notification._id}
+                    className="p-3 lg:px-6 flex items-center gap-3 bg-gray-800 hover:bg-gray-750 border-l-2 border-b border-b-gray-700 first:border-t border-t-gray-700 border-l-gray-800 hover:border-l-blue-500 group"
+                  >
+                    <div className="notification-icon text-xl self-start mt-1">
+                      {getNotificationIcon(notification)}
                     </div>
-                    <div className="notification-description text-gray-300 text-sm lg:text-ss">
-                      {getNotificationDescription(notification)}
+                    <div className="flex-1">
+                      <div className="notification-title text-gray-100 font-semibold capitalize  font-noto group-hover:text-white">
+                        {`${notification.type}`}
+                      </div>
+                      <div className="notification-description text-gray-300 text-sm lg:text-ss">
+                        {getNotificationDescription(notification)}
+                      </div>
+                      <div className="notification-date text-gray-300 mt-2 text-xsm font-noto font-semibold flex lg:hidden truncate">
+                        {getDate(notification.date, {
+                          format: "short calendar",
+                        })}
+                      </div>
                     </div>
-                    <div className="notification-date text-gray-300 mt-2 text-xsm font-noto font-semibold flex lg:hidden truncate">
+                    <div className="notification-action">
+                      <button
+                        className="bg-blue-500 text-white text-ss rounded-full lg:rounded h-10 w-10 lg:w-32 lg:h-8 flex items-center justify-center"
+                        disabled={
+                          projects.loading && projects.method.acceptInvite
+                        }
+                        onClick={action.handler}
+                      >
+                        {processedActions.includes(notification._id) ? (
+                          <ThreeDotsLoader className="text-red-500" />
+                        ) : (
+                          <>
+                            <span className="hidden lg:inline text-ss font-medium">
+                              {action.label}
+                            </span>
+                            <BsCheck className="lg:hidden text-2xl" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                    <div className="notification-date text-gray-400 text-sm font-medium w-32 hidden lg:flex justify-end truncate">
                       {getDate(notification.date, {
                         format: "short calendar",
                       })}
                     </div>
-                  </div>
-                  <div className="notification-action">
-                    <button
-                      className="bg-blue-500 text-white text-ss rounded-full lg:rounded h-10 w-10 lg:w-32 lg:h-8 flex items-center justify-center"
-                      disabled={
-                        projects.loading && projects.method.acceptInvite
-                      }
-                      onClick={() => {
-                        store.dispatch(
-                          acceptInvite(notification.ref.project._id)
-                        );
-                        setCurrentAction(notification._id);
-                      }}
-                    >
-                      {projects.loading &&
-                      projects.method.acceptInvite &&
-                      currentAction === notification._id ? (
-                        <ThreeDotsLoader className="text-red-500" />
-                      ) : (
-                        <>
-                          <span className="hidden lg:inline text-ss font-medium">
-                            Accept Invite
-                          </span>
-                          <BsCheck className="lg:hidden text-2xl" />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <div className="notification-date text-gray-400 text-sm font-medium w-32 hidden lg:flex justify-end truncate">
-                    {getDate(notification.date, {
-                      format: "short calendar",
-                    })}
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <div className="flex flex-col gap-1 items-center font-noto flex-1">
