@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { ProtectedRequest } from "../types/request";
-import Ticket, { TicketType } from "../models/ticketModel";
-import Project, { ProjectType } from "./../models/projectModel";
+import Ticket from "../models/ticketModel";
+import Project from "./../models/projectModel";
 import { Types } from "mongoose";
 import { pusher, pusherChannel } from "..";
 import {
@@ -34,9 +34,8 @@ const fetchProject = async (id: Types.ObjectId | string) => {
  */
 export const getProjects = async (req: ProtectedRequest, res: Response) => {
   try {
-    const projects = await Project.find({
-      $or: [{ author: req.user }, { team: req.user }],
-    })
+		const filter = req.admin ? {} : { $or: [{ author: req.user }, { team: req.user }]}
+		const projects = await Project.find(filter)
       .populate("author", "name")
       .populate("team", "name email image")
       .populate("invitees.user", "name image email")
@@ -44,7 +43,7 @@ export const getProjects = async (req: ProtectedRequest, res: Response) => {
 
     res.status(200).json({ projects });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -61,9 +60,18 @@ export const getProjectById = async (
     const { id } = req.params;
     const project = await fetchProject(id);
 
+    if (!project) return res.status(404).json({ message: "Project not found" });
+
+    if (
+      project.author.id.toString() !== req.user &&
+      !project.team.some((member) => member.id.toString() === req.user) &&
+      !req.admin
+    )
+      return res.status(403).json({ message: "User not authorized" });
+
     res.status(200).json({ project });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -97,7 +105,7 @@ export const createProject = async (
     const returnProject = await fetchProject(newProject._id);
     res.status(201).json({ project: returnProject });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -119,7 +127,7 @@ export const updateProject = async (
     if (!project) return res.status(404).json({ message: "Project not found" });
 
     if (project?.author._id.toString() !== req.user && !req.admin)
-      return res.status(401).json({ message: "User not authorized" });
+      return res.status(403).json({ message: "User not authorized" });
 
     if (title) project.title = title;
     // The body carries validated id strings; the document expects ObjectIds.
@@ -137,7 +145,7 @@ export const updateProject = async (
     const returnProject = await fetchProject(updatedProject.id);
     res.status(200).json({ project: returnProject });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -159,7 +167,7 @@ export const inviteToProject = async (
     if (!project) return res.status(404).json({ message: "Project not found" });
 
     if (project?.author.id.toString() !== req.user && !req.admin)
-      return res.status(401).json({ message: "User not authorized" });
+      return res.status(403).json({ message: "User not authorized" });
 
     project.invitees = [
       ...project.invitees,
@@ -184,7 +192,7 @@ export const inviteToProject = async (
 
     res.status(200).json({ project: returnProject });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -228,10 +236,10 @@ export const acceptInvite = async (
 
       res.status(200).json({ project: returnProject });
     } else {
-      res.status(400).json({ message: "Invitation invalid or expired" });
+      res.status(403).json({ message: "Invitation invalid or expired" });
     }
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -252,7 +260,7 @@ export const deleteProject = async (
     if (!project) return res.status(404).json({ message: "Project not found" });
 
     if (project.author._id.toString() !== req.user && !req.admin)
-      return res.status(401).json({ message: "User not authorized" });
+      return res.status(403).json({ message: "User not authorized" });
 
     await project.remove();
     await pusher.trigger(
@@ -268,7 +276,7 @@ export const deleteProject = async (
 
     res.status(200).json({ message: "Project removed" });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -312,7 +320,7 @@ export const createTicket = async (
       !req.admin &&
       !ticketProjectMembers?.some((member) => member === req.user)
     ) {
-      return res.status(401).json({ message: "User not authorized" });
+      return res.status(403).json({ message: "User not authorized" });
     }
 
     ticket = await ticket.save();
@@ -332,8 +340,8 @@ export const createTicket = async (
     ticketProject?.tickets.unshift(ticket._id);
     await ticketProject?.save();
 
-    res.status(200).json({ ticket });
+    res.status(201).json({ ticket });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };

@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Middleware } from "../types/request";
+import User from "../models/userModel";
 
 const secret = process.env.JWT_SECRET || "";
 const tokenName = "bug-tracker-token";
@@ -15,9 +16,11 @@ const protect: Middleware = async (req, res, next) => {
         id: string;
         admin: boolean;
       };
+			const user = await User.findById(decoded.id);
+      if (!user) return res.status(401).json({ message: "Unauthorized" });
 
       req.user = decoded.id;
-      req.admin = decoded.admin;
+      req.admin = user.admin;
 
       next();
     } catch (err: any) {

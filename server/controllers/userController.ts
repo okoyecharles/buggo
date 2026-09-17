@@ -94,7 +94,7 @@ export const updateUser = async (
     if (!userExists) return res.status(404).json({ message: "User not found" });
 
     if (req.user !== userExists._id.toString() && !req.admin)
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
 
     if (name) userExists.name = name;
     if (image) userExists.image = image;
@@ -124,7 +124,7 @@ export const validateUser = async (req: ProtectedRequest, res: Response) => {
     admin: boolean;
   };
   const user = await User.findById(decoded.id);
-  if (!user) return res.status(401).json({ message: "Unauthorized" });
+  if (!user) return res.status(403).json({ message: "Unauthorized" });
 
   res.status(200).json({
     user,
@@ -146,7 +146,7 @@ export const register = async (
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(409).json({ message: "User already exists" });
     }
 
     const salt = await bcrypt.genSalt(12);
@@ -161,7 +161,7 @@ export const register = async (
 
     const token = generateToken(user._id.toString(), user.admin);
     res
-      .status(200)
+      .status(201)
       .cookie(tokenName, token, cookieOptions)
       .json({ user, token });
   } catch (error) {
@@ -176,25 +176,14 @@ export const register = async (
  * @desc    Login a user
  * @access  Public
  */
-export const login = async (
-  req: DefaultRequest<LoginBody>,
-  res: Response,
-) => {
+export const login = async (req: DefaultRequest<LoginBody>, res: Response) => {
   const { email, password } = req.body;
 
   try {
     const userExists = await User.findOne({ email });
 
-    if (!userExists) {
-      return res.status(404).json({ message: "User does not exist" });
-    }
-
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      userExists.password,
-    );
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid credentials" });
+    if (!userExists || !(await bcrypt.compare(password, userExists.password))) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const token = generateToken(userExists._id.toString(), userExists.admin);
@@ -213,9 +202,10 @@ export const login = async (
  * @route   POST /users/signout
  * @desc    Logout a user
  * @access  Public
-*/
+ */
 export const logout = async (_req: DefaultRequest, res: Response) => {
   res
+    .status(200)
     .clearCookie(tokenName, cookieOptions)
     .send({ message: "Logged out successfully" });
 };

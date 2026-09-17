@@ -1,5 +1,5 @@
 import { Response } from "express";
-import Ticket, { TicketType } from "../models/ticketModel";
+import Ticket from "../models/ticketModel";
 import Project from "../models/projectModel";
 import Comment from "../models/commentModel";
 import { pusher, pusherChannel } from "..";
@@ -57,7 +57,7 @@ export const getTicketById = async (
     const ticket = await fetchTicket(id);
     res.status(200).json({ ticket });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -95,7 +95,7 @@ export const updateTicketById = async (
       project?.author.toString() !== req.user &&
       !projectTeam.includes(req.user as string)
     )
-      return res.status(401).json({ message: "User not authorized" });
+      return res.status(403).json({ message: "User not authorized" });
 
     await Ticket.updateOne(
       { _id: id },
@@ -128,7 +128,7 @@ export const updateTicketById = async (
 
     res.status(200).json({ ticket: updatedTicket });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -157,7 +157,7 @@ export const deleteTicket = async (
       ticket?.author.toString() !== req.user &&
       project?.author.toString() !== req.user
     ) {
-      return res.status(401).json({ message: "User not authorized" });
+      return res.status(403).json({ message: "User not authorized" });
     }
 
     await ticket.remove();
@@ -183,7 +183,7 @@ export const deleteTicket = async (
 
     res.status(200).json({ message: "Ticket removed" });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -213,7 +213,7 @@ export const createTicketComment = async (
       project?.author.toString() !== req.user &&
       !ticket?.team.some((member: any) => member.toString() === req.user)
     )
-      return res.status(401).json({ message: "User not authorized" });
+      return res.status(403).json({ message: "User not authorized" });
 
     const comment = await Comment.create({
       text,
@@ -244,9 +244,9 @@ export const createTicketComment = async (
       "name image email",
     );
 
-    res.status(200).json({ comment: savedComment });
+    res.status(201).json({ comment: savedComment });
   } catch (error: any) {
-    res.status(404).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -273,7 +273,7 @@ export const getTicketComment = async (
 
     res.status(200).json({ comment });
   } catch (error: any) {
-    res.status(404).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
