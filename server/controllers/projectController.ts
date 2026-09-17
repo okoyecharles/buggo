@@ -34,8 +34,10 @@ const fetchProject = async (id: Types.ObjectId | string) => {
  */
 export const getProjects = async (req: ProtectedRequest, res: Response) => {
   try {
-		const filter = req.admin ? {} : { $or: [{ author: req.user }, { team: req.user }]}
-		const projects = await Project.find(filter)
+    const filter = req.admin
+      ? {}
+      : { $or: [{ author: req.user }, { team: req.user }] };
+    const projects = await Project.find(filter)
       .populate("author", "name")
       .populate("team", "name email image")
       .populate("invitees.user", "name image email")
@@ -297,7 +299,15 @@ export const createTicket = async (
   try {
     // Get ticket's project and author
     const ticketProject = await Project.findById(id);
-    const ticketAuthor: any = req.user;
+    if (!ticketProject)
+      return res.status(404).json({ message: "Project not found" });
+
+    if (
+      !req.admin &&
+      !ticketProject.team.some((member) => member.toString() === req.user)
+    ) {
+      return res.status(403).json({ message: "User not authorized" });
+    }
 
     let ticket = new Ticket({
       priority,
@@ -307,23 +317,11 @@ export const createTicket = async (
       title,
       description,
     });
-
     // Assign project and author to tickets relationship
-    ticket.project = ticketProject?.id;
-    ticket.author = ticketAuthor;
-
-    const ticketProjectMembers = ticketProject?.team.map((member) => {
-      return member.toString();
-    });
-
-    if (
-      !req.admin &&
-      !ticketProjectMembers?.some((member) => member === req.user)
-    ) {
-      return res.status(403).json({ message: "User not authorized" });
-    }
-
+    ticket.project = ticketProject.id;
+    ticket.author = new Types.ObjectId(req.user);
     ticket = await ticket.save();
+
     await pusher.trigger(
       pusherChannel,
       "create-project-ticket",
@@ -337,8 +335,8 @@ export const createTicket = async (
     );
 
     // Assign ticket to project's relationship
-    ticketProject?.tickets.unshift(ticket._id);
-    await ticketProject?.save();
+    ticketProject.tickets.unshift(ticket._id);
+    await ticketProject.save();
 
     res.status(201).json({ ticket });
   } catch (error: any) {

@@ -27,10 +27,7 @@ const fetchTicket = async (id: string) => {
  * @desc     Get all tickets created by a specific user
  * @access   Private
  */
-export const getUserTickets = async (
-  req: ProtectedRequest,
-  res: Response,
-) => {
+export const getUserTickets = async (req: ProtectedRequest, res: Response) => {
   try {
     const tickets = await Ticket.find({ author: req.user }).populate(
       "project",
@@ -53,8 +50,10 @@ export const getTicketById = async (
 ) => {
   try {
     const { id } = req.params;
-
     const ticket = await fetchTicket(id);
+
+    if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+
     res.status(200).json({ ticket });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -84,16 +83,14 @@ export const updateTicketById = async (
     } = req.body;
     const socketId = req.headers["x-pusher-socket-id"];
     const ticket = await Ticket.findById(id);
-    const project = await Project.findById(ticket?.project);
-    const projectTeam = project!.team.map((member) => member.toString());
-
     if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+    const project = await Project.findById(ticket.project);
+    if (!project) return res.status(404).json({ message: "Project not found" });
 
     if (
       !req.admin &&
       ticket.author.toString() !== req.user &&
-      project?.author.toString() !== req.user &&
-      !projectTeam.includes(req.user as string)
+      project.author.toString() !== req.user
     )
       return res.status(403).json({ message: "User not authorized" });
 
@@ -125,7 +122,6 @@ export const updateTicketById = async (
     );
 
     const updatedTicket = await fetchTicket(id);
-
     res.status(200).json({ ticket: updatedTicket });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -146,16 +142,14 @@ export const deleteTicket = async (
     const socketId = req.headers["x-pusher-socket-id"];
 
     const ticket = await Ticket.findById(id);
-    const project = await Project.findById(ticket?.project);
-
     if (!ticket) return res.status(404).json({ message: "Ticket not found" });
-
+    const project = await Project.findById(ticket.project);
     if (!project) return res.status(404).json({ message: "Project not found" });
 
     if (
       !req.admin &&
-      ticket?.author.toString() !== req.user &&
-      project?.author.toString() !== req.user
+      ticket.author.toString() !== req.user &&
+      project.author.toString() !== req.user
     ) {
       return res.status(403).json({ message: "User not authorized" });
     }
@@ -179,7 +173,7 @@ export const deleteTicket = async (
     project.tickets = project.tickets.filter(
       (ticketId) => ticketId.toString() !== id,
     );
-    await project?.save();
+    await project.save();
 
     res.status(200).json({ message: "Ticket removed" });
   } catch (error: any) {
@@ -200,18 +194,19 @@ export const createTicketComment = async (
     const { id } = req.params;
     const { text } = req.body;
     const author = req.user;
-    const ticket: any = await Ticket.findById(id).populate("project", "author");
-    const project = ticket?.project;
-    const socketId = req.headers["x-pusher-socket-id"];
 
+    const ticket = await Ticket.findById(id).populate("project", "author");
     if (!ticket)
       return res.status(404).json({ message: "Comment's ticket not found" });
+    const project = await Project.findById(ticket.project);
+    if (!project) return res.status(404).json({ message: "Project not found" });
+    const socketId = req.headers["x-pusher-socket-id"];
 
     if (
       !req.admin &&
-      ticket?.author.toString() !== req.user &&
-      project?.author.toString() !== req.user &&
-      !ticket?.team.some((member: any) => member.toString() === req.user)
+      ticket.author.toString() !== req.user &&
+      project.author.toString() !== req.user &&
+      !ticket.team.some((member) => member.toString() === req.user)
     )
       return res.status(403).json({ message: "User not authorized" });
 
@@ -262,13 +257,13 @@ export const getTicketComment = async (
 ) => {
   try {
     const { id, commentId } = req.params;
-
     const comment = await Comment.findById(commentId).populate(
       "author",
       "name image email",
     );
 
-    if (comment?.ticket.toString() !== id)
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+    if (comment.ticket.toString() !== id)
       return res.status(404).json({ message: "Comment not found" });
 
     res.status(200).json({ comment });
@@ -276,4 +271,3 @@ export const getTicketComment = async (
     res.status(500).json({ message: error.message });
   }
 };
-
