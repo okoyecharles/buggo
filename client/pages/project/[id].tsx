@@ -20,20 +20,26 @@ export default function ProjectDetails() {
   const [ticketCreateOpen, setTicketCreateOpen] = useState<boolean>(false);
   const [projectDeleteOpen, setProjectDeleteOpen] = useState<boolean>(false);
 
+  // `id` is only known once the router has parsed the url, which happens a
+  // render after mount on a direct load
   useEffect(() => {
-    if (!project.loading && id) {
-      store.dispatch(fetchProjectById(id as string));
-      setPageLoaded(true);
-    } else {
-      router.replace('/dashboard');
+    if (!router.isReady) return;
+    if (!id) {
+      router.replace("/dashboard");
+      return;
     }
-  }, []);
 
+    store.dispatch(fetchProjectById(id as string));
+    setPageLoaded(true);
+  }, [router.isReady, id]);
+
+  // Send the user back if the project could not be loaded; the error
+  // middleware has already explained why
   useEffect(() => {
-    if (!project.project && !project.loading && pageLoaded) {
-      router.replace('/dashboard');
+    if (pageLoaded && !project.loading && !project.project) {
+      router.replace("/dashboard");
     }
-  }, [project.project]);
+  }, [project.project, project.loading, pageLoaded]);
 
   return (
     <>
