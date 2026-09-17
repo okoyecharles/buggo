@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { useSpring, a } from "@react-spring/web";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../../../../redux/configureStore";
 import { Ticket } from "../../../types/models";

@@ -9,7 +9,6 @@ import {
 import { useSelector } from "react-redux";
 import { TailSpinLoader, ThreeDotsLoader } from "../../loader";
 import {
-  restrictLength,
   returnWithLineBreaks,
 } from "../../../utils/components/string";
 import Pluralize from "react-pluralize";
