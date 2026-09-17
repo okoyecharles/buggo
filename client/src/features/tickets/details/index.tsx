@@ -21,7 +21,7 @@ import getDate from "../../../utils/strings/date";
 import TicketDeleteModal from "../modal/ticketDelete";
 import { BsCheck } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
-import Authorized from "../../../utils/authorization";
+import getAuthorization from "../../../utils/authorization";
 import { FcCancel } from "react-icons/fc";
 
 interface TicketDetailsBarProps {
@@ -77,7 +77,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   };
 
   const isCommentAuthorized = useMemo(() => {
-    return Authorized(
+    return getAuthorization(
       "ticket",
       "comment-create",
       user,
@@ -219,7 +219,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
               ticketDetails.loading ||
               ticketDetails.method.update ||
               ticketDetails.ticket?.status === "closed" ||
-              !Authorized(
+              !getAuthorization(
                 "ticket",
                 "update",
                 user,
@@ -241,7 +241,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
               "Close Ticket"
             )}
           </button>
-          {Authorized(
+          {getAuthorization(
             "ticket",
             "delete",
             user,

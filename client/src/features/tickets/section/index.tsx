@@ -8,7 +8,7 @@ import { Ticket } from "../../../types/models";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
 import CreateTicketModal from "../modal/ticketCreate";
-import Authorized from "../../../utils/authorization";
+import getAuthorization from "../../../utils/authorization";
 import { a, useSpring, useTrail } from "@react-spring/web";
 
 interface TicketsSectionProps {
@@ -65,7 +65,7 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
   };
 
   const canCreateTicket = useMemo(() => {
-    return Authorized("project", "ticket-create", user, project);
+    return getAuthorization("project", "ticket-create", user, project);
   }, [user, project]);
 
   const ticketListTrail = useTrail(currentTickets.length, {

@@ -13,7 +13,7 @@ import { OptionsButton } from "../../../components/Button";
 import { TailSpinLoader } from "../../loader";
 import { updateTicket } from "../../../../redux/actions/ticketActions";
 import TicketAssignModal from "../modal/ticketAssign";
-import Authorized from "../../../utils/authorization";
+import getAuthorization from "../../../utils/authorization";
 import { IoClose } from "react-icons/io5";
 import TicketDeleteModal from "../modal/ticketDelete";
 import OptionsPopup from "../../../components/Options";
@@ -70,7 +70,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
   };
 
   const isAuthorized = useMemo(() => {
-    return Authorized("ticket", "update", user, project, ticket);
+    return getAuthorization("ticket", "update", user, project, ticket);
   }, [user, project, ticket]);
 
   return (

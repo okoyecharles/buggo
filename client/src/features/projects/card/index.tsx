@@ -21,7 +21,7 @@ import ProjectOptionsPopup from "./Options";
 import ProjectCardMembers from "./Members";
 import Highlighter from "react-highlight-words";
 import getDate from "../../../utils/strings/date";
-import Authorized from "../../../utils/authorization";
+import getAuthorization from "../../../utils/authorization";
 import { useRouter } from "next/router";
 import { a } from "@react-spring/web";
 
@@ -87,7 +87,7 @@ const ProjectCard: React.FC<projectProps> = ({
   };
 
   const isAuthorized = useMemo(() => {
-    return Authorized("project", "update", user, project);
+    return getAuthorization("project", "update", user, project);
   }, [user, project]);
 
   return (

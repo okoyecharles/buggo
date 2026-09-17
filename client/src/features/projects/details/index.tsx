@@ -17,7 +17,7 @@ import ProjectInviteModal from "../modal/projectInvite";
 import Button from "../../../components/Button";
 import { acceptInvite } from "../../../../redux/actions/projectActions";
 import { a, useSpring, useTrail } from "@react-spring/web";
-import Authorized from "../../../utils/authorization";
+import getAuthorization from "../../../utils/authorization";
 import { useRouter } from "next/router";
 
 interface ProjectDetailsBarProps {
@@ -45,7 +45,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   const user = useSelector((store: storeType) => store.currentUser.user);
 
   const isAuthorized = useMemo(() => {
-    return Authorized("project", "update", user, project);
+    return getAuthorization("project", "update", user, project);
   }, [user, project]);
 
   const membersOpenTrail = useTrail(project?.team.length || 0, {
