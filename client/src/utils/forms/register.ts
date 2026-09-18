@@ -7,11 +7,15 @@ export const validateName = (name: any) => {
   if (name.length < 5) {
     return 'Name must be at least 5 characters';
   };
+  // validate name is not longer than 50 characters
+  if (name.length > 50) {
+    return 'Name cannot be longer than 50 characters';
+  };
   return null;
 };
 
 export const validateEmail = (email: any) => {
-  const emailRegular = /[^A-Za-z0-9]/g;
+  const emailRegular = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   // validate email is not empty
   if (!email.trim('')) {
     return 'Email cannot be empty';

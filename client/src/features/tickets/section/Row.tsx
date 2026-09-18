@@ -13,7 +13,7 @@ import TicketOptionsPopup from "./Options";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
 import ImageRow from "../../../components/ImageRow";
-import Authorized from "../../../utils/authorization";
+import getAuthorization from "../../../utils/authorization";
 import { a } from "@react-spring/web";
 import { Tooltip } from "react-tooltip";
 
@@ -42,7 +42,7 @@ const TicketRow: React.FC<TicketRowProps> = ({
   }, [ticket]);
 
   const isInProjectTeam = useMemo(() => {
-    return Authorized("project", "team", user, project);
+    return getAuthorization("project", "team", user, project);
   }, [project, user?._id]);
 
   return (

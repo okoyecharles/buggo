@@ -13,6 +13,7 @@ import { updateTicket } from "../../../../redux/actions/ticketActions";
 import { ThreeDotsLoader } from "../../loader";
 import Highlighter from "react-highlight-words";
 import { searchByNameOrEmail } from "../../../utils/strings/search";
+import { validateTicketTeam } from "../../../utils/forms/ticket";
 
 const ticketMembersReducer = (state: User[], action: any) => {
   switch (action.type) {
@@ -244,9 +245,17 @@ const TicketAssignModal: React.FC<{
           className="px-6 p-2 bg-blue-600 text-blue-50 rounded-sm font-semibold hover:bg-blue-700 group transition disabled:opacity-75"
           disabled={loading && method.update}
           onClick={() => {
+            const assignedTeam = members.map((member: User) => member._id);
+
+            const teamValidationError = validateTicketTeam(assignedTeam);
+            if (teamValidationError) {
+              toast.error(teamValidationError);
+              return;
+            }
+
             store.dispatch(
               updateTicket(ticket._id, {
-                team: members.map((member: User) => member._id),
+                team: assignedTeam,
               })
             );
           }}

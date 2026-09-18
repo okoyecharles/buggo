@@ -12,6 +12,8 @@ import { restrictLength } from "../../../utils/components/string";
 import Highlighter from "react-highlight-words";
 import store, { storeType } from "../../../../redux/configureStore";
 import { inviteToProject } from "../../../../redux/actions/projectActions";
+import { validateInvitees } from "../../../utils/forms/project";
+import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
 const projectInviteesReducer = (state: User[], action: any) => {
@@ -269,15 +271,18 @@ const ProjectInviteModal: React.FC<{
           className="px-6 p-2 bg-blue-600 text-blue-50 rounded-sm font-semibold hover:bg-blue-700 group transition disabled:opacity-75 disabled:cursor-not-allowed"
           disabled={(loading && method.update) || !invitees.length}
           onClick={() => {
-            store.dispatch(
-              inviteToProject(
-                project._id,
-                invitees.map((invitee: User) => ({
-                  user: invitee._id,
-                  email: invitee.email,
-                }))
-              )
-            );
+            const payload = invitees.map((invitee: User) => ({
+              user: invitee._id,
+              email: invitee.email,
+            }));
+
+            const inviteesValidationError = validateInvitees(payload);
+            if (inviteesValidationError) {
+              toast.error(inviteesValidationError);
+              return;
+            }
+
+            store.dispatch(inviteToProject(project._id, payload));
           }}
         >
           {loading && method.update ? <ThreeDotsLoader /> : "Invite"}

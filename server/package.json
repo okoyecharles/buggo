@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-		"build": "tsc",
-		"start": "node dist/index.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
     "server": "nodemon index.ts"
   },
   "keywords": [],
@@ -22,7 +22,7 @@
     "mongoose": "^6.8.2",
     "morgan": "^1.10.0",
     "pusher": "^5.1.2",
-    "react-file-base64": "^1.0.3"
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
@@ -31,8 +31,9 @@
     "@types/express": "^4.17.15",
     "@types/jsonwebtoken": "^9.0.0",
     "@types/morgan": "^1.9.4",
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.13.4",
     "nodemon": "^2.0.20",
-    "typescript": "^5.9.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }

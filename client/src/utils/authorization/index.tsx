@@ -3,13 +3,12 @@
 
 import { Project, Ticket, User } from "../../types/models";
 
-const Authorized = (
+const getAuthorization = (
   modelName: "project" | "ticket" | "comment",
   action: "update" | "delete" | "team" | "ticket-create" | "comment-create",
   user: User | null,
   project?: Project | null,
   ticket?: Ticket | null,
-  comment?: Comment | null
 ): boolean => {
   if (!user) return false;
   if (user.admin === true) return true;
@@ -56,4 +55,4 @@ const Authorized = (
   }
 };
 
-export default Authorized;
+export default getAuthorization;

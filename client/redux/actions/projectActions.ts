@@ -233,7 +233,6 @@ export const acceptInvite = (id: string) =>
         payload: data
       });
     } catch (error: any) {
-      toast.error("Couldn't accept invite");
       dispatch({
         type: types.PROJECT_ACCEPT_INVITE_FAIL,
         payload: error.response?.data ? error.response.data : error.error,

@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { useSpring, a } from "@react-spring/web";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../../../../redux/configureStore";
 import { Ticket } from "../../../types/models";
@@ -13,10 +12,15 @@ import { OptionsButton } from "../../../components/Button";
 import { TailSpinLoader } from "../../loader";
 import { updateTicket } from "../../../../redux/actions/ticketActions";
 import TicketAssignModal from "../modal/ticketAssign";
-import Authorized from "../../../utils/authorization";
+import getAuthorization from "../../../utils/authorization";
 import { IoClose } from "react-icons/io5";
 import TicketDeleteModal from "../modal/ticketDelete";
 import OptionsPopup from "../../../components/Options";
+import {
+  ticketStatus,
+  validateTicketTeam,
+} from "../../../utils/forms/ticket";
+import { toast } from "react-toastify";
 
 interface TicketOptionsPopupProps {
   ticket: Ticket;
@@ -49,6 +53,12 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
       ? previousTeam.filter((member) => member !== user?._id!)
       : [...previousTeam, user?._id];
 
+    const teamValidationError = validateTicketTeam(newTeam);
+    if (teamValidationError) {
+      toast.error(teamValidationError);
+      return;
+    }
+
     store.dispatch(
       updateTicket(ticket._id, {
         team: newTeam,
@@ -59,7 +69,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
   };
 
   const isAuthorized = useMemo(() => {
-    return Authorized("ticket", "update", user, project, ticket);
+    return getAuthorization("ticket", "update", user, project, ticket);
   }, [user, project, ticket]);
 
   return (
@@ -95,13 +105,13 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
             <hr className="border-gray-800" />
 
-            {ticket.status !== "closed" ? (
+            {ticket.status !== ticketStatus.closed ? (
               <OptionsButton
                 processing={loading && method.update}
                 onClick={() => {
                   setClosing(true);
                   store.dispatch(
-                    updateTicket(ticket._id, { status: "closed" })
+                    updateTicket(ticket._id, { status: ticketStatus.closed })
                   );
                 }}
               >

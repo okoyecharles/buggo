@@ -9,17 +9,18 @@ import {
 import { useSelector } from "react-redux";
 import { TailSpinLoader, ThreeDotsLoader } from "../../loader";
 import {
-  restrictLength,
   returnWithLineBreaks,
 } from "../../../utils/components/string";
 import Pluralize from "react-pluralize";
 import TicketComments from "./comments";
+import { validateCommentText } from "../../../utils/forms/comment";
+import { ticketStatus } from "../../../utils/forms/ticket";
 import { Ticket } from "../../../types/models";
 import getDate from "../../../utils/strings/date";
 import TicketDeleteModal from "../modal/ticketDelete";
 import { BsCheck } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
-import Authorized from "../../../utils/authorization";
+import getAuthorization from "../../../utils/authorization";
 import { FcCancel } from "react-icons/fc";
 
 interface TicketDetailsBarProps {
@@ -67,7 +68,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (comment.trim() && !ticketDetails.method.comment) {
+    if (!validateCommentText(comment) && !ticketDetails.method.comment) {
       const ticket = ticketDetails.ticket!;
       store.dispatch(commentOnTicket(ticket._id, comment));
       setComment("");
@@ -75,7 +76,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   };
 
   const isCommentAuthorized = useMemo(() => {
-    return Authorized(
+    return getAuthorization(
       "ticket",
       "comment-create",
       user,
@@ -217,7 +218,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
               ticketDetails.loading ||
               ticketDetails.method.update ||
               ticketDetails.ticket?.status === "closed" ||
-              !Authorized(
+              !getAuthorization(
                 "ticket",
                 "update",
                 user,
@@ -228,7 +229,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
             onClick={() => {
               store.dispatch(
                 updateTicket(ticketDetails.ticket?._id!, {
-                  status: "closed",
+                  status: ticketStatus.closed,
                 })
               );
             }}
@@ -239,7 +240,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
               "Close Ticket"
             )}
           </button>
-          {Authorized(
+          {getAuthorization(
             "ticket",
             "delete",
             user,

@@ -9,7 +9,6 @@ import {
 } from "../src/utils/forms/register";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
-import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { register } from "../redux/actions/userActions";
 import Head from "next/head";
@@ -60,9 +59,6 @@ const Register = () => {
 
   useEffect(() => {
     setProcessing(registerStore.loading);
-    if (registerStore.error) {
-      toast.error(registerStore.error.message);
-    }
     if (user) {
       router.replace("/dashboard");
     }

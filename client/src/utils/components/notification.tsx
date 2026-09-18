@@ -1,38 +1,63 @@
-import { Notification } from "../../types/models";
+import { Notification, NotificationType } from "../../types/models";
 import { BsPersonPlusFill } from "react-icons/bs";
-import Link from "next/link";
+import store from "../../../redux/configureStore";
+import { acceptInvite } from "../../../redux/actions/projectActions";
 
 export const getNotificationDescription = (notification: Notification) => {
-  const { type, subject } = notification;
-  const action = `${type} ${subject}`;
+  const { type } = notification;
 
-  switch (action) {
-    case "project invite":
+  switch (type) {
+    case NotificationType.PROJECT_INVITE:
       return (
         <span className="font-noto">
           You have been invited to join the project{" "}
-          <Link
-            href={`/project/${notification.ref.project._id}`}
-            className="text-blue-400 underline"
-          >
-            {notification.ref.project.title}
-          </Link>{" "}
-          by {notification.ref.project.author.name}
+          <span className="text-blue-400 font-semibold">
+            {notification.data.project.title}
+          </span>{" "}
+          by {notification.data.project.author.name}
         </span>
       );
+    default:
+      return "New notification.";
+  }
+};
+
+export const getNotificationIcon = (notification: Notification) => {
+  const { type } = notification;
+
+  switch (type) {
+    case NotificationType.PROJECT_INVITE:
+      return <BsPersonPlusFill className="text-blue-400" />;
     default:
       return "";
   }
 };
 
-export const getNotificationIcon = (notification: Notification) => {
-  const { type, subject } = notification;
-  const action = `${type} ${subject}`;
+type NotificationAction = {
+	label: string;
+	handler: () => void;
+}
 
-  switch (action) {
-    case "project invite":
-      return <BsPersonPlusFill className="text-blue-400" />;
+export const getNotificationAction = (
+  notification: Notification,
+	processedActions: Array<string>,
+	setProcessedActions: React.Dispatch<React.SetStateAction<string[]>>
+): NotificationAction => {
+  const { type } = notification;
+
+  switch (type) {
+    case NotificationType.PROJECT_INVITE:
+			return {
+				label: "Accept Invite",
+				handler: () => {
+					store.dispatch(acceptInvite(notification.data.project._id));
+					setProcessedActions([...processedActions, notification._id]);
+				}
+			};
     default:
-      return "";
+			return {
+        label: "...",
+				handler: () => {}
+			};
   }
 };

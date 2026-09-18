@@ -45,13 +45,16 @@ export default function Home() {
         <h2 className="text-lg lg:text-xl font-noto flex flex-col">
           <span className="text-gray-200 text-ss">{getGreeting()}</span>
           <div className="text-orange-400 font-semibold leading-5">
-            Welcome Back!
+            Welcome Back {user?.name}!
           </div>
         </h2>
       </header>
       <div className="grid gap-16 xl:gap-4 xl:grid-cols-4 m-4">
         <ProjectSection
-          projects={searchProjectByName(projectSearch, projects.projects)}
+          projects={searchProjectByName(
+            projectSearch,
+            projects.projects.filter((project) => !project.invitePending),
+          )}
           loading={projects.loading}
           method={projects.method}
           search={projectSearch}

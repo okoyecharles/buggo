@@ -2,11 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import {
-  FaAngellist,
   FaGithub,
   FaGlobe,
   FaLinkedin,
-  FaTwitter,
 } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../redux/configureStore";
@@ -15,7 +13,7 @@ const LandingFooter = () => {
   const currentUser = useSelector((store: storeType) => store.currentUser.user);
 
   return (
-    <footer className="flex justify-center text-gray-200 bg-gray-950 py-4 px-6 md:px-[40px]">
+    <footer className="flex justify-center text-gray-200 border-t border-gray-800 bg-gray-950 py-8 px-6 md:px-[40px]">
       <div className="w-[min(100%,1260px)]">
         <div className="grid md:grid-cols-5 gap-5 mb-4">
           <section className="flex-1 flex flex-col gap-2 md:col-span-2">
@@ -52,35 +50,13 @@ const LandingFooter = () => {
               </li>
               <li>
                 <a
-                  href="https://www.linkedin.com/in/charles-k-okoye"
+                  href="https://www.linkedin.com/in/okoyecharles"
                   className="flex gap-[1ch] items-center"
                   aria-label="LinkedIn"
                   target="_blank"
                   rel="norefferer noopener"
                 >
                   <FaLinkedin className="text-2xl" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://twitter.com/okoyecharles_"
-                  className="flex gap-[1ch] items-center"
-                  aria-label="Twitter"
-                  target="_blank"
-                  rel="norefferer noopener"
-                >
-                  <FaTwitter className="text-2xl" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://angel.co/u/charles-k-okoye"
-                  className="flex gap-[1ch] items-center"
-                  aria-label="AngelList"
-                  target="_blank"
-                  rel="norefferer noopener"
-                >
-                  <FaAngellist className="text-2xl" />
                 </a>
               </li>
             </ul>
@@ -98,7 +74,7 @@ const LandingFooter = () => {
           </section>
         </div>
 
-        <div className="flex items-center justify-between border-t border-gray-700 pt-6">
+        <div className="flex items-center justify-between border-t border-gray-800 pt-6">
           <div className="footer-logo">
             <Image src={"/text-logo.png"} height={20} width={100} alt="buggo" />
           </div>

@@ -1,8 +1,20 @@
-import { Request } from "express";
+import { NextFunction, Request, Response } from "express";
 
-type AuthorizedRequest<T> = Request<never, never, T> & {
+// T is the type of the body
+// P is the type of the params
+
+type DefaultRequest<T = undefined, P = Record<string, string>> = Request<P, any, T>;
+
+type ProtectedRequest<T = undefined, P = Record<string, string>> = DefaultRequest<T, P> & {
   user?: string;
   admin?: boolean;
 };
 
-export default AuthorizedRequest;
+// Middleware mounted ahead of a controller must leave the body and params open,
+type Middleware = (
+  req: ProtectedRequest<any, any>,
+  res: Response,
+  next: NextFunction,
+) => any;
+
+export { DefaultRequest, ProtectedRequest, Middleware };

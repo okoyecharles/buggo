@@ -4,7 +4,6 @@ import { CgArrowLongRight } from "react-icons/cg";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../../redux/configureStore";
-import { a, useSpring } from "@react-spring/web";
 
 const LandingHero = () => {
   const currentUser = useSelector((store: storeType) => store.currentUser.user);
@@ -29,11 +28,11 @@ const LandingHero = () => {
         lg:py-[120px] lg:grid-cols-12"
         >
           <div className="hero-section-content col-span-4 md:col-span-5 lg:col-start-3 lg:col-span-8">
-            <h1 className="font-black text-[clamp(24px,5vw,44px)] leading-7 sm:leading-8 md:leading-10 uppercase text-white lg:text-center">
-              Track Issues & Bugs Like Never Before ...
+            <h1 className="font-black text-[clamp(28px,5vw,50px)] leading-[1.1] uppercase text-white lg:text-center">
+							Track Issues & Bugs Like Never Before ...
             </h1>
 
-            <p className="font-noto text-[clamp(14px,2vw,18px)] text-white mt-6 lg:text-center">
+            <p className="font-noto text-base max-w-xl mx-auto text-white mt-6 lg:text-center">
               The ultimate issue tracking solution for teams of any size. Manage
               all your issues, bugs and features in one place and focus on
               delivering exceptional products and services to your customers
@@ -72,14 +71,14 @@ const LandingHero = () => {
             alt="Hero Illustration"
             width={550}
             height={461}
-            className="w-[min(100%,300px)] md:hidden lg:block lg:w-[350px]"
+            className="w-[min(100%,300px)] md:hidden lg:block lg:w-[350px] -mb-1"
           />
           <Image
             src={"/hero/illustration-2.svg"}
             alt="Hero Illustration"
             width={592}
             height={468}
-            className="w-[400px] hidden md:block lg:w-[350px]"
+            className="w-[400px] hidden md:block lg:w-[350px] -mb-1"
           />
         </div>
       </div>
