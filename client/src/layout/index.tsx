@@ -9,6 +9,7 @@ import {
   connectPusher,
   disconnectPusher,
 } from "../../redux/actions/pusherActions";
+import { fetchNotifications } from "../../redux/actions/notificationActions";
 import bindChannelEvents from "./pusher/channel";
 import SideBar from "./sidebar";
 import Navigation from "./navigation";
@@ -34,6 +35,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       router.replace("/login?redirected=true");
     }
   }, [currentUser]);
+
+  // Load notifications once the user is known
+  useEffect(() => {
+    if (currentUser.user?._id && !currentUser.loading) {
+      store.dispatch(fetchNotifications());
+    }
+  }, [currentUser.user?._id]);
 
   // Connect to pusher when user logs in
   useEffect(() => {

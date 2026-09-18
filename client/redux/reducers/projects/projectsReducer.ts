@@ -13,6 +13,7 @@ interface ProjectsState {
     update: boolean;
     delete: boolean;
     acceptInvite: boolean;
+    declineInvite: boolean;
   };
 };
 
@@ -25,7 +26,8 @@ const initialState = {
     create: false,
     update: false,
     delete: false,
-    acceptInvite: false
+    acceptInvite: false,
+    declineInvite: false
   }
 };
 
@@ -108,16 +110,32 @@ const projectsReducer = (state: ProjectsState = initialState, action: ActionType
         ...state,
         error: null,
         loading: false,
-        projects: state.projects.map((project) => {
-          if (project._id === payload.project._id) {
-            return payload.project;
-          }
-          return project;
-        }),
+        // Accepting is usually the first time this project reaches the store,
+        // since a user is only sent projects they are a part of. Admins are
+        // sent every project, so guard against a second copy.
+        projects: [
+          payload.project,
+          ...state.projects.filter(
+            (project) => project._id !== payload.project._id
+          )
+        ],
         method: { ...state.method, acceptInvite: false }
       };
     case types.PROJECT_ACCEPT_INVITE_FAIL:
       return { ...state, loading: false, error: payload, method: { ...state.method, acceptInvite: false } };
+
+    case types.PROJECT_DECLINE_INVITE_REQUEST:
+      return { ...state, loading: true, error: null, method: { ...state.method, declineInvite: true } };
+    case types.PROJECT_DECLINE_INVITE_SUCCESS:
+      return {
+        ...state,
+        error: null,
+        loading: false,
+        projects: state.projects.filter((project) => project._id !== payload.projectId),
+        method: { ...state.method, declineInvite: false }
+      };
+    case types.PROJECT_DECLINE_INVITE_FAIL:
+      return { ...state, loading: false, error: payload, method: { ...state.method, declineInvite: false } };
 
     // Clear state on logout
     case userTypes.USER_LOGOUT:

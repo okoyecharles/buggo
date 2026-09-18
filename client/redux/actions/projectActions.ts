@@ -230,11 +230,38 @@ export const acceptInvite = (id: string) =>
 
       dispatch({
         type: types.PROJECT_ACCEPT_INVITE_SUCCESS,
-        payload: data
+        payload: { ...data, projectId: id }
       });
     } catch (error: any) {
       dispatch({
         type: types.PROJECT_ACCEPT_INVITE_FAIL,
+        payload: error.response?.data ? error.response.data : error.error,
+      });
+    }
+  };
+
+export const declineInvite = (id: string) =>
+  async (dispatch: DispatchType, getState: () => storeType) => {
+    try {
+      dispatch({
+        type: types.PROJECT_DECLINE_INVITE_REQUEST,
+      });
+
+      const socketId = getState().pusher.socket;
+      await axios.put(
+        `${SERVER_URL}/projects/${id}/decline-invite`,
+        {},
+        generateConfig(socketId || '')
+      );
+      toast.success("Invitation declined");
+
+      dispatch({
+        type: types.PROJECT_DECLINE_INVITE_SUCCESS,
+        payload: { projectId: id }
+      });
+    } catch (error: any) {
+      dispatch({
+        type: types.PROJECT_DECLINE_INVITE_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
     }

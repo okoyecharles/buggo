@@ -51,10 +51,7 @@ export default function Home() {
       </header>
       <div className="grid gap-16 xl:gap-4 xl:grid-cols-4 m-4">
         <ProjectSection
-          projects={searchProjectByName(
-            projectSearch,
-            projects.projects.filter((project) => !project.invitePending),
-          )}
+          projects={searchProjectByName(projectSearch, projects.projects)}
           loading={projects.loading}
           method={projects.method}
           search={projectSearch}

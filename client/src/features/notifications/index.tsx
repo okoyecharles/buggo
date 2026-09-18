@@ -3,16 +3,20 @@ import { User } from "../../types/models";
 import { IoMdClose, IoMdNotificationsOff } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { storeType } from "../../../redux/configureStore";
-import { BsCheck } from "react-icons/bs";
 import getDate from "../../utils/strings/date";
 import Portal from "../portal";
 import { useSpring, a } from "@react-spring/web";
 import {
-  getNotificationAction,
+  getNotificationActions,
   getNotificationDescription,
   getNotificationIcon,
+  getNotificationTitle,
 } from "../../utils/components/notification";
 import { ThreeDotsLoader } from "../loader";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import NotificationOptionsPopup from "./Options";
+import { readNotifications } from "../../../redux/actions/notificationActions";
+import store from "../../../redux/configureStore";
 import { useRouter } from "next/router";
 
 interface NotificationModalProps {
@@ -25,16 +29,15 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   open,
   setOpen,
 }) => {
-  const notifications = useSelector(
-    (store: storeType) => store.notifications.notifications,
+  const { notifications, method } = useSelector(
+    (store: storeType) => store.notifications,
   );
-  const projects = useSelector((store: storeType) => store.projects);
+  const unread = notifications.filter((notification) => !notification.read);
   const router = useRouter();
-
-  const [processedActions, setProcessedActions] = React.useState<Array<string>>(
-    [],
-  );
-
+  // Every action taken this session, keyed by notification id
+  const [pending, setPending] = React.useState<Record<string, string>>({});
+  // Only one row menu is open at a time
+  const [openOptions, setOpenOptions] = React.useState<string | null>(null);
   useEffect(() => {
     // Close notification modal when route changes
     setOpen(false);
@@ -80,58 +83,110 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             </div>
           </button>
         </header>
+        {unread.length > 0 && (
+          <div className="flex justify-start px-4 lg:px-6 mb-4">
+            <button
+              className="bg-blue-500 hover:bg-blue-600 text-white text-ss font-medium rounded h-8 px-3 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              disabled={method.readAll}
+              onClick={() => {
+                store.dispatch(readNotifications());
+              }}
+            >
+              Mark all as read
+            </button>
+          </div>
+        )}
         <div className="flex flex-1">
           {notifications?.length > 0 ? (
             <ul className="mb-4 flex-1">
               {notifications?.map((notification) => {
-                const action = getNotificationAction(
-                  notification,
-                  processedActions,
-                  setProcessedActions,
-                );
                 return (
                   <li
                     key={notification._id}
-                    className="p-3 lg:px-6 flex items-center gap-3 bg-gray-800 hover:bg-gray-750 border-l-2 border-b border-b-gray-700 first:border-t border-t-gray-700 border-l-gray-800 hover:border-l-blue-500 group"
+                    className={`p-3 lg:px-6 flex items-center gap-3 border-l-2 border-b border-b-gray-700 first:border-t border-t-gray-700 ${
+                      notification.read
+                        ? "bg-gray-800 border-l-gray-800"
+                        : "bg-gray-750 border-l-blue-500"
+                    }`}
                   >
                     <div className="notification-icon text-xl self-start mt-1">
                       {getNotificationIcon(notification)}
                     </div>
                     <div className="flex-1">
-                      <div className="notification-title text-gray-100 font-semibold capitalize  font-noto group-hover:text-white">
-                        {`${notification.type}`}
-                      </div>
-                      <div className="notification-description text-gray-300 text-sm lg:text-ss">
+                      <h3
+                        className={`notification-title font-bold capitalize font-noto ${
+                          notification.read ? "text-gray-400" : "text-white"
+                        }`}
+                      >
+                        {getNotificationTitle(notification)}
+                      </h3>
+                      <p
+                        className={`notification-description text-sm lg:text-ss ${
+                          notification.read ? "text-gray-500" : "text-gray-300"
+                        }`}
+                      >
                         {getNotificationDescription(notification)}
-                      </div>
+                      </p>
                       <div className="notification-date text-gray-300 mt-2 text-xsm font-noto font-semibold flex lg:hidden truncate">
-                        {getDate(notification.date, {
+                        {getDate(notification.createdAt, {
                           format: "short calendar",
                         })}
                       </div>
                     </div>
-                    <div className="notification-action">
-                      <button
-                        className="bg-blue-500 text-white text-ss rounded-full lg:rounded h-10 w-10 lg:w-32 lg:h-8 flex items-center justify-center"
-                        disabled={
-                          projects.loading && projects.method.acceptInvite
-                        }
-                        onClick={action.handler}
-                      >
-                        {processedActions.includes(notification._id) ? (
-                          <ThreeDotsLoader className="text-red-500" />
-                        ) : (
-                          <>
-                            <span className="hidden lg:inline text-ss font-medium">
-                              {action.label}
-                            </span>
-                            <BsCheck className="lg:hidden text-2xl" />
-                          </>
-                        )}
-                      </button>
+                    <div className="notification-action flex items-center gap-2">
+                      {getNotificationActions(notification).map((action) => (
+                        <button
+                          key={action.key}
+                          className={`text-ss rounded-full lg:rounded h-10 w-10 lg:h-8 flex items-center justify-center ${
+                            action.variant === "primary"
+                              ? "bg-blue-500 hover:bg-blue-600 text-white lg:w-32"
+                              : "bg-red-500 hover:bg-red-600 text-white lg:w-24"
+                          }`}
+                          disabled={Boolean(pending[notification._id])}
+                          onClick={() => {
+                            action.handler();
+                            setPending((processed) => ({
+                              ...processed,
+                              [notification._id]: action.key,
+                            }));
+                          }}
+                        >
+                          {pending[notification._id] === action.key ? (
+                            <ThreeDotsLoader className="text-red-500" />
+                          ) : (
+                            <>
+                              <span className="hidden lg:inline text-ss font-medium">
+                                {action.label}
+                              </span>
+                              <span className="lg:hidden">{action.icon}</span>
+                            </>
+                          )}
+                        </button>
+                      ))}
+                      <div className="relative">
+                        <button
+                          name="notification options"
+                          className="h-10 w-10 rounded-full lg:h-8 lg:w-8 lg:rounded flex items-center justify-center text-gray-300 ring-1 ring-gray-600 hover:text-gray-100 hover:ring-gray-400 transition-colors"
+                          onClick={() => {
+                            setOpenOptions(
+                              openOptions === notification._id
+                                ? null
+                                : notification._id,
+                            );
+                          }}
+                        >
+                          <BsThreeDotsVertical />
+                        </button>
+                        <NotificationOptionsPopup
+                          open={openOptions === notification._id}
+                          setOpen={() => setOpenOptions(null)}
+                          notification={notification}
+                          method={method}
+                        />
+                      </div>
                     </div>
                     <div className="notification-date text-gray-400 text-sm font-medium w-32 hidden lg:flex justify-end truncate">
-                      {getDate(notification.date, {
+                      {getDate(notification.createdAt, {
                         format: "short calendar",
                       })}
                     </div>

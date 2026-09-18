@@ -10,6 +10,7 @@ import colors from "@colors/colors/safe";
 import userRouter from "./routes/userRoutes";
 import projectRouter from "./routes/projectRoutes";
 import ticketRouter from "./routes/ticketRoutes";
+import notificationRouter from "./routes/notificationRoutes";
 import connectToPusher from "./config/Pusher";
 
 const app = express();
@@ -44,6 +45,7 @@ app.get("/api/health", (_, res) => res.json({ ok: true }));
 app.use("/api/users", userRouter);
 app.use("/api/projects", projectRouter);
 app.use("/api/tickets", ticketRouter);
+app.use("/api/notifications", notificationRouter);
 
 const PORT = +process.env.PORT!;
 const CONNECTION_URI = process.env.MONGO_URI || "";

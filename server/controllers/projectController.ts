@@ -2,7 +2,9 @@ import { Response } from "express";
 import { ProtectedRequest } from "../types/request";
 import Ticket from "../models/ticketModel";
 import Project from "./../models/projectModel";
-import { Types } from "mongoose";
+import User from "../models/userModel";
+import { ProjectInviteNotification } from "../models/notificationModel";
+import mongoose, { Types } from "mongoose";
 import { pusher, pusherChannel } from "..";
 import {
   CreateProjectBody,
@@ -34,44 +36,16 @@ const fetchProject = async (id: Types.ObjectId | string) => {
  */
 export const getProjects = async (req: ProtectedRequest, res: Response) => {
   try {
-    // Projects the user is a part of, in full
-    const memberFilter = req.admin
+    const filter = req.admin
       ? {}
       : { $or: [{ author: req.user }, { team: req.user }] };
-    const projects = await Project.find(memberFilter)
+    const projects = await Project.find(filter)
       .populate("author", "name")
       .populate("team", "name email image")
       .populate("invitees.user", "name image email")
       .sort({ createdAt: -1 });
 
-    if (req.admin) return res.status(200).json({ projects });
-
-    // Projects the user has only been invited to: enough to render the
-    // invite notification, and nothing more
-    const invitedProjects = await Project.find(
-      {
-        "invitees.user": req.user,
-        author: { $ne: req.user },
-        team: { $ne: req.user },
-      },
-      { title: 1, author: 1, invitees: { $elemMatch: { user: req.user } } },
-    )
-      .populate("author", "name")
-      .populate("invitees.user", "name image email")
-      .sort({ createdAt: -1 })
-      .lean();
-
-    res.status(200).json({
-      projects: [
-        ...projects,
-        // Flagged so the client can keep partial projects out of the
-        // project list and render them as notifications only
-        ...invitedProjects.map((project) => ({
-          ...project,
-          invitePending: true,
-        })),
-      ],
-    });
+    res.status(200).json({ projects });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -199,27 +173,60 @@ export const inviteToProject = async (
     if (project?.author.id.toString() !== req.user && !req.admin)
       return res.status(403).json({ message: "User not authorized" });
 
-    project.invitees = [
-      ...project.invitees,
-      ...invitees.map((invitee) => ({
+    // Inviting someone already pending should not add a second entry or a
+    // second notification
+    const pendingInvites = new Set(
+      project.invitees.map((invitee) => invitee.user.toString()),
+    );
+    const newInvitees = invitees
+      .filter((invitee) => !pendingInvites.has(invitee.user))
+      .map((invitee) => ({
         user: new Types.ObjectId(invitee.user),
         email: invitee.email,
         createdAt: new Date(),
-      })),
-    ];
+      }));
 
-    const updatedProject = await project.save();
+    const actor = await User.findById(req.user).select("name");
+
+    if (!actor) return res.status(404).json({ message: "User not found" });
+
+    // An invitee without its notification is invisible to them, so the two
+    // writes land together or not at all
+    const session = await mongoose.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+        await Project.findByIdAndUpdate(
+          id,
+          { $push: { invitees: { $each: newInvitees } } },
+          { session },
+        );
+
+        await ProjectInviteNotification.insertMany(
+          newInvitees.map((invitee) => ({
+            recipient: invitee.user,
+            snapshot: {
+              project: { _id: project._id, title: project.title },
+              actor: { _id: actor._id, name: actor.name },
+            },
+          })),
+          { session },
+        );
+      });
+    } finally {
+      await session.endSession();
+    }
+
     await pusher.trigger(
       pusherChannel,
       "project-invite",
       {
-        projectId: updatedProject?._id.toString(),
+        projectId: project._id.toString(),
       },
       { socket_id: socketId as string },
     );
 
-    const returnProject = await fetchProject(updatedProject.id);
-
+    const returnProject = await fetchProject(id);
     res.status(200).json({ project: returnProject });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -238,36 +245,111 @@ export const acceptInvite = async (
   try {
     const { id } = req.params;
     const socketId = req.headers["x-pusher-socket-id"];
-    const project = await Project.findById(id).populate("author", "name");
+    const project = await Project.findById(id);
 
     if (!project) return res.status(404).json({ message: "Project not found" });
 
-    const invitees = project.invitees.map((invitee) => {
-      return invitee.user.toString();
-    });
+    const isInvited = project.invitees.some(
+      (invitee) => invitee.user.toString() === req.user,
+    );
 
-    if (invitees.includes(req.user as string)) {
-      project.invitees = project.invitees.filter(
-        (invitee) => invitee.user.toString() !== req.user,
-      );
+    if (!isInvited)
+      return res.status(403).json({ message: "Invitation invalid or expired" });
 
-      project.team.push(req.user as any);
-      await project.save();
-      await pusher.trigger(
-        pusherChannel,
-        "accept-project-invite",
-        {
-          projectId: project?._id.toString(),
-        },
-        { socket_id: socketId as string },
-      );
+    // The invite, the membership and the notification that announced it all
+    // go together
+    const session = await mongoose.startSession();
 
-      const returnProject = await fetchProject(project.id);
+    try {
+      await session.withTransaction(async () => {
+        await Project.findByIdAndUpdate(
+          id,
+          {
+            $pull: { invitees: { user: req.user } },
+            $addToSet: { team: new Types.ObjectId(req.user) },
+          },
+          { session },
+        );
 
-      res.status(200).json({ project: returnProject });
-    } else {
-      res.status(403).json({ message: "Invitation invalid or expired" });
+        await ProjectInviteNotification.deleteMany(
+          { recipient: req.user, "snapshot.project._id": id },
+          { session },
+        );
+      });
+    } finally {
+      await session.endSession();
     }
+
+    await pusher.trigger(
+      pusherChannel,
+      "accept-project-invite",
+      {
+        projectId: project._id.toString(),
+      },
+      { socket_id: socketId as string },
+    );
+
+    const returnProject = await fetchProject(id);
+
+    res.status(200).json({ project: returnProject });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/*
+ * @route   PUT /projects/:id/decline-invite
+ * @desc    Decline an invite to a project
+ * @access  Private
+ */
+export const declineInvite = async (
+  req: ProtectedRequest<undefined, { id: string }>,
+  res: Response,
+) => {
+  try {
+    const { id } = req.params;
+    const socketId = req.headers["x-pusher-socket-id"];
+    const project = await Project.findById(id);
+
+    if (!project) return res.status(404).json({ message: "Project not found" });
+
+    const isInvited = project.invitees.some(
+      (invitee) => invitee.user.toString() === req.user,
+    );
+
+    if (!isInvited)
+      return res.status(403).json({ message: "Invitation invalid or expired" });
+
+    // The invite and the notification that announced it go together
+    const session = await mongoose.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+        await Project.findByIdAndUpdate(
+          id,
+          { $pull: { invitees: { user: req.user } } },
+          { session },
+        );
+
+        await ProjectInviteNotification.deleteMany(
+          { recipient: req.user, "snapshot.project._id": id },
+          { session },
+        );
+      });
+    } finally {
+      await session.endSession();
+    }
+
+    await pusher.trigger(
+      pusherChannel,
+      "decline-project-invite",
+      {
+        projectId: project._id.toString(),
+      },
+      { socket_id: socketId as string },
+    );
+
+    res.status(200).json({ message: "Invitation declined" });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
