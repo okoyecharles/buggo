@@ -18,12 +18,6 @@ export type Project = {
   tickets: any[];
   invitees: any[];
   createdAt: any;
-  /**
-   * Set by GET /projects on a project the user has only been invited to.
-   * Those come back partial (no `team`, `tickets` or `createdAt`), so they
-   * feed the invite notification and must be kept out of the project list.
-   */
-  invitePending?: boolean;
 };
 
 export type Ticket = {
@@ -60,19 +54,27 @@ export type Comment = {
 };
 
 export enum NotificationType {
-	PROJECT_INVITE = "Project Invite",
+  PROJECT_INVITE = "PROJECT_INVITE",
 }
 
-export type Notification = {
+type BaseNotification = {
   _id: string;
-  type: NotificationType;
-  date: string;
-  /**
-   * Keyed by the domain the `type` belongs to: a PROJECT_* notification holds
-   * only `{ project }`, a TICKET_* one only `{ ticket }`, and so on. The
-   * notification reducer keys off the presence of that field to decide which
-   * notifications to drop and recalculate, so a type must not reach outside
-   * its own domain here.
-   */
-  data: Record<string, any>;
+  recipient: string;
+  read: boolean;
+  createdAt: string;
 };
+
+/*
+ * `snapshot` is what to display, captured when the notification was written,
+ * so it never dangles. Each type owns its own shape, keyed by the domain the
+ * type belongs to. Ids are real, so an action still knows what to act on.
+ */
+export type ProjectInviteNotification = BaseNotification & {
+  type: NotificationType.PROJECT_INVITE;
+  snapshot: {
+    project: { _id: string; title: string };
+    actor: { _id: string; name: string };
+  };
+};
+
+export type Notification = ProjectInviteNotification;

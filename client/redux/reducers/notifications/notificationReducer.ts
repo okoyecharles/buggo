@@ -1,99 +1,109 @@
-import {
-  Notification,
-  NotificationType,
-  Project,
-} from "../../../src/types/models";
+import { Notification, NotificationType } from "../../../src/types/models";
 import { ActionType } from "../../types";
+import * as types from "../../constants/notificationConstants";
 import * as projectTypes from "../../constants/projectConstants";
 import * as userTypes from "../../constants/userConstants";
 
-type NotificationsState = {
+interface NotificationsState {
   notifications: Notification[];
+  loading: boolean;
+  error: { message: string } | null;
+  method: {
+    list: boolean;
+    read: boolean;
+    readAll: boolean;
+    delete: boolean;
+  };
 };
 
 const initialState = {
   notifications: [],
+  loading: false,
+  error: null,
+  method: {
+    list: false,
+    read: false,
+    readAll: false,
+    delete: false
+  }
 };
 
-const notificationReducer = (
-  state: NotificationsState = initialState,
-  action: ActionType,
-): NotificationsState => {
+const notificationReducer = (state: NotificationsState = initialState, action: ActionType): NotificationsState => {
   const { type, payload } = action;
 
   switch (type) {
-    case projectTypes.PROJECT_LIST_SUCCESS: {
-      // Check for notifications in projects
-      const { projects, userId }: { projects: Project[]; userId: string } =
-        payload;
-      const projectsNotifications: Notification[] = [];
+    // Get all notifications
+    case types.NOTIFICATION_LIST_REQUEST:
+      return { ...state, loading: true, error: null, method: { ...state.method, list: true } };
+    case types.NOTIFICATION_LIST_SUCCESS:
+      return { ...state, error: null, loading: false, method: { ...state.method, list: false }, notifications: payload.notifications };
+    case types.NOTIFICATION_LIST_FAIL:
+      return { ...state, loading: false, method: { ...state.method, list: false }, error: payload };
 
-      projects.forEach((project) => {
-        // PROJECT_INVITE
-        if (project.invitees.length) {
-          const invitee = project.invitees.find((i) => i.user._id === userId);
-
-          if (invitee) {
-            projectsNotifications.push({
-              _id: `${NotificationType.PROJECT_INVITE}-${invitee._id}`,
-              type: NotificationType.PROJECT_INVITE,
-              date: invitee.createdAt,
-              data: { project },
-            });
+    // Mark a single notification as read
+    case types.NOTIFICATION_READ_REQUEST:
+      return { ...state, loading: true, error: null, method: { ...state.method, read: true } };
+    case types.NOTIFICATION_READ_SUCCESS:
+      return {
+        ...state,
+        error: null,
+        loading: false,
+        notifications: state.notifications.map((notification) => {
+          if (notification._id === payload.notification._id) {
+            return payload.notification;
           }
-        }
-      });
-
-      // Refresh list of notifications
-      return {
-        ...state,
-        notifications: [
-          ...projectsNotifications,
-          ...state.notifications.filter((n) => !n.data.project),
-        ],
-      };
-    }
-
-    case projectTypes.PROJECT_UPDATE_SUCCESS: {
-      // Check for notification in updated project
-      const { project, userId }: { project: Project; userId: string } = payload;
-      if (!userId) return state;
-
-      // Clear related notifications
-      const unrelatedNotifications: Notification[] = state.notifications.filter(
-        (n) => n.data.project?._id !== project._id,
-			);
-      const projectNotifications: Notification[] = [];
-
-      if (project.invitees.length) {
-        // PROJECT_INVITE
-        const invitee = project.invitees.find((i) => i.user._id === userId);
-        if (invitee) {
-          projectNotifications.push({
-            _id: `${NotificationType.PROJECT_INVITE}-${invitee._id}`,
-            type: NotificationType.PROJECT_INVITE,
-            data: { project },
-            date: invitee.createdAt,
-          });
-        }
-      }
-
-      return {
-        ...state,
-        notifications: [...projectNotifications, ...unrelatedNotifications],
-      };
-    }
-    case projectTypes.PROJECT_ACCEPT_INVITE_SUCCESS:
-      // Remove project invite notification
-      return {
-        ...state,
-        notifications: state.notifications.filter((n) => {
-          return (
-            n.type !== NotificationType.PROJECT_INVITE ||
-            n.data.project?._id !== payload.project._id
-          );
+          return notification;
         }),
+        method: { ...state.method, read: false }
       };
+    case types.NOTIFICATION_READ_FAIL:
+      return { ...state, loading: false, method: { ...state.method, read: false }, error: payload };
+
+    // Mark every notification as read
+    case types.NOTIFICATION_READ_ALL_REQUEST:
+      return { ...state, loading: true, error: null, method: { ...state.method, readAll: true } };
+    case types.NOTIFICATION_READ_ALL_SUCCESS:
+      return {
+        ...state,
+        error: null,
+        loading: false,
+        notifications: state.notifications.map((notification) => ({ ...notification, read: true })),
+        method: { ...state.method, readAll: false }
+      };
+    case types.NOTIFICATION_READ_ALL_FAIL:
+      return { ...state, loading: false, method: { ...state.method, readAll: false }, error: payload };
+
+    // Dismiss a notification
+    case types.NOTIFICATION_DELETE_REQUEST:
+      return { ...state, loading: true, error: null, method: { ...state.method, delete: true } };
+    case types.NOTIFICATION_DELETE_SUCCESS:
+      return {
+        ...state,
+        error: null,
+        loading: false,
+        notifications: state.notifications.filter(
+          (notification) => notification._id !== payload.notificationId
+        ),
+        method: { ...state.method, delete: false }
+      };
+    case types.NOTIFICATION_DELETE_FAIL:
+      return { ...state, loading: false, method: { ...state.method, delete: false }, error: payload };
+
+    // Acting on an invite resolves it server side, so drop its notification
+    case projectTypes.PROJECT_ACCEPT_INVITE_SUCCESS:
+    case projectTypes.PROJECT_DECLINE_INVITE_SUCCESS:
+      return {
+        ...state,
+        notifications: state.notifications.filter(
+          (notification) =>
+            !(
+              notification.type === NotificationType.PROJECT_INVITE &&
+              notification.snapshot.project._id === payload.projectId
+            )
+        )
+      };
+
+    // Clear state on logout
     case userTypes.USER_LOGOUT:
       return initialState;
     default:
@@ -102,4 +112,3 @@ const notificationReducer = (
 };
 
 export default notificationReducer;
-

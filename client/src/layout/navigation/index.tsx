@@ -22,8 +22,8 @@ const Navigation: React.FC<NavigationProps> = ({
   setNotificationOpen,
 }) => {
   const currentUser = useSelector((store: storeType) => store.currentUser);
-  const notifications = useSelector(
-    (store: storeType) => store.notifications.notifications
+  const unread = useSelector((store: storeType) =>
+    store.notifications.notifications.filter((notification) => !notification.read)
   );
 
   const [openDropdown, setOpenDropdown] = React.useState(false);
@@ -45,9 +45,9 @@ const Navigation: React.FC<NavigationProps> = ({
         >
           <div className="relative">
             <FaBell className="text-xl" />
-            {notifications?.length > 0 && (
+            {unread.length > 0 && (
               <span className="absolute -top-1/2 -right-1/2 bg-blue-500 text-white w-4 h-4 flex items-center justify-center text-xsm rounded-lg font-semibold ring-4 ring-gray-800">
-                {notifications.length}
+                {unread.length}
               </span>
             )}
           </div>

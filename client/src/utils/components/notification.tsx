@@ -1,21 +1,24 @@
 import { Notification, NotificationType } from "../../types/models";
-import { BsPersonPlusFill } from "react-icons/bs";
+import { BsCheck } from "react-icons/bs";
+import { TiUserAdd } from "react-icons/ti";
+import { IoClose } from "react-icons/io5";
 import store from "../../../redux/configureStore";
-import { acceptInvite } from "../../../redux/actions/projectActions";
+import {
+  acceptInvite,
+  declineInvite,
+} from "../../../redux/actions/projectActions";
 
 export const getNotificationDescription = (notification: Notification) => {
-  const { type } = notification;
-
-  switch (type) {
+  switch (notification.type) {
     case NotificationType.PROJECT_INVITE:
       return (
-        <span className="font-noto">
+        <>
           You have been invited to join the project{" "}
           <span className="text-blue-400 font-semibold">
-            {notification.data.project.title}
+            {notification.snapshot.project.title}
           </span>{" "}
-          by {notification.data.project.author.name}
-        </span>
+          by {notification.snapshot.actor.name}
+        </>
       );
     default:
       return "New notification.";
@@ -23,41 +26,59 @@ export const getNotificationDescription = (notification: Notification) => {
 };
 
 export const getNotificationIcon = (notification: Notification) => {
-  const { type } = notification;
-
-  switch (type) {
+  switch (notification.type) {
     case NotificationType.PROJECT_INVITE:
-      return <BsPersonPlusFill className="text-blue-400" />;
+      return <TiUserAdd className="text-blue-400" size={40} />;
     default:
       return "";
   }
 };
 
 type NotificationAction = {
-	label: string;
-	handler: () => void;
-}
+  key: string;
+  label: string;
+  icon: React.ReactNode;
+  variant: "primary" | "danger";
+  handler: () => void;
+};
 
-export const getNotificationAction = (
+/*
+ * Descriptors only — recording which action is pending belongs to whichever
+ * component renders them
+ */
+export const getNotificationActions = (
   notification: Notification,
-	processedActions: Array<string>,
-	setProcessedActions: React.Dispatch<React.SetStateAction<string[]>>
-): NotificationAction => {
-  const { type } = notification;
-
-  switch (type) {
+): NotificationAction[] => {
+  switch (notification.type) {
     case NotificationType.PROJECT_INVITE:
-			return {
-				label: "Accept Invite",
-				handler: () => {
-					store.dispatch(acceptInvite(notification.data.project._id));
-					setProcessedActions([...processedActions, notification._id]);
-				}
-			};
+      return [
+        {
+          key: "accept",
+          label: "Accept Invite",
+          icon: <BsCheck className="text-2xl" />,
+          variant: "primary",
+          handler: () =>
+            store.dispatch(acceptInvite(notification.snapshot.project._id)),
+        },
+        {
+          key: "decline",
+          label: "Decline",
+          icon: <IoClose className="text-xl" />,
+          variant: "danger",
+          handler: () =>
+            store.dispatch(declineInvite(notification.snapshot.project._id)),
+        },
+      ];
     default:
-			return {
-        label: "...",
-				handler: () => {}
-			};
+      return [];
+  }
+};
+
+export const getNotificationTitle = (notification: Notification): string => {
+  switch (notification.type) {
+    case NotificationType.PROJECT_INVITE:
+      return "Project Invite";
+    default:
+      return "Notification";
   }
 };
