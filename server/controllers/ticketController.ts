@@ -2,6 +2,9 @@ import { Response } from "express";
 import Ticket from "../models/ticketModel";
 import Project from "../models/projectModel";
 import Comment from "../models/commentModel";
+import User from "../models/userModel";
+import { TicketAssignNotification } from "../models/notificationModel";
+import mongoose, { Types } from "mongoose";
 import { pusher, pusherChannel } from "..";
 import { ProtectedRequest } from "../types/request";
 import { UpdateTicketBody } from "../types/ticket";
@@ -94,19 +97,58 @@ export const updateTicketById = async (
     )
       return res.status(403).json({ message: "User not authorized" });
 
-    await Ticket.updateOne(
-      { _id: id },
-      {
-        title,
-        description,
-        priority,
-        status,
-        type,
-        time_estimate,
-        team,
-        comments,
-      },
-    );
+    // Assigning is adding to the ticket's team. Only the members this call
+    // adds are notified, and never the person doing the assigning
+    const assigned = new Set(ticket.team.map((member) => member.toString()));
+    const newAssignees = (team || [])
+      .filter((member) => !assigned.has(member) && member !== req.user)
+      .map((member) => new Types.ObjectId(member));
+
+    const actor = newAssignees.length
+      ? await User.findById(req.user).select("name")
+      : null;
+
+    // An assignment the assignee never hears about is no assignment at all
+    const session = await mongoose.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+        await Ticket.updateOne(
+          { _id: id },
+          {
+            title,
+            description,
+            priority,
+            status,
+            type,
+            time_estimate,
+            team,
+            comments,
+          },
+          { session },
+        );
+
+        if (!actor) return;
+
+        await TicketAssignNotification.insertMany(
+          newAssignees.map((member) => ({
+            recipient: member,
+            snapshot: {
+              ticket: {
+                _id: ticket._id,
+                title: title || ticket.title,
+                project: { _id: project._id, title: project.title },
+              },
+              actor: { _id: actor._id, name: actor.name },
+            },
+          })),
+          { session },
+        );
+      });
+    } finally {
+      await session.endSession();
+    }
+
     await pusher.trigger(
       pusherChannel,
       "update-project-ticket",

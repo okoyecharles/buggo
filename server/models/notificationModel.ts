@@ -2,6 +2,7 @@ import mongoose, { InferSchemaType } from 'mongoose';
 
 export enum NotificationType {
   PROJECT_INVITE = 'PROJECT_INVITE',
+  TICKET_ASSIGN = 'TICKET_ASSIGN',
 }
 
 const notificationSchema = new mongoose.Schema(
@@ -45,6 +46,32 @@ export type ProjectInviteNotificationDoc = InferSchemaType<
 export const ProjectInviteNotification = Notification.discriminator(
   NotificationType.PROJECT_INVITE,
   projectInviteSchema
+);
+
+const ticketAssignSchema = new mongoose.Schema({
+  snapshot: {
+    ticket: {
+      _id: { type: mongoose.Schema.Types.ObjectId, required: true },
+      title: { type: String, required: true },
+      project: {
+        _id: { type: mongoose.Schema.Types.ObjectId, required: true },
+        title: { type: String, required: true },
+      },
+    },
+    actor: {
+      _id: { type: mongoose.Schema.Types.ObjectId, required: true },
+      name: { type: String, required: true },
+    },
+  },
+});
+
+export type TicketAssignNotificationDoc = InferSchemaType<
+  typeof ticketAssignSchema
+>;
+
+export const TicketAssignNotification = Notification.discriminator(
+  NotificationType.TICKET_ASSIGN,
+  ticketAssignSchema
 );
 
 export default Notification;

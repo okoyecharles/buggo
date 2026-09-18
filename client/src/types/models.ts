@@ -55,6 +55,7 @@ export type Comment = {
 
 export enum NotificationType {
   PROJECT_INVITE = "PROJECT_INVITE",
+  TICKET_ASSIGN = "TICKET_ASSIGN",
 }
 
 type BaseNotification = {
@@ -77,4 +78,16 @@ export type ProjectInviteNotification = BaseNotification & {
   };
 };
 
-export type Notification = ProjectInviteNotification;
+export type TicketAssignNotification = BaseNotification & {
+  type: NotificationType.TICKET_ASSIGN;
+  snapshot: {
+    ticket: {
+      _id: string;
+      title: string;
+      project: { _id: string; title: string };
+    };
+    actor: { _id: string; name: string };
+  };
+};
+
+export type Notification = ProjectInviteNotification | TicketAssignNotification;
