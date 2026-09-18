@@ -36,44 +36,16 @@ const fetchProject = async (id: Types.ObjectId | string) => {
  */
 export const getProjects = async (req: ProtectedRequest, res: Response) => {
   try {
-    // Projects the user is a part of, in full
-    const memberFilter = req.admin
+    const filter = req.admin
       ? {}
       : { $or: [{ author: req.user }, { team: req.user }] };
-    const projects = await Project.find(memberFilter)
+    const projects = await Project.find(filter)
       .populate("author", "name")
       .populate("team", "name email image")
       .populate("invitees.user", "name image email")
       .sort({ createdAt: -1 });
 
-    if (req.admin) return res.status(200).json({ projects });
-
-    // Projects the user has only been invited to: enough to render the
-    // invite notification, and nothing more
-    const invitedProjects = await Project.find(
-      {
-        "invitees.user": req.user,
-        author: { $ne: req.user },
-        team: { $ne: req.user },
-      },
-      { title: 1, author: 1, invitees: { $elemMatch: { user: req.user } } },
-    )
-      .populate("author", "name")
-      .populate("invitees.user", "name image email")
-      .sort({ createdAt: -1 })
-      .lean();
-
-    res.status(200).json({
-      projects: [
-        ...projects,
-        // Flagged so the client can keep partial projects out of the
-        // project list and render them as notifications only
-        ...invitedProjects.map((project) => ({
-          ...project,
-          invitePending: true,
-        })),
-      ],
-    });
+    res.status(200).json({ projects });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
