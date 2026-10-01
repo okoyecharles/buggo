@@ -60,7 +60,11 @@ const logout = (auto = false) => async (dispatch: DispatchType) => {
   dispatch({
     type: types.USER_LOGOUT,
   });
-  await axios.post(`${SERVER_URL}/users/signout`, {}, generateConfig());
+  // The local session is already gone, so a failed signout only leaves a
+  // cookie the server rejects anyway -- never block or throw on it.
+  try {
+    await axios.post(`${SERVER_URL}/users/signout`, {}, generateConfig());
+  } catch {}
   if (!auto)
     toast.success("Logged Out successfully");
 };
@@ -86,7 +90,8 @@ const validateUserSession = () => async (dispatch: DispatchType) => {
     dispatch({
       type: types.USER_VALIDATE_FAIL,
     });
-    logout();
+    // `auto` keeps this quiet: a dead session is not a deliberate sign out.
+    store.dispatch(logout(true));
   }
 };
 
