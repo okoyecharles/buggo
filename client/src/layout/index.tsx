@@ -29,8 +29,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   useEffect(() => {
     if (
       !currentUser.user &&
-      !currentUser.loading &&
-      !currentUser.method.validate
+      !(currentUser.loading && currentUser.method.validate)
     ) {
       router.replace("/login?redirected=true");
     }

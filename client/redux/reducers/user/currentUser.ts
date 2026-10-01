@@ -17,7 +17,7 @@ const initialState: State = {
   loading: false,
   method: {
     update: false,
-    validate: true
+    validate: false
   }
 };
 
