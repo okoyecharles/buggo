@@ -8,7 +8,7 @@ import {
   validateTicketTimeEstimate,
   validateTicketTitle,
   validateTicketType,
-} from "../../../utils/forms/ticket";
+} from "../../../utils/validation/ticket";
 import store from "../../../../redux/configureStore";
 import { createTicket } from "../../../../redux/actions/ticketActions";
 import { useRouter } from "next/router";

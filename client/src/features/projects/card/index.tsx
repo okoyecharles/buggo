@@ -13,7 +13,7 @@ import { Project } from "../../../types/models";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../../../../redux/configureStore";
 import { updateProject } from "../../../../redux/actions/projectActions";
-import { validateProjectTitle } from "../../../utils/forms/project";
+import { validateProjectTitle } from "../../../utils/validation/project";
 import ProjectDeleteModal from "../modal/projectDelete";
 import { restrictLength } from "../../../utils/components/string";
 import ProjectInviteModal from "../modal/projectInvite";

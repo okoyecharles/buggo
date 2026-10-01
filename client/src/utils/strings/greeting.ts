@@ -1,5 +1,4 @@
 function getGreeting() {
-  // Display good morning, afternoon, evening, night based on the time of day
   const hour = new Date().getHours();
   if (hour < 12) {
     return "Good morning";

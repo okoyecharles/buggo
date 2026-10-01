@@ -13,8 +13,8 @@ import {
 } from "../../../utils/components/string";
 import Pluralize from "react-pluralize";
 import TicketComments from "./comments";
-import { validateCommentText } from "../../../utils/forms/comment";
-import { ticketStatus } from "../../../utils/forms/ticket";
+import { validateCommentText } from "../../../utils/validation/comment";
+import { ticketStatus } from "../../../utils/validation/ticket";
 import { Ticket } from "../../../types/models";
 import getDate from "../../../utils/strings/date";
 import TicketDeleteModal from "../modal/ticketDelete";

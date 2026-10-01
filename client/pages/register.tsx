@@ -6,14 +6,14 @@ import {
   validateEmail,
   validatePassword,
   validateConfirmPassword,
-} from "../src/utils/forms/register";
+} from "../src/utils/validation/register";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
 import { useRouter } from "next/router";
 import { register } from "../redux/actions/userActions";
 import Head from "next/head";
 import Compressor from "compressorjs";
-import { toBase64 } from "../src/utils/strings/image";
+import { toBase64 } from "../src/utils/image/convert";
 import Button from "../src/components/Button";
 import Image from "next/image";
 import avatars from "../src/assets/avatar";

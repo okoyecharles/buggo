@@ -13,7 +13,7 @@ import { updateTicket } from "../../../../redux/actions/ticketActions";
 import { ThreeDotsLoader } from "../../loader";
 import Highlighter from "react-highlight-words";
 import { searchByNameOrEmail } from "../../../utils/strings/search";
-import { validateTicketTeam } from "../../../utils/forms/ticket";
+import { validateTicketTeam } from "../../../utils/validation/ticket";
 
 const ticketMembersReducer = (state: User[], action: any) => {
   switch (action.type) {

@@ -19,7 +19,7 @@ import OptionsPopup from "../../../components/Options";
 import {
   ticketStatus,
   validateTicketTeam,
-} from "../../../utils/forms/ticket";
+} from "../../../utils/validation/ticket";
 import { toast } from "react-toastify";
 
 interface TicketOptionsPopupProps {

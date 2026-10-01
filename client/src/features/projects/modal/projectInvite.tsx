@@ -12,7 +12,7 @@ import { restrictLength } from "../../../utils/components/string";
 import Highlighter from "react-highlight-words";
 import store, { storeType } from "../../../../redux/configureStore";
 import { inviteToProject } from "../../../../redux/actions/projectActions";
-import { validateInvitees } from "../../../utils/forms/project";
+import { validateInvitees } from "../../../utils/validation/project";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 

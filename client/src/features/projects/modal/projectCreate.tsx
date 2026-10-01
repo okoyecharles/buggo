@@ -1,7 +1,7 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { createProject } from "../../../../redux/actions/projectActions";
 import store from "../../../../redux/configureStore";
-import { validateProjectTitle } from "../../../utils/forms/project";
+import { validateProjectTitle } from "../../../utils/validation/project";
 import Modal from "../../modal";
 import { IoMdClose } from "react-icons/io";
 import { ThreeDotsLoader } from "../../loader";

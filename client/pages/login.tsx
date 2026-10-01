@@ -1,7 +1,7 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSpring, a } from "@react-spring/web";
-import { validateEmail, validatePassword } from "../src/utils/forms/register";
+import { validateEmail, validatePassword } from "../src/utils/validation/register";
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
 import { useRouter } from "next/router";

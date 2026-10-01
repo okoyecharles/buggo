@@ -2,13 +2,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import Modal from "../../features/modal";
 import Image from "next/image";
 import Compressor from "compressorjs";
-import { toBase64 } from "../../utils/strings/image";
+import { toBase64 } from "../../utils/image/convert";
 import store from "../../../redux/configureStore";
 import { updateUser } from "../../../redux/actions/userActions";
 import {
   validateProfileImage,
   validateProfileName,
-} from "../../utils/forms/profile";
+} from "../../utils/validation/profile";
 import { ThreeDotsLoader } from "../../features/loader";
 import { User } from "../../types/models";
 import avatars from "../../assets/avatar";
