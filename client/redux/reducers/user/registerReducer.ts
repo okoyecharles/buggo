@@ -1,5 +1,5 @@
-import * as types from '../../constants/userConstants';
-import { ActionType } from '../../types';
+import * as types from "../../constants/userConstants";
+import { ActionType } from "../../types";
 
 type State = {
   loading: boolean;
@@ -12,12 +12,14 @@ const initialState = {
 
 const registerReducer = (
   state: State = initialState,
-  action: ActionType
+  action: ActionType,
 ): State => {
   const { type, payload } = action;
   switch (type) {
     case types.USER_REGISTER_REQUEST:
       return { ...state, loading: true, error: null };
+    case types.USER_REGISTER_SUCCESS:
+      return { ...state, loading: false, error: null };
     case types.USER_REGISTER_FAIL:
       return { ...state, loading: false, error: payload };
     case types.USER_LOGOUT:
