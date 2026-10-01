@@ -1,5 +1,5 @@
-import * as types from "../../constants/userConstants";
-import { ActionType } from "../../types";
+import * as types from "@/redux/constants/userConstants";
+import { ActionType } from "@/redux/types";
 
 type State = {
   loading: boolean;

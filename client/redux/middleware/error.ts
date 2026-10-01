@@ -1,6 +1,6 @@
 import { Middleware } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import { USER_VALIDATE_FAIL } from '../constants/userConstants';
+import { USER_VALIDATE_FAIL } from '@/redux/constants/userConstants';
 
 const FALLBACK_MESSAGE = 'Something went wrong... Please try again';
 

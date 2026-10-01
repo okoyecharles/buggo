@@ -1,17 +1,17 @@
 import Head from "next/head";
 import React, { useEffect, useMemo, useState } from "react";
-import Layout from "../src/layout";
+import Layout from "@/components/layout";
 import { BsDot } from "react-icons/bs";
-import UsersSection from "../src/features/users/section";
-import { getUsers } from "../redux/actions/userActions";
-import { User } from "../src/types/models";
-import UsersSearch from "../src/features/users/Search";
+import UsersSection from "@/components/users/section";
+import { getUsers } from "@/redux/actions/userActions";
+import { User } from "@/core/types/models";
+import UsersSearch from "@/components/users/Search";
 import { useSelector } from "react-redux";
-import { storeType } from "../redux/configureStore";
+import { storeType } from "@/redux/configureStore";
 import { useRouter } from "next/router";
-import { searchByNameOrEmail } from "../src/utils/strings/search";
+import { searchByNameOrEmail } from "@/core/utils/strings/search";
 import { IoMdRefresh } from "react-icons/io";
-import { TailSpinLoader } from "../src/features/loader";
+import { TailSpinLoader } from "@/core/components/loader";
 import { IoSearch } from "react-icons/io5";
 import { a, useSpring } from "@react-spring/web";
 

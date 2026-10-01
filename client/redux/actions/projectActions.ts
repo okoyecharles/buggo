@@ -1,9 +1,9 @@
 import { toast } from 'react-toastify';
 import { storeType } from './../configureStore';
-import SERVER_URL from '../../src/data/backend-config';
-import * as types from '../constants/projectConstants';
+import SERVER_URL from '@/core/data/backend';
+import * as types from '@/redux/constants/projectConstants';
 import axios from 'axios';
-import { DispatchType } from '../types';
+import { DispatchType } from '@/redux/types';
 import generateConfig from './config/axios';
 
 export const fetchProjects =

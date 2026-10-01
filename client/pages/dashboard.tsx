@@ -1,16 +1,16 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../redux/configureStore";
-import { fetchProjects } from "../redux/actions/projectActions";
-import { fetchTickets } from "../redux/actions/ticketActions";
-import getGreeting from "../src/utils/strings/greeting";
+import store, { storeType } from "@/redux/configureStore";
+import { fetchProjects } from "@/redux/actions/projectActions";
+import { fetchTickets } from "@/redux/actions/ticketActions";
+import getGreeting from "@/core/utils/strings/greeting";
 import { Tooltip } from "react-tooltip";
-import TicketStats from "../src/features/tickets/Stats";
+import TicketStats from "@/components/tickets/Stats";
 import { AiFillQuestionCircle } from "react-icons/ai";
-import ProjectSection from "../src/features/projects";
-import { searchProjectByName } from "../src/utils/strings/search";
-import Layout from "../src/layout";
+import ProjectSection from "@/components/projects";
+import { searchProjectByName } from "@/core/utils/strings/search";
+import Layout from "@/components/layout";
 
 export default function Home() {
   const user = useSelector((store: storeType) => store.currentUser.user);

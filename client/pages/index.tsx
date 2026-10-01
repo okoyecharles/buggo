@@ -1,8 +1,8 @@
 import React from "react";
 import Head from "next/head";
-import Header from "../src/landing/header";
-import Footer from "../src/landing/footer";
-import Content from "../src/landing/content";
+import Header from "@/components/landing/header";
+import Footer from "@/components/landing/footer";
+import Content from "@/components/landing/content";
 
 const Landing = () => {
   return (

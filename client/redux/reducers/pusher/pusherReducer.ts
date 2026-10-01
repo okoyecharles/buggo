@@ -1,5 +1,5 @@
-import * as types from "../../constants/pusherConstants";
-import { ActionType } from "../../types";
+import * as types from "@/redux/constants/pusherConstants";
+import { ActionType } from "@/redux/types";
 
 interface PusherState {
   socket: string | null;

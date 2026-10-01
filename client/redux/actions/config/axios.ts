@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import store from "../../configureStore";
+import store from "@/redux/configureStore";
 
 // config with option to include pusher socket id in headers
 export const generateConfig = (socket_id?: string): AxiosRequestConfig<any> => {

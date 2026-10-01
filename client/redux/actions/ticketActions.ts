@@ -1,8 +1,8 @@
 import { storeType } from './../configureStore';
-import SERVER_URL from '../../src/data/backend-config';
+import SERVER_URL from '@/core/data/backend';
 import * as types from './../constants/ticketConstants';
 import axios from 'axios';
-import { DispatchType } from '../types';
+import { DispatchType } from '@/redux/types';
 import generateConfig from './config/axios';
 import { toast } from 'react-toastify';
 

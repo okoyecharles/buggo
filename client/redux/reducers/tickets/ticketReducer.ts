@@ -1,8 +1,8 @@
 
-import { ActionType } from "../../types";
-import * as types from "../../constants/ticketConstants";
-import * as userTypes from "../../constants/userConstants";
-import { Ticket } from "../../../src/types/models";
+import { ActionType } from "@/redux/types";
+import * as types from "@/redux/constants/ticketConstants";
+import * as userTypes from "@/redux/constants/userConstants";
+import { Ticket } from "@/core/types/models";
 
 interface TicketState {
   ticket: Ticket | null;

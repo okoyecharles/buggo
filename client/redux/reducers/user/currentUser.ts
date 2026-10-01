@@ -1,6 +1,6 @@
-import { User } from '../../../src/types/models';
-import * as types from '../../constants/userConstants';
-import { ActionType } from '../../types';
+import { User } from '@/core/types/models';
+import * as types from '@/redux/constants/userConstants';
+import { ActionType } from '@/redux/types';
 
 type State = {
   user: User | null,
@@ -17,7 +17,7 @@ const initialState: State = {
   loading: false,
   method: {
     update: false,
-    validate: false
+    validate: true
   }
 };
 

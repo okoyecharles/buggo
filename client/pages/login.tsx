@@ -1,14 +1,14 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSpring, a } from "@react-spring/web";
-import { validateEmail, validatePassword } from "../src/utils/validation/register";
+import { validateEmail, validatePassword } from "@/core/utils/validation/register";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
 import { useRouter } from "next/router";
-import { login, AUTH_TOAST_ID } from "../redux/actions/userActions";
+import { login, AUTH_TOAST_ID } from "@/redux/actions/userActions";
 import { toast } from "react-toastify";
 import Head from "next/head";
-import Button from "../src/components/Button";
+import Button from "@/core/components/button";
 import Image from "next/image";
 
 const Login = () => {

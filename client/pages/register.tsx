@@ -6,18 +6,18 @@ import {
   validateEmail,
   validatePassword,
   validateConfirmPassword,
-} from "../src/utils/validation/register";
+} from "@/core/utils/validation/register";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
 import { useRouter } from "next/router";
-import { register, AUTH_TOAST_ID } from "../redux/actions/userActions";
+import { register, AUTH_TOAST_ID } from "@/redux/actions/userActions";
 import { toast } from "react-toastify";
 import Head from "next/head";
 import Compressor from "compressorjs";
-import { toBase64 } from "../src/utils/image/convert";
-import Button from "../src/components/Button";
+import { toBase64 } from "@/core/utils/image/convert";
+import Button from "@/core/components/button";
 import Image from "next/image";
-import avatars from "../src/assets/avatar";
+import avatars from "@/core/assets/avatar";
 
 const Register = () => {
   const router = useRouter();

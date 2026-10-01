@@ -1,19 +1,18 @@
+import Head from "next/head";
 import React, { useEffect, useMemo } from "react";
 import { Provider } from "react-redux";
-import store from "../redux/configureStore";
-import "../styles/globals.css";
+import UnAuthorized from "@/core/components/unauthorized";
+import store from "@/redux/configureStore";
+import { validateUserSession } from "@/redux/actions/userActions";
 import type { AppProps } from "next/app";
-import { ToastContainer } from "react-toastify";
+import * as reactToastify from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-tooltip/dist/react-tooltip.css";
-import { validateUserSession } from "../redux/actions/userActions";
-import Head from "next/head";
-import UnAuthorized from "../src/features/unauthorized";
+import "@/styles/globals.css";
 
 export default function App({ Component, pageProps }: AppProps) {
   // Use the layout defined at the page level, if defined
   const getLayout = (Component as any).getLayout || ((page: any) => page);
-
   const protectedRoute = (Component as any).protected || false;
 
   useEffect(() => {
@@ -29,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <link rel="icon" href="/circle-logo.ico" />
       </Head>
-      <ToastContainer position={"bottom-right"} />
+      <reactToastify.ToastContainer position={"bottom-right"} />
       <Provider store={store}>
         {protectedRoute && !admin
           ? getLayout(<UnAuthorized />)

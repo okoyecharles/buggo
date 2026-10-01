@@ -1,4 +1,4 @@
-import * as types from '../constants/pusherConstants';
+import * as types from '@/redux/constants/pusherConstants';
 
 export const connectPusher = (socket_id: string) => ({
   type: types.PUSHER_CONNECT_SUCCESS,

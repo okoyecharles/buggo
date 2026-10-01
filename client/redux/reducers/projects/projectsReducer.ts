@@ -1,7 +1,7 @@
-import { ActionType } from "../../types";
-import * as types from "../../constants/projectConstants";
-import * as userTypes from "../../constants/userConstants";
-import { Project } from "../../../src/types/models";
+import { ActionType } from "@/redux/types";
+import * as types from "@/redux/constants/projectConstants";
+import * as userTypes from "@/redux/constants/userConstants";
+import { Project } from "@/core/types/models";
 
 interface ProjectsState {
   projects: Project[];
