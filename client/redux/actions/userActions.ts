@@ -6,6 +6,13 @@ import { DispatchType } from '../types';
 import store, { storeType } from '../configureStore';
 import generateConfig from './config/axios';
 
+/*
+ * Shared by every "you are signed in" notice: a real sign in and the auth
+ * pages' redirect notice can both fire in the same tick, and reusing one
+ * toast id lets react-toastify drop the second.
+ */
+export const AUTH_TOAST_ID = 'auth-session';
+
 const login =
   (email: string, password: string) => async (dispatch: DispatchType) => {
     try {
@@ -18,7 +25,7 @@ const login =
         { email, password },
         generateConfig()
       );
-      toast.success("Logged In successfully");
+      toast.success("Logged In successfully", { toastId: AUTH_TOAST_ID });
 
       dispatch({
         type: types.USER_LOGIN_SUCCESS,
@@ -42,7 +49,7 @@ const register = (formData: any) => async (dispatch: DispatchType) => {
       formData,
       generateConfig()
     );
-    toast.success("Signed Up successfully");
+    toast.success("Signed Up successfully", { toastId: AUTH_TOAST_ID });
 
     dispatch({
       type: types.USER_REGISTER_SUCCESS,
@@ -80,7 +87,6 @@ const validateUserSession = () => async (dispatch: DispatchType) => {
       {},
       generateConfig()
     );
-    toast.success("Logged In successfully");
 
     dispatch({
       type: types.USER_VALIDATE_SUCCESS,

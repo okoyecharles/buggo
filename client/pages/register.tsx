@@ -10,7 +10,8 @@ import {
 import { useSelector } from "react-redux";
 import store, { storeType } from "../redux/configureStore";
 import { useRouter } from "next/router";
-import { register } from "../redux/actions/userActions";
+import { register, AUTH_TOAST_ID } from "../redux/actions/userActions";
+import { toast } from "react-toastify";
 import Head from "next/head";
 import Compressor from "compressorjs";
 import { toBase64 } from "../src/utils/image/convert";
@@ -57,6 +58,10 @@ const Register = () => {
 
   useEffect(() => {
     if (currentUser.user && !currentUser.loading) {
+      // Only an auth page can know the user is being bounced away, so the
+      // notice lives here rather than in the session check that runs on
+      // every mount. A real sign in shares the toast id and wins the race.
+      toast.success("You're already signed in", { toastId: AUTH_TOAST_ID });
       router.replace("/dashboard");
     }
   }, [currentUser]);
