@@ -33,6 +33,8 @@ app.use(
       return callback(new Error("Not allowed by CORS: " + String(origin)));
     },
     credentials: true,
+		// let browser cache the preflighted request
+		maxAge: 86400
   }),
 );
 app.use(morgan("dev"));
