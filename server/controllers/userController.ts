@@ -10,8 +10,8 @@ const tokenExpiration = process.env.NODE_ENV === "development" ? "1d" : "7d";
 const tokenName = "bug-tracker-token";
 const cookieOptions: CookieOptions = {
   httpOnly: true,
-  sameSite: "none",
-  secure: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
 };
 
 /*
