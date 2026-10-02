@@ -2,16 +2,17 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel";
 import { CookieOptions, Response } from "express";
-import { pusher, pusherChannel } from "..";
+import { getIO } from "../config/socket";
 import { DefaultRequest, ProtectedRequest } from "../types/request";
 import { LoginBody, RegisterBody, UpdateUserBody } from "../types/user";
+import { tokenName } from "../middleware/auth";
 const secret = process.env.JWT_SECRET!;
-const tokenExpiration = process.env.NODE_ENV === "development" ? "1d" : "7d";
-const tokenName = "bug-tracker-token";
+const tokenExpirationInDays = process.env.NODE_ENV === "development" ? 1 : 7;
 const cookieOptions: CookieOptions = {
   httpOnly: true,
-  sameSite: "none",
-  secure: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  maxAge: tokenExpirationInDays * 24 * 60 * 60 * 1000,
 };
 
 /*
@@ -41,8 +42,6 @@ export const deleteUser = async (
 ) => {
   try {
     const { id } = req.params;
-    const socketId = req.headers["x-pusher-socket-id"];
-
     const userExists = await User.findById(id);
 
     if (!userExists) return res.status(404).json({ message: "User not found" });
@@ -55,16 +54,15 @@ export const deleteUser = async (
       return res.status(403).json({ message: "Unauthorized Request" });
 
     await userExists.remove();
-    await pusher.trigger(
-      pusherChannel,
-      "delete-user",
-      {
-        userId: id,
-      },
-      {
-        socket_id: socketId as string,
-      },
-    );
+
+    /*
+     * Only the deleted account's own room is told, so the event never reaches
+     * anyone it does not concern. Their lines are then dropped -- the packet
+     * is queued behind the event, so they still hear why.
+     */
+    const io = getIO();
+    io.to(`user:${id}`).emit("user:delete", { userId: id });
+    io.in(`user:${id}`).disconnectSockets();
 
     const users = await User.find();
 
@@ -115,21 +113,13 @@ export const updateUser = async (
  * @access  Private
  */
 export const validateUser = async (req: ProtectedRequest, res: Response) => {
-  const token = req.cookies[tokenName];
-
-  if (!token) return res.status(401).json({ message: "Unauthorized" });
-
-  const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-    id: string;
-    admin: boolean;
-  };
-  const user = await User.findById(decoded.id);
-  if (!user) return res.status(403).json({ message: "Unauthorized" });
-
-  res.status(200).json({
-    user,
-    token,
-  });
+  try {
+    const user = await User.findById(req.user);
+    if (!user) return res.status(403).json({ message: "Unauthorized" });
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong... Please try again" });
+  }
 };
 
 /*
@@ -160,10 +150,7 @@ export const register = async (
     });
 
     const token = generateToken(user._id.toString(), user.admin);
-    res
-      .status(201)
-      .cookie(tokenName, token, cookieOptions)
-      .json({ user, token });
+    res.status(201).cookie(tokenName, token, cookieOptions).json({ user });
   } catch (error) {
     res
       .status(500)
@@ -190,7 +177,7 @@ export const login = async (req: DefaultRequest<LoginBody>, res: Response) => {
     res
       .status(200)
       .cookie(tokenName, token, cookieOptions)
-      .json({ user: userExists, token });
+      .json({ user: userExists });
   } catch (error) {
     res
       .status(500)
@@ -211,11 +198,25 @@ export const logout = async (_req: DefaultRequest, res: Response) => {
 };
 
 /*
+ * @route   POST /users/socket-ticket
+ * @desc    Mint a short lived credential for the socket handshake
+ * @access  Private
+ */
+export const createSocketTicket = (req: ProtectedRequest, res: Response) => {
+  // The socket connects straight to the api, bypassing the proxy, so the
+  // cookie never reaches it -- this is the credential it carries instead.
+  const ticket = jwt.sign({ id: req.user, typ: "socket" }, secret, {
+    expiresIn: 120,
+  });
+  res.status(200).json({ ticket });
+};
+
+/*
  * @desc    Genrate a token based on user id
  */
 const generateToken = (id: string, admin: boolean) => {
   const token = jwt.sign({ id, admin }, secret, {
-    expiresIn: tokenExpiration,
+    expiresIn: tokenExpirationInDays * 24 * 60 * 60,
   });
   return token;
 };

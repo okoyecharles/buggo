@@ -1,10 +1,9 @@
-import { User } from '../../../src/types/models';
-import * as types from '../../constants/userConstants';
-import { ActionType } from '../../types';
+import { User } from '@/core/types/models';
+import * as types from '@/redux/constants/userConstants';
+import { ActionType } from '@/redux/types';
 
 type State = {
   user: User | null,
-  token: string | null,
   loading: boolean,
   method: {
     update: boolean;
@@ -13,7 +12,6 @@ type State = {
 };
 const initialState: State = {
   user: null,
-  token: null,
   loading: false,
   method: {
     update: false,
@@ -54,7 +52,6 @@ const currentUserReducer = (
     case types.USER_PROFILE_UPDATE_SUCCESS:
       return {
         ...payload,
-        token: state.token,
         loading: false,
         method: { ...state.method, update: false }
       };

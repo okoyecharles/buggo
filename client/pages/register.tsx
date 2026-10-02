@@ -6,38 +6,37 @@ import {
   validateEmail,
   validatePassword,
   validateConfirmPassword,
-} from "../src/utils/forms/register";
+} from "@/core/utils/validation/register";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
 import { useRouter } from "next/router";
-import { register } from "../redux/actions/userActions";
+import { register, AUTH_TOAST_ID } from "@/redux/actions/userActions";
+import { toast } from "react-toastify";
 import Head from "next/head";
 import Compressor from "compressorjs";
-import { toBase64 } from "../src/utils/strings/image";
-import Button from "../src/components/Button";
+import { toBase64 } from "@/core/utils/image/convert";
+import Button from "@/core/components/button";
 import Image from "next/image";
-import avatars from "../src/assets/avatar";
+import avatars from "@/core/assets/avatar";
 
 const Register = () => {
   const router = useRouter();
+  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const registerStore = useSelector((store: storeType) => store.register);
 
   const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [image, setImage] = useState<File | Blob | null>(null);
-  const [base64Image, setBase64Image] = useState<string>("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
-
   const [nameError, setNameError] = useState<null | string>(null);
+  const [email, setEmail] = useState<string>("");
   const [emailError, setEmailError] = useState<null | string>(null);
+  const [password, setPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState<null | string>(null);
+  const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [passwordConfirmationError, setPasswordConfirmationError] = useState<
     null | string
   >(null);
-
-  const [processing, setProcessing] = useState<boolean>(false);
-  const registerStore = useSelector((store: storeType) => store.register);
-  const user = useSelector((store: storeType) => store.currentUser.user);
+  const [image, setImage] = useState<File | Blob | null>(null);
+  const [convertingImage, setConvertingImage] = useState(false);
+  const [base64Image, setBase64Image] = useState<string>("");
 
   const [springs, api] = useSpring(() => ({
     opacity: 0.5,
@@ -58,16 +57,16 @@ const Register = () => {
   }, []);
 
   useEffect(() => {
-    setProcessing(registerStore.loading);
-    if (user) {
+    if (currentUser.user && !currentUser.loading) {
+      // Only an auth page can know the user is being bounced away, so the
+      // notice lives here rather than in the session check that runs on
+      // every mount. A real sign in shares the toast id and wins the race.
+      toast.success("You're already signed in", { toastId: AUTH_TOAST_ID });
       router.replace("/dashboard");
     }
-  }, [registerStore, user]);
+  }, [currentUser]);
 
-  const throwError = (error: string | null, type: string) => {
-    if (error) setProcessing(false);
-
-    // Throw error
+  const showError = (error: string | null, type: string) => {
     if (type === "name") {
       setNameError(error);
     } else if (type === "email") {
@@ -85,35 +84,30 @@ const Register = () => {
     setEmailError(null);
     setPasswordError(null);
     setPasswordConfirmationError(null);
-    setProcessing(true);
 
     // Validate name
     let nameValidationError = validateName(name);
-    throwError(nameValidationError, "name");
+    if (nameValidationError) return showError(nameValidationError, "name");
 
     // Validate email
     let emailValidationError = validateEmail(email);
-    throwError(emailValidationError, "email");
+    if (emailValidationError) return showError(emailValidationError, "email");
 
     // Validate password
     let passwordValidationError = validatePassword(password);
-    throwError(passwordValidationError, "password");
+    if (passwordValidationError)
+      return showError(passwordValidationError, "password");
 
     // Validate password confirmation
     let passwordConfirmationValidationError = validateConfirmPassword(
       password,
-      passwordConfirmation
+      passwordConfirmation,
     );
-    throwError(passwordConfirmationValidationError, "passwordConfirmation");
-
-    // If errors exist, return
-    if (
-      nameValidationError ||
-      emailValidationError ||
-      passwordValidationError ||
-      passwordConfirmationValidationError
-    )
-      return;
+    if (passwordConfirmationValidationError)
+      return showError(
+        passwordConfirmationValidationError,
+        "passwordConfirmation",
+      );
 
     const formData = {
       name,
@@ -126,12 +120,16 @@ const Register = () => {
 
   useEffect(() => {
     async function convertImage() {
-      // Convert image to base64
-      if (image) {
-        const imageFile = await toBase64(image as File | Blob);
-        setBase64Image(imageFile as string);
-      } else {
-        setBase64Image("");
+      try {
+        setConvertingImage(true);
+        if (image) {
+          const imageFile = await toBase64(image as File | Blob);
+          setBase64Image(imageFile as string);
+        } else {
+          setBase64Image("");
+        }
+      } finally {
+        setConvertingImage(false);
       }
     }
     convertImage();
@@ -293,7 +291,10 @@ const Register = () => {
             />
           </div>
 
-          <Button overrideStyle="mt-6" processing={processing}>
+          <Button
+            overrideStyle="mt-6"
+            processing={registerStore.loading || convertingImage}
+          >
             Continue
           </Button>
 

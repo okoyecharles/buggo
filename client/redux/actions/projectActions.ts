@@ -1,9 +1,9 @@
 import { toast } from 'react-toastify';
 import { storeType } from './../configureStore';
-import SERVER_URL from '../../src/data/backend-config';
-import * as types from '../constants/projectConstants';
+import SERVER_URL from '@/core/data/backend';
+import * as types from '@/redux/constants/projectConstants';
 import axios from 'axios';
-import { DispatchType } from '../types';
+import { DispatchType } from '@/redux/types';
 import generateConfig from './config/axios';
 
 export const fetchProjects =
@@ -62,11 +62,10 @@ export const createProject =
           type: types.PROJECT_CREATE_REQUEST,
         });
 
-        const socketId = getState().pusher.socket;
         const { data } = await axios.post(
           `${SERVER_URL}/projects`,
           project,
-          generateConfig(socketId || '')
+          generateConfig()
         );
         toast.success('Project created successfully');
 
@@ -82,27 +81,6 @@ export const createProject =
       }
     };
 
-export const pusherCreateProject = (projectId: string) => async (
-  dispatch: DispatchType
-) => {
-  try {
-    const { data } = await axios.get(
-      `${SERVER_URL}/projects/${projectId}`,
-      generateConfig()
-    );
-
-    dispatch({
-      type: types.PROJECT_CREATE_SUCCESS,
-      payload: data,
-    });
-  } catch (error: any) {
-    dispatch({
-      type: types.PROJECT_CREATE_FAIL,
-      payload: error.response?.data ? error.response.data : error.error,
-    });
-  }
-};
-
 export const updateProject =
   ({ id, project }: { id: string; project: any }) =>
     async (dispatch: DispatchType, getState: () => storeType) => {
@@ -111,11 +89,10 @@ export const updateProject =
           type: types.PROJECT_UPDATE_REQUEST,
         });
 
-        const socketId = getState().pusher.socket;
         const { data } = await axios.put(
           `${SERVER_URL}/projects/${id}`,
           project,
-          generateConfig(socketId || '')
+          generateConfig()
         );
 
         dispatch({
@@ -130,38 +107,13 @@ export const updateProject =
       }
     };
 
-export const pusherUpdateProject = (projectId: string) => async (
-  dispatch: DispatchType, getState: () => storeType
-) => {
-  try {
-    const { data } = await axios.get(
-      `${SERVER_URL}/projects/${projectId}`,
-      generateConfig()
-    );
-
-    dispatch({
-      type: types.PROJECT_UPDATE_SUCCESS,
-      payload: {
-        ...data,
-        userId: getState().currentUser.user?._id
-      },
-    });
-  } catch (error: any) {
-    dispatch({
-      type: types.PROJECT_UPDATE_FAIL,
-      payload: error.response?.data ? error.response.data : error.error,
-    });
-  }
-};
-
 export const deleteProject =
   (id: string) => async (dispatch: DispatchType, getState: () => storeType) => {
     try {
       dispatch({
         type: types.PROJECT_DELETE_REQUEST,
       });
-      const socketId = getState().pusher.socket;
-      await axios.delete(`${SERVER_URL}/projects/${id}`, generateConfig(socketId || ""));
+      await axios.delete(`${SERVER_URL}/projects/${id}`, generateConfig());
       toast.success("Project deleted successfully");
 
       dispatch({
@@ -176,13 +128,6 @@ export const deleteProject =
     }
   };
 
-export const pusherDeleteProject = (projectId: string) => {
-  return {
-    type: types.PROJECT_DELETE_SUCCESS,
-    payload: projectId,
-  };
-}
-
 export const inviteToProject = (id: string, invitees: {
   _id: string;
   email: string;
@@ -193,11 +138,10 @@ export const inviteToProject = (id: string, invitees: {
         type: types.PROJECT_INVITE_REQUEST,
       });
 
-      const socketId = getState().pusher.socket;
       const { data } = await axios.put(
         `${SERVER_URL}/projects/${id}/invite`,
         { invitees },
-        generateConfig(socketId || '')
+        generateConfig()
       );
       toast.success("Members invited successfully");
 
@@ -220,11 +164,10 @@ export const acceptInvite = (id: string) =>
         type: types.PROJECT_ACCEPT_INVITE_REQUEST,
       });
 
-      const socketId = getState().pusher.socket;
       const { data } = await axios.put(
         `${SERVER_URL}/projects/${id}/accept-invite`,
         {},
-        generateConfig(socketId || '')
+        generateConfig()
       );
       toast.success("Invitation accepted successfully");
 
@@ -247,11 +190,10 @@ export const declineInvite = (id: string) =>
         type: types.PROJECT_DECLINE_INVITE_REQUEST,
       });
 
-      const socketId = getState().pusher.socket;
       await axios.put(
         `${SERVER_URL}/projects/${id}/decline-invite`,
         {},
-        generateConfig(socketId || '')
+        generateConfig()
       );
       toast.success("Invitation declined");
 

@@ -1,8 +1,8 @@
-import { ActionType } from "../../types";
-import * as types from "../../constants/ticketConstants";
-import * as projectTypes from "../../constants/projectConstants";
-import * as userTypes from "../../constants/userConstants";
-import { Ticket } from "../../../src/types/models";
+import { ActionType } from "@/redux/types";
+import * as types from "@/redux/constants/ticketConstants";
+import * as projectTypes from "@/redux/constants/projectConstants";
+import * as userTypes from "@/redux/constants/userConstants";
+import { Ticket } from "@/core/types/models";
 
 interface TicketsState {
   tickets: Ticket[];
@@ -27,6 +27,18 @@ const ticketsReducer = (state: TicketsState = initialState, action: ActionType):
     case types.TICKET_LIST_FAIL:
       return { ...state, loading: false, error: payload };
 
+    case types.TICKET_CREATE_SUCCESS:
+      // Every project member is sent a creation, but this list is the user's
+      // own tickets, so keep only the ones they authored.
+      if (payload.ticket.author !== payload.userId) return state;
+      return {
+        ...state,
+        tickets: [
+          payload.ticket,
+          ...state.tickets.filter((ticket) => ticket._id !== payload.ticket._id)
+        ],
+      };
+
     case types.TICKET_UPDATE_SUCCESS:
       return {
         ...state,
@@ -44,6 +56,14 @@ const ticketsReducer = (state: TicketsState = initialState, action: ActionType):
         tickets: state.tickets.filter((ticket) => ticket._id !== payload.ticketId),
       };
   
+    case projectTypes.PROJECT_REMOVED:
+      return {
+        ...state,
+        tickets: state.tickets.filter(
+          (ticket) => ticket.project._id !== payload.projectId
+        ),
+      };
+
     case projectTypes.PROJECT_DELETE_SUCCESS:
       return {
         ...state,
@@ -57,7 +77,13 @@ const ticketsReducer = (state: TicketsState = initialState, action: ActionType):
           if (ticket._id === payload.comment.ticket) {
             return {
               ...ticket,
-              comments: [...ticket.comments, payload.comment._id],
+              // Socket delivery can repeat what the request already applied.
+              comments: [
+                ...ticket.comments.filter(
+                  (commentId) => commentId !== payload.comment._id
+                ),
+                payload.comment._id,
+              ],
             };
           }
           return ticket;

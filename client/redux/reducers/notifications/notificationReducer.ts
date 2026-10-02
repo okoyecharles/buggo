@@ -1,8 +1,8 @@
-import { Notification, NotificationType } from "../../../src/types/models";
-import { ActionType } from "../../types";
-import * as types from "../../constants/notificationConstants";
-import * as projectTypes from "../../constants/projectConstants";
-import * as userTypes from "../../constants/userConstants";
+import { Notification, NotificationType } from "@/core/types/models";
+import { ActionType } from "@/redux/types";
+import * as types from "@/redux/constants/notificationConstants";
+import * as projectTypes from "@/redux/constants/projectConstants";
+import * as userTypes from "@/redux/constants/userConstants";
 
 interface NotificationsState {
   notifications: Notification[];
@@ -39,6 +39,18 @@ const notificationReducer = (state: NotificationsState = initialState, action: A
       return { ...state, error: null, loading: false, method: { ...state.method, list: false }, notifications: payload.notifications };
     case types.NOTIFICATION_LIST_FAIL:
       return { ...state, loading: false, method: { ...state.method, list: false }, error: payload };
+
+    // Pushed rather than requested: the server announces each one it writes
+    case types.NOTIFICATION_RECEIVE:
+      return {
+        ...state,
+        notifications: [
+          payload.notification,
+          ...state.notifications.filter(
+            (notification) => notification._id !== payload.notification._id
+          )
+        ]
+      };
 
     // Mark a single notification as read
     case types.NOTIFICATION_READ_REQUEST:

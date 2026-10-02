@@ -21,7 +21,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.2",
     "morgan": "^1.10.0",
-    "pusher": "^5.1.2",
+    "socket.io": "^4.8.4",
     "zod": "^4.6.5"
   },
   "devDependencies": {

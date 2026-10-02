@@ -5,10 +5,10 @@ import Comment from "../models/commentModel";
 import User from "../models/userModel";
 import { TicketAssignNotification } from "../models/notificationModel";
 import mongoose, { Types } from "mongoose";
-import { pusher, pusherChannel } from "..";
 import { ProtectedRequest } from "../types/request";
 import { UpdateTicketBody } from "../types/ticket";
 import { CreateCommentBody } from "../types/comment";
+import { getIO, projectRoom } from "../config/socket";
 
 const fetchTicket = async (id: string) => {
   const ticket = Ticket.findById(id)
@@ -84,7 +84,6 @@ export const updateTicketById = async (
       team,
       comments,
     } = req.body;
-    const socketId = req.headers["x-pusher-socket-id"];
     const ticket = await Ticket.findById(id);
     if (!ticket) return res.status(404).json({ message: "Ticket not found" });
     const project = await Project.findById(ticket.project);
@@ -110,6 +109,7 @@ export const updateTicketById = async (
 
     // An assignment the assignee never hears about is no assignment at all
     const session = await mongoose.startSession();
+    let notifications: any[] = [];
 
     try {
       await session.withTransaction(async () => {
@@ -130,7 +130,7 @@ export const updateTicketById = async (
 
         if (!actor) return;
 
-        await TicketAssignNotification.insertMany(
+        notifications = await TicketAssignNotification.insertMany(
           newAssignees.map((member) => ({
             recipient: member,
             snapshot: {
@@ -148,22 +148,20 @@ export const updateTicketById = async (
     } finally {
       await session.endSession();
     }
+    const updatedTicket = await fetchTicket(id);
+    const io = getIO();
+    io.to(projectRoom(project._id)).emit("ticket:update", {
+      ticket: updatedTicket,
+    });
 
-    await pusher.trigger(
-      pusherChannel,
-      "update-project-ticket",
-      {
-        ticket: {
-          _id: id,
-          author: ticket?.author._id.toString(),
-        },
-      },
-      {
-        socket_id: socketId as string,
-      },
+    // Announced after the transaction commits, so a rolled back write is
+    // never advertised, and only ever into its recipient's own room.
+    notifications.forEach((notification) =>
+      io
+        .to(`user:${notification.recipient}`)
+        .emit("notification:create", { notification }),
     );
 
-    const updatedTicket = await fetchTicket(id);
     res.status(200).json({ ticket: updatedTicket });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -181,7 +179,6 @@ export const deleteTicket = async (
 ) => {
   try {
     const { id } = req.params;
-    const socketId = req.headers["x-pusher-socket-id"];
 
     const ticket = await Ticket.findById(id);
     if (!ticket) return res.status(404).json({ message: "Ticket not found" });
@@ -197,19 +194,9 @@ export const deleteTicket = async (
     }
 
     await ticket.remove();
-    await pusher.trigger(
-      pusherChannel,
-      "delete-project-ticket",
-      {
-        ticket: {
-          _id: id,
-          author: ticket.author._id.toString(),
-        },
-      },
-      {
-        socket_id: socketId as string,
-      },
-    );
+    getIO()
+      .to(projectRoom(project._id))
+      .emit("ticket:delete", { ticketId: id });
 
     // Remove ticket reference from the project without using pull
     project.tickets = project.tickets.filter(
@@ -242,7 +229,6 @@ export const createTicketComment = async (
       return res.status(404).json({ message: "Comment's ticket not found" });
     const project = await Project.findById(ticket.project);
     if (!project) return res.status(404).json({ message: "Project not found" });
-    const socketId = req.headers["x-pusher-socket-id"];
 
     if (
       !req.admin &&
@@ -257,21 +243,6 @@ export const createTicketComment = async (
       author: author,
       ticket: ticket?._id,
     });
-    await pusher.trigger(
-      pusherChannel,
-      "new-ticket-comment",
-      {
-        ticketId: id,
-        comment: {
-          _id: comment?._id.toString(),
-          author: comment?.author.toString(),
-        },
-      },
-      {
-        socket_id: socketId as string,
-      },
-    );
-
     // Add comment reference to the ticket
     ticket?.comments.push(comment.id);
     await ticket?.save();
@@ -280,6 +251,9 @@ export const createTicketComment = async (
       "author",
       "name image email",
     );
+    getIO()
+      .to(projectRoom(project._id))
+      .emit("ticket:comment", { ticketId: id, comment: savedComment });
 
     res.status(201).json({ comment: savedComment });
   } catch (error: any) {
@@ -292,7 +266,6 @@ export const createTicketComment = async (
  * @desc     Get a comment
  * @access   Private
  */
-
 export const getTicketComment = async (
   req: ProtectedRequest<undefined, { id: string; commentId: string }>,
   res: Response,

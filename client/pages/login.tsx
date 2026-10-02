@@ -1,27 +1,25 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSpring, a } from "@react-spring/web";
-import { validateEmail, validatePassword } from "../src/utils/forms/register";
+import { validateEmail, validatePassword } from "@/core/utils/validation/register";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
 import { useRouter } from "next/router";
-import { login } from "../redux/actions/userActions";
+import { login, AUTH_TOAST_ID } from "@/redux/actions/userActions";
+import { toast } from "react-toastify";
 import Head from "next/head";
-import Button from "../src/components/Button";
+import Button from "@/core/components/button";
 import Image from "next/image";
 
 const Login = () => {
   const router = useRouter();
-
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [processing, setProcessing] = useState<boolean>(false);
-
-  const [emailError, setEmailError] = useState<null | string>(null);
-  const [passwordError, setPasswordError] = useState<null | string>(null);
-
   const loginStore = useSelector((store: storeType) => store.login);
   const currentUser = useSelector((store: storeType) => store.currentUser);
+
+  const [email, setEmail] = useState<string>("");
+  const [emailError, setEmailError] = useState<null | string>(null);
+  const [password, setPassword] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<null | string>(null);
 
   const [springs, api] = useSpring(() => ({
     opacity: 0.5,
@@ -42,19 +40,16 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    setProcessing(loginStore.loading);
-  }, [loginStore, currentUser]);
-
-  useEffect(() => {
     if (currentUser.user && !currentUser.loading) {
+      // Only an auth page can know the user is being bounced away, so the
+      // notice lives here rather than in the session check that runs on
+      // every mount. A real sign in shares the toast id and wins the race.
+      toast.success("You're already signed in", { toastId: AUTH_TOAST_ID });
       router.replace("/dashboard");
     }
-  }, [currentUser.user]);
+  }, [currentUser]);
 
-  const throwError = (error: string | null, type: string) => {
-    if (error) setProcessing(false);
-
-    // Throw error
+  const showError = (error: string, type: string) => {
     if (type === "email") {
       setEmailError(error);
     } else if (type === "password") {
@@ -66,18 +61,14 @@ const Login = () => {
     event.preventDefault();
     setEmailError(null);
     setPasswordError(null);
-    setProcessing(true);
 
     // Validate email
     let emailValidationError = validateEmail(email);
-    throwError(emailValidationError, "email");
+    if (emailValidationError) return showError(emailValidationError, "email");
 
     // Validate password
     let passwordValidationError = validatePassword(password);
-    throwError(passwordValidationError, "password");
-
-    // If errors exist, return
-    if (emailValidationError || passwordValidationError) return;
+    if (passwordValidationError) return showError(passwordValidationError, "password");
 
     // If no errors, send request to server
     store.dispatch(login(email, password));
@@ -165,7 +156,7 @@ const Login = () => {
             />
           </div>
 
-          <Button overrideStyle="mt-6" processing={processing}>
+          <Button overrideStyle="mt-6" processing={loginStore.loading}>
             Log In
           </Button>
 

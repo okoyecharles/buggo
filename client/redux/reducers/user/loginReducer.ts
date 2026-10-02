@@ -1,5 +1,5 @@
-import * as types from '../../constants/userConstants';
-import { ActionType } from '../../types';
+import * as types from '@/redux/constants/userConstants';
+import { ActionType } from '@/redux/types';
 
 type State = {
   loading: boolean;
@@ -18,6 +18,8 @@ const loginReducer = (
   switch (type) {
     case types.USER_LOGIN_REQUEST:
       return { ...state, loading: true, error: null };
+		case types.USER_LOGIN_SUCCESS:
+      return { ...state, loading: false, error: null };
     case types.USER_LOGIN_FAIL:
       return { ...state, loading: false, error: payload };
     case types.USER_LOGOUT:

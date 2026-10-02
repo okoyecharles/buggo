@@ -1,7 +1,7 @@
-import SERVER_URL from '../../src/data/backend-config';
-import * as types from '../constants/notificationConstants';
+import SERVER_URL from '@/core/data/backend';
+import * as types from '@/redux/constants/notificationConstants';
 import axios from 'axios';
-import { DispatchType } from '../types';
+import { DispatchType } from '@/redux/types';
 import generateConfig from './config/axios';
 
 export const fetchNotifications =

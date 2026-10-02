@@ -1,10 +1,17 @@
 import { toast } from 'react-toastify';
-import SERVER_URL from '../../src/data/backend-config';
-import * as types from '../constants/userConstants';
+import SERVER_URL from '@/core/data/backend';
+import * as types from '@/redux/constants/userConstants';
 import axios from 'axios';
-import { DispatchType } from '../types';
-import store, { storeType } from '../configureStore';
+import { DispatchType } from '@/redux/types';
+import store, { storeType } from '@/redux/configureStore';
 import generateConfig from './config/axios';
+
+/*
+ * Shared by every "you are signed in" notice: a real sign in and the auth
+ * pages' redirect notice can both fire in the same tick, and reusing one
+ * toast id lets react-toastify drop the second.
+ */
+export const AUTH_TOAST_ID = 'auth-session';
 
 const login =
   (email: string, password: string) => async (dispatch: DispatchType) => {
@@ -18,7 +25,7 @@ const login =
         { email, password },
         generateConfig()
       );
-      toast.success("Logged In successfully");
+      toast.success("Logged In successfully", { toastId: AUTH_TOAST_ID });
 
       dispatch({
         type: types.USER_LOGIN_SUCCESS,
@@ -42,7 +49,7 @@ const register = (formData: any) => async (dispatch: DispatchType) => {
       formData,
       generateConfig()
     );
-    toast.success("Signed Up successfully");
+    toast.success("Signed Up successfully", { toastId: AUTH_TOAST_ID });
 
     dispatch({
       type: types.USER_REGISTER_SUCCESS,
@@ -60,7 +67,11 @@ const logout = (auto = false) => async (dispatch: DispatchType) => {
   dispatch({
     type: types.USER_LOGOUT,
   });
-  await axios.post(`${SERVER_URL}/users/signout`, {}, generateConfig());
+  // The local session is already gone, so a failed signout only leaves a
+  // cookie the server rejects anyway -- never block or throw on it.
+  try {
+    await axios.post(`${SERVER_URL}/users/signout`, {}, generateConfig());
+  } catch {}
   if (!auto)
     toast.success("Logged Out successfully");
 };
@@ -76,7 +87,6 @@ const validateUserSession = () => async (dispatch: DispatchType) => {
       {},
       generateConfig()
     );
-    toast.success("Logged In successfully");
 
     dispatch({
       type: types.USER_VALIDATE_SUCCESS,
@@ -86,7 +96,8 @@ const validateUserSession = () => async (dispatch: DispatchType) => {
     dispatch({
       type: types.USER_VALIDATE_FAIL,
     });
-    logout();
+    // `auto` keeps this quiet: a dead session is not a deliberate sign out.
+    store.dispatch(logout(true));
   }
 };
 
@@ -125,10 +136,9 @@ const getUsers = async () => {
 
 const deleteUser = async (id: string) => {
   try {
-    const socketId = store.getState().pusher.socket;
     const { data } = await axios.delete(
       `${SERVER_URL}/users/${id}`,
-      generateConfig(socketId || '')
+      generateConfig()
     );
     toast.success("User deleted successfully");
     return data.users;
@@ -139,7 +149,7 @@ const deleteUser = async (id: string) => {
   }
 };
 
-const pusherDeleteUser = (id: string) => {
+const handleAccountDeleted = (id: string) => {
   const userId = store.getState().currentUser.user?._id;
   if (userId === id) {
     toast.warn("Due to policy violation, This account has been deleted");
@@ -147,4 +157,4 @@ const pusherDeleteUser = (id: string) => {
   }
 };
 
-export { validateUserSession, login, register, logout, updateUser, getUsers, deleteUser, pusherDeleteUser };
+export { validateUserSession, login, register, logout, updateUser, getUsers, deleteUser, handleAccountDeleted };

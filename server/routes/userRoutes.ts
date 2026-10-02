@@ -1,4 +1,4 @@
-import { logout, updateUser, validateUser } from './../controllers/userController';
+import { createSocketTicket, logout, updateUser, validateUser } from './../controllers/userController';
 import express from 'express';
 import { register, login, deleteUser, getUsers } from '../controllers/userController';
 import protect from '../middleware/auth';
@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.get('/', protect, getUsers);
 router.post('/validate', protect, validateUser);
+router.post('/socket-ticket', protect, createSocketTicket);
 router.put('/:id', protect, validate(updateUserSchema), updateUser);
 router.delete('/:id', protect, deleteUser);
 
