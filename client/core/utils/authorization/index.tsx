@@ -37,10 +37,10 @@ const getAuthorization = (
 
       switch (action) {
         case "update": {
-          return user._id === ticketAuthor || user._id === project?.author._id;
+          return user._id === ticketAuthor || user._id === projectAuthor;
         }
         case "delete":
-          return user._id === ticketAuthor || user._id === project?.author._id;
+          return user._id === ticketAuthor || user._id === projectAuthor;
         case "comment-create":
           return (
             user._id === projectAuthor ||

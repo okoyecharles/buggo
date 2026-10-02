@@ -75,23 +75,24 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
   return (
     <>
       <OptionsPopup open={open} setOpen={setOpen} style="hidden lg:block">
-        <OptionsButton
-          id={`remove-self-${ticket._id}`}
-          processing={loading && method.update}
-          onClick={handleTicketAssign}
-        >
-          {isInTeam(ticket) ? (
-            <>
-              Remove Yourself <BsPersonDashFill />
-            </>
-          ) : (
-            <>
-              Assign Yourself <BsPersonPlusFill />
-            </>
-          )}
-        </OptionsButton>
         {isAuthorized ? (
           <>
+            <OptionsButton
+              id={`remove-self-${ticket._id}`}
+              processing={loading && method.update}
+              onClick={handleTicketAssign}
+            >
+              {isInTeam(ticket) ? (
+                <>
+                  Remove Yourself <BsPersonDashFill />
+                </>
+              ) : (
+                <>
+                  Assign Yourself <BsPersonPlusFill />
+                </>
+              )}
+            </OptionsButton>
+
             <OptionsButton
               processing={loading && method.update}
               onClick={() => {

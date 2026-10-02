@@ -41,9 +41,9 @@ const TicketRow: React.FC<TicketRowProps> = ({
     if (ticket?._id === ticketDetails?._id) setTicketDetails(ticket);
   }, [ticket]);
 
-  const isInProjectTeam = useMemo(() => {
-    return getAuthorization("project", "team", user, project);
-  }, [project, user?._id]);
+  const canUpdateTicket = useMemo(() => {
+    return getAuthorization("ticket", "update", user, project, ticket);
+  }, [project, ticket, user?._id]);
 
   return (
     <a.li
@@ -113,8 +113,9 @@ const TicketRow: React.FC<TicketRowProps> = ({
           emptyText="No team"
         />
         {
-          // Show options button if user is a project member
-          isInProjectTeam ? (
+          // Every option behind it needs the same authorization, so without it
+          // the menu would open empty
+          canUpdateTicket ? (
             <button
               className="p-1 pr-4 items-center justify-center transition hidden lg:flex"
               onClick={(e) => {
