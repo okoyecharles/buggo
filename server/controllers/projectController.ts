@@ -5,7 +5,7 @@ import Project from "./../models/projectModel";
 import User from "../models/userModel";
 import { ProjectInviteNotification } from "../models/notificationModel";
 import mongoose, { Types } from "mongoose";
-import { pusher, pusherChannel } from "..";
+import { adminsRoom, getIO, projectRoom } from "../config/socket";
 import {
   CreateProjectBody,
   InviteToProjectBody,
@@ -43,6 +43,9 @@ export const getProjects = async (req: ProtectedRequest, res: Response) => {
       .populate("author", "name")
       .populate("team", "name email image")
       .populate("invitees.user", "name image email")
+      // Only the count is rendered, but populating keeps `tickets` a list of
+      // documents here as well as on the detail fetch.
+      .populate("tickets", "_id")
       .sort({ createdAt: -1 });
 
     res.status(200).json({ projects });
@@ -90,7 +93,6 @@ export const createProject = async (
 ) => {
   try {
     const { title } = req.body;
-    const socketId = req.headers["x-pusher-socket-id"];
     const project = new Project({
       title,
       author: req.user,
@@ -98,15 +100,20 @@ export const createProject = async (
     });
 
     const newProject = await project.save();
-    await pusher.trigger(
-      pusherChannel,
-      "project-create",
-      {
-        projectId: newProject?._id.toString(),
-      },
-      { socket_id: socketId as string },
-    );
     const returnProject = await fetchProject(newProject._id);
+
+    const io = getIO();
+
+    /*
+     * Rooms are joined on connect, so a project made during a session has no
+     * room for its author to be in -- without this they receive nothing about
+     * it until they reconnect.
+     */
+    io.in(`user:${req.user}`).socketsJoin(`project:${newProject._id}`);
+
+    // Only the author is a member and they have the response, but admins are
+    // sent every project and so have to hear about a new one.
+    io.to(adminsRoom).emit("project:create", { project: returnProject });
     res.status(201).json({ project: returnProject });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -125,7 +132,6 @@ export const updateProject = async (
   try {
     const { id } = req.params;
     const { title, team } = req.body;
-    const socketId = req.headers["x-pusher-socket-id"];
     const project = await Project.findById(id).populate("author", "name");
 
     if (!project) return res.status(404).json({ message: "Project not found" });
@@ -133,20 +139,44 @@ export const updateProject = async (
     if (project?.author._id.toString() !== req.user && !req.admin)
       return res.status(403).json({ message: "User not authorized" });
 
+    const previousTeam = project.team.map((member) => member.toString());
+
     if (title) project.title = title;
     // The body carries validated id strings; the document expects ObjectIds.
     if (team) project.team = team.map((member) => new Types.ObjectId(member));
 
     const updatedProject = await project.save();
-    await pusher.trigger(
-      pusherChannel,
-      "project-update",
-      {
-        projectId: updatedProject?._id.toString(),
-      },
-      { socket_id: socketId as string },
-    );
     const returnProject = await fetchProject(updatedProject.id);
+
+    /*
+     * Membership decides who the room reaches, so it has to be corrected
+     * before the update goes out -- otherwise a removed member is still
+     * listening and a new one hears nothing.
+     */
+    const io = getIO();
+    const room = `project:${updatedProject._id}`;
+    const currentTeam = updatedProject.team.map((member) => member.toString());
+
+    currentTeam
+      .filter((member) => !previousTeam.includes(member))
+      .forEach((member) => io.in(`user:${member}`).socketsJoin(room));
+
+    // The author keeps access through `author` regardless of the team, so
+    // dropping them from it revokes nothing.
+    const authorId = updatedProject.author._id.toString();
+
+    previousTeam
+      .filter((member) => member !== authorId && !currentTeam.includes(member))
+      .forEach((member) => {
+        // Their own room is the only way left to reach them, so tell them
+        // before the project room stops including them.
+        io.to(`user:${member}`).emit("project:removed", { projectId: id });
+        io.in(`user:${member}`).socketsLeave(room);
+      });
+
+    io.to(projectRoom(updatedProject._id)).emit("project:update", {
+      project: returnProject,
+    });
     res.status(200).json({ project: returnProject });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -165,7 +195,6 @@ export const inviteToProject = async (
   try {
     const { id } = req.params;
     const { invitees } = req.body;
-    const socketId = req.headers["x-pusher-socket-id"];
     const project = await Project.findById(id).populate("author", "name");
 
     if (!project) return res.status(404).json({ message: "Project not found" });
@@ -193,6 +222,7 @@ export const inviteToProject = async (
     // An invitee without its notification is invisible to them, so the two
     // writes land together or not at all
     const session = await mongoose.startSession();
+    let notifications: any[] = [];
 
     try {
       await session.withTransaction(async () => {
@@ -202,7 +232,7 @@ export const inviteToProject = async (
           { session },
         );
 
-        await ProjectInviteNotification.insertMany(
+        notifications = await ProjectInviteNotification.insertMany(
           newInvitees.map((invitee) => ({
             recipient: invitee.user,
             snapshot: {
@@ -217,16 +247,23 @@ export const inviteToProject = async (
       await session.endSession();
     }
 
-    await pusher.trigger(
-      pusherChannel,
-      "project-invite",
-      {
-        projectId: project._id.toString(),
-      },
-      { socket_id: socketId as string },
+    const returnProject = await fetchProject(id);
+    const io = getIO();
+
+    // Only members are told. An invitee is not one yet, so what reaches them
+    // is their notification, not the project.
+    io.to(projectRoom(project._id)).emit("project:invite", {
+      project: returnProject,
+    });
+
+    // Announced after the transaction commits, so a rolled back write is
+    // never advertised, and only ever into its recipient's own room.
+    notifications.forEach((notification) =>
+      io
+        .to(`user:${notification.recipient}`)
+        .emit("notification:create", { notification }),
     );
 
-    const returnProject = await fetchProject(id);
     res.status(200).json({ project: returnProject });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -244,7 +281,6 @@ export const acceptInvite = async (
 ) => {
   try {
     const { id } = req.params;
-    const socketId = req.headers["x-pusher-socket-id"];
     const project = await Project.findById(id);
 
     if (!project) return res.status(404).json({ message: "Project not found" });
@@ -280,16 +316,17 @@ export const acceptInvite = async (
       await session.endSession();
     }
 
-    await pusher.trigger(
-      pusherChannel,
-      "accept-project-invite",
-      {
-        projectId: project._id.toString(),
-      },
-      { socket_id: socketId as string },
-    );
-
     const returnProject = await fetchProject(id);
+
+    // Joining before the emit means the accepter's own tabs hear it too.
+    const io = getIO();
+    const room = `project:${project._id}`;
+    io.in(`user:${req.user}`).socketsJoin(room);
+    // `projectId` is what clears the invite's notification.
+    io.to(projectRoom(project._id)).emit("project:accept-invite", {
+      project: returnProject,
+      projectId: id,
+    });
 
     res.status(200).json({ project: returnProject });
   } catch (error: any) {
@@ -308,7 +345,6 @@ export const declineInvite = async (
 ) => {
   try {
     const { id } = req.params;
-    const socketId = req.headers["x-pusher-socket-id"];
     const project = await Project.findById(id);
 
     if (!project) return res.status(404).json({ message: "Project not found" });
@@ -340,14 +376,12 @@ export const declineInvite = async (
       await session.endSession();
     }
 
-    await pusher.trigger(
-      pusherChannel,
-      "decline-project-invite",
-      {
-        projectId: project._id.toString(),
-      },
-      { socket_id: socketId as string },
-    );
+    // The decliner leaves nothing behind but a shorter invitee list, which
+    // the members still need.
+    const returnProject = await fetchProject(id);
+    getIO()
+      .to(projectRoom(project._id))
+      .emit("project:update", { project: returnProject });
 
     res.status(200).json({ message: "Invitation declined" });
   } catch (error: any) {
@@ -366,7 +400,6 @@ export const deleteProject = async (
 ) => {
   try {
     const { id } = req.params;
-    const socketId = req.headers["x-pusher-socket-id"];
     const project = await Project.findById(id).populate("author", "name");
 
     if (!project) return res.status(404).json({ message: "Project not found" });
@@ -375,16 +408,12 @@ export const deleteProject = async (
       return res.status(403).json({ message: "User not authorized" });
 
     await project.remove();
-    await pusher.trigger(
-      pusherChannel,
-      "delete-project",
-      {
-        projectId: id,
-      },
-      {
-        socket_id: socketId as string,
-      },
-    );
+
+    // The reducers key this one off a bare id. Emit before emptying the room.
+    const io = getIO();
+    const room = `project:${id}`;
+    io.to(projectRoom(id)).emit("project:delete", id);
+    io.in(room).socketsLeave(room);
 
     res.status(200).json({ message: "Project removed" });
   } catch (error: any) {
@@ -404,7 +433,6 @@ export const createTicket = async (
   const { priority, status, type, time_estimate, title, description } =
     req.body;
   const { id } = req.params;
-  const socketId = req.headers["x-pusher-socket-id"];
 
   try {
     // Get ticket's project and author
@@ -431,18 +459,12 @@ export const createTicket = async (
     ticket.project = ticketProject.id;
     ticket.author = new Types.ObjectId(req.user);
     ticket = await ticket.save();
+    // The my-tickets list groups by project, so the id alone is not enough.
+    await ticket.populate({ path: "project", select: "title" });
 
-    await pusher.trigger(
-      pusherChannel,
-      "create-project-ticket",
-      {
-        ticket: {
-          _id: ticket.id.toString(),
-          author: ticket.author.toString(),
-        },
-      },
-      { socket_id: socketId as string },
-    );
+    getIO()
+      .to(projectRoom(ticketProject._id))
+      .emit("ticket:create", { ticket });
 
     // Assign ticket to project's relationship
     ticketProject.tickets.unshift(ticket._id);

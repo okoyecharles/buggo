@@ -2,7 +2,7 @@
 import { ActionType } from "@/redux/types";
 import * as types from "@/redux/constants/ticketConstants";
 import * as userTypes from "@/redux/constants/userConstants";
-import { Ticket } from "@/core/types/models";
+import { Comment, Ticket } from "@/core/types/models";
 
 interface TicketState {
   ticket: Ticket | null;
@@ -94,7 +94,13 @@ const ticketReducer = (state: TicketState = initialState, action: ActionType): T
           comment: false,
         }, ticket: {
           ...state.ticket,
-          comments: [...state.ticket.comments, payload.comment].sort((a, b) => {
+          // Socket delivery can repeat what the request already applied.
+          comments: [
+            ...(state.ticket.comments as Comment[]).filter(
+              (comment) => comment._id !== payload.comment._id
+            ),
+            payload.comment,
+          ].sort((a, b) => {
             return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
           })
         }
@@ -115,6 +121,8 @@ const ticketReducer = (state: TicketState = initialState, action: ActionType): T
         }
       };
     case types.TICKET_DELETE_SUCCESS:
+      // A member deleting some other ticket must not clear the open one.
+      if (state.ticket && state.ticket._id !== payload.ticketId) return state;
       return initialState;
     case types.TICKET_DELETE_FAIL:
       return {

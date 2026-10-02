@@ -1,5 +1,5 @@
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL!;
-const PUSHER_KEY = process.env.NEXT_PUBLIC_PUSHER_KEY!;
+const API_ORIGIN = process.env.NEXT_PUBLIC_API_ORIGIN!;
 
 export default SERVER_URL;
-export { PUSHER_KEY };
+export { API_ORIGIN };

@@ -6,22 +6,23 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import colors from "@colors/colors/safe";
-
+import http from "http";
 import userRouter from "./routes/userRoutes";
 import projectRouter from "./routes/projectRoutes";
 import ticketRouter from "./routes/ticketRoutes";
 import notificationRouter from "./routes/notificationRoutes";
-import connectToPusher from "./config/Pusher";
+import { initSocket } from "./config/socket";
 
 const app = express();
-const pusher = connectToPusher();
-const pusherChannel = "bug-tracker";
+const httpServer = http.createServer(app);
 
 const allowed = (process.env.ALLOWED_ORIGINS || "")
   .split(",")
   .map((s) => s.trim());
 
 console.log("CORS allowed origins:", colors.brightGreen(allowed.join(", ")));
+
+initSocket(httpServer, allowed);
 
 app.use(express.json({ limit: "30mb" }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
@@ -56,7 +57,7 @@ mongoose.set("strictQuery", false);
 mongoose
   .connect(CONNECTION_URI)
   .then((conn) => {
-    app.listen(PORT, () => {
+    httpServer.listen(PORT, () => {
       console.log(`Connected to ${conn.connection.name} successfully...`);
       console.log("Host:", colors.cyan(conn.connection.host));
       console.log("Port:", colors.cyan(PORT.toString()));
@@ -66,5 +67,3 @@ mongoose
     console.log("\nError connecting to MongoDB...");
     console.log("Message:", colors.red(err.message || err), "\n");
   });
-
-export { pusher, pusherChannel };

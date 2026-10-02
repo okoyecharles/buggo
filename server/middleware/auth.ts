@@ -13,7 +13,10 @@ const protect: Middleware = async (req, res, next) => {
       const decoded = jwt.verify(requestToken, secret) as {
         id: string;
         admin: boolean;
+        typ?: string;
       };
+			// Check if the token is a socket ticket
+			if (decoded.typ) return res.status(401).json({ message: "Unauthorized" });
 			const user = await User.findById(decoded.id);
       if (!user) return res.status(401).json({ message: "Unauthorized" });
 

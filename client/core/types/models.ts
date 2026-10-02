@@ -15,7 +15,7 @@ export type Project = {
   title: string;
   author: User;
   team: User[];
-  tickets: any[];
+  tickets: Ticket[];
   invitees: any[];
   createdAt: any;
 };

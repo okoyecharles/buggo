@@ -40,6 +40,18 @@ const notificationReducer = (state: NotificationsState = initialState, action: A
     case types.NOTIFICATION_LIST_FAIL:
       return { ...state, loading: false, method: { ...state.method, list: false }, error: payload };
 
+    // Pushed rather than requested: the server announces each one it writes
+    case types.NOTIFICATION_RECEIVE:
+      return {
+        ...state,
+        notifications: [
+          payload.notification,
+          ...state.notifications.filter(
+            (notification) => notification._id !== payload.notification._id
+          )
+        ]
+      };
+
     // Mark a single notification as read
     case types.NOTIFICATION_READ_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, read: true } };

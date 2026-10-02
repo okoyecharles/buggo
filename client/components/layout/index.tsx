@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import Pusher from "pusher-js";
 import { useSpring, a } from "@react-spring/web";
-import { PUSHER_KEY } from "@/core/data/backend";
 import store, { storeType } from "@/redux/configureStore";
-import { connectPusher, disconnectPusher } from "@/redux/actions/pusherActions";
 import { fetchNotifications } from "@/redux/actions/notificationActions";
-import bindChannelEvents from "./pusher/channel";
 import SideBar from "./sidebar";
 import Navigation from "./navigation";
+import socket from "./socket";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -33,29 +30,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   }, [currentUser]);
 
-  // Load notifications once the user changes
+	// Once the user logs in
   useEffect(() => {
     if (currentUser.user?._id && !currentUser.loading) {
-      store.dispatch(fetchNotifications());
-    }
-  }, [currentUser.user?._id]);
-
-  // Connect to pusher when user logs in
-  useEffect(() => {
-    if (currentUser.user?._id && !currentUser.loading) {
-      const pusher = new Pusher(PUSHER_KEY, { cluster: "eu" });
-
-      pusher.connection.bind("connected", () => {
-        const channel = pusher.subscribe("bug-tracker");
-        bindChannelEvents(channel);
-
-        store.dispatch(connectPusher(pusher.connection.socket_id));
-      });
-
-      return () => {
-        store.dispatch(disconnectPusher());
-        pusher.disconnect();
-      };
+			// Connect to the socket
+			socket.connect();
+			// Load notifications
+			store.dispatch(fetchNotifications());
     }
   }, [currentUser.user?._id]);
 

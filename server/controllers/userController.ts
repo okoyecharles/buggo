@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel";
 import { CookieOptions, Response } from "express";
-import { pusher, pusherChannel } from "..";
+import { getIO } from "../config/socket";
 import { DefaultRequest, ProtectedRequest } from "../types/request";
 import { LoginBody, RegisterBody, UpdateUserBody } from "../types/user";
 import { tokenName } from "../middleware/auth";
@@ -42,8 +42,6 @@ export const deleteUser = async (
 ) => {
   try {
     const { id } = req.params;
-    const socketId = req.headers["x-pusher-socket-id"];
-
     const userExists = await User.findById(id);
 
     if (!userExists) return res.status(404).json({ message: "User not found" });
@@ -56,16 +54,15 @@ export const deleteUser = async (
       return res.status(403).json({ message: "Unauthorized Request" });
 
     await userExists.remove();
-    await pusher.trigger(
-      pusherChannel,
-      "delete-user",
-      {
-        userId: id,
-      },
-      {
-        socket_id: socketId as string,
-      },
-    );
+
+    /*
+     * Only the deleted account's own room is told, so the event never reaches
+     * anyone it does not concern. Their lines are then dropped -- the packet
+     * is queued behind the event, so they still hear why.
+     */
+    const io = getIO();
+    io.to(`user:${id}`).emit("user:delete", { userId: id });
+    io.in(`user:${id}`).disconnectSockets();
 
     const users = await User.find();
 
@@ -198,6 +195,20 @@ export const logout = async (_req: DefaultRequest, res: Response) => {
     .status(200)
     .clearCookie(tokenName, cookieOptions)
     .send({ message: "Logged out successfully" });
+};
+
+/*
+ * @route   POST /users/socket-ticket
+ * @desc    Mint a short lived credential for the socket handshake
+ * @access  Private
+ */
+export const createSocketTicket = (req: ProtectedRequest, res: Response) => {
+  // The socket connects straight to the api, bypassing the proxy, so the
+  // cookie never reaches it -- this is the credential it carries instead.
+  const ticket = jwt.sign({ id: req.user, typ: "socket" }, secret, {
+    expiresIn: 120,
+  });
+  res.status(200).json({ ticket });
 };
 
 /*

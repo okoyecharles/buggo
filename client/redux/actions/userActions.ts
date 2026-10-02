@@ -136,10 +136,9 @@ const getUsers = async () => {
 
 const deleteUser = async (id: string) => {
   try {
-    const socketId = store.getState().pusher.socket;
     const { data } = await axios.delete(
       `${SERVER_URL}/users/${id}`,
-      generateConfig(socketId || '')
+      generateConfig()
     );
     toast.success("User deleted successfully");
     return data.users;
@@ -150,7 +149,7 @@ const deleteUser = async (id: string) => {
   }
 };
 
-const pusherDeleteUser = (id: string) => {
+const handleAccountDeleted = (id: string) => {
   const userId = store.getState().currentUser.user?._id;
   if (userId === id) {
     toast.warn("Due to policy violation, This account has been deleted");
@@ -158,4 +157,4 @@ const pusherDeleteUser = (id: string) => {
   }
 };
 
-export { validateUserSession, login, register, logout, updateUser, getUsers, deleteUser, pusherDeleteUser };
+export { validateUserSession, login, register, logout, updateUser, getUsers, deleteUser, handleAccountDeleted };

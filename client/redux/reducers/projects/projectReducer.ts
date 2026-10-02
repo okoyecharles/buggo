@@ -59,6 +59,8 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
         }
       };
     case types.PROJECT_DELETE_SUCCESS:
+      // A member deleting some other project must not clear the open one.
+      if (state.project && state.project._id !== payload) return state;
       return { ...initialState };
     case types.PROJECT_DELETE_FAIL:
       return {
@@ -141,11 +143,18 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
     case ticketTypes.TICKET_CREATE_REQUEST:
       return { ...state, loading: true, error: null, method: { ...state.method, createTicket: true } };
     case ticketTypes.TICKET_CREATE_SUCCESS:
-      if (!state.project || state.project._id !== payload.ticket.project) return state;
+      if (!state.project || state.project._id !== payload.ticket.project._id)
+        return state;
       return {
         project: {
           ...state.project,
-          tickets: [payload.ticket, ...state.project?.tickets],
+          // Socket delivery can repeat what the request already applied.
+          tickets: [
+            payload.ticket,
+            ...state.project.tickets.filter(
+              (ticket) => ticket._id !== payload.ticket._id
+            )
+          ],
         }, loading: false, error: null, method: { ...state.method, createTicket: false }
       };
     case ticketTypes.TICKET_CREATE_FAIL:
@@ -185,7 +194,13 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
             if (ticket._id === payload.comment.ticket) {
               return {
                 ...ticket,
-                comments: [payload.comment._id, ...ticket.comments]
+                // Socket delivery can repeat what the request already applied.
+                comments: [
+                  payload.comment._id,
+                  ...(ticket.comments as string[]).filter(
+                    (commentId) => commentId !== payload.comment._id
+                  )
+                ]
               }
             }
             return ticket;
@@ -203,6 +218,11 @@ const projectReducer = (state: ProjectsState = initialState, action: ActionType)
           tickets: state.project.tickets.filter(ticket => ticket._id !== payload.ticketId)
         }
       };
+
+    case types.PROJECT_REMOVED:
+      // Only clears the view if it is the project being left behind.
+      if (state.project && state.project._id !== payload.projectId) return state;
+      return initialState;
 
     case userTypes.USER_LOGOUT:
       return initialState;
