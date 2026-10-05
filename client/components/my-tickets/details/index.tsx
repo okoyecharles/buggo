@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { GroupedTickets, Ticket } from "@/core/types/models";
 import MyTicketsProjects from "./projects";
 

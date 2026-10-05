@@ -18,7 +18,7 @@ const TicketStats: React.FC<Props> = ({
 
   return (
     <>
-      <div className="flex flex-col md:flex-row xl:flex-col gap-4 relative">
+      <div className="flex flex-col md:flex-row xl:flex-col gap-4 relative overflow-hidden">
         <a.div
           style={trail[0]}
           className="row-span-1 bg-gray-900 p-3 rounded shadow flex-1 relative"

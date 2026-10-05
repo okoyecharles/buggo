@@ -34,7 +34,7 @@ const Navigation: React.FC<NavigationProps> = ({
       <nav className="flex items-center shadow-sm shadow-gray-950 bg-gray-800 p-3 text-gray-100 font-open md:px-8 gap-4 h-16">
         <div className="logo font-bold">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <Image src={"/text-logo.png"} height={20} width={100} alt="buggo" />
+            <Image src={"/text-logo.png"} height={20} width={100} alt="buggo" className="w-auto h-auto" />
           </Link>
         </div>
         <button

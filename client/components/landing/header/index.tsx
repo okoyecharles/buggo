@@ -16,7 +16,13 @@ const LandingHeader = () => {
       <div className="flex items-center p-3 px-6 text-gray-100 font-open md:px-[40px] gap-4 h-20 w-[min(100%,1260px)]">
         <div className="logo font-bold mr-auto">
           <Link href="/" className="flex items-center gap-2" aria-label="Logo">
-            <Image src={"/text-logo.png"} height={20} width={100} alt="buggo" />
+            <Image
+              src={"/text-logo.png"}
+              height={20}
+              width={100}
+              alt="buggo"
+              className="w-auto h-auto"
+            />
           </Link>
         </div>
 

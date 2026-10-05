@@ -14,6 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
   // Use the layout defined at the page level, if defined
   const getLayout = (Component as any).getLayout || ((page: any) => page);
   const protectedRoute = (Component as any).protected || false;
+  // progamatically import toastify css
 
   useEffect(() => {
     store.dispatch(validateUserSession());

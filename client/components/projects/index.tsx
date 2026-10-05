@@ -54,6 +54,7 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
           <button
             className="group cursor-pointer"
             id="create-project"
+						aria-label="Create Project"
             onClick={() => {
               setCreateModalOpen(true);
             }}
