@@ -23,8 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   useEffect(() => {
     if (
       !currentUser.user &&
-      !currentUser.loading &&
-      !currentUser.method.validate
+      !currentUser.pending.validate
     ) {
       router.replace("/login?redirected=true");
     }
@@ -32,7 +31,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 	// Once the user logs in
   useEffect(() => {
-    if (currentUser.user?._id && !currentUser.loading) {
+    if (currentUser.user?._id && !currentUser.pending.validate) {
 			// Connect to the socket
 			socket.connect();
 			// Load notifications

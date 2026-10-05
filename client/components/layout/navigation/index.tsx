@@ -95,9 +95,6 @@ const Navigation: React.FC<NavigationProps> = ({
           <EditProfileModal
             open={editProfile}
             setOpen={setEditProfile}
-            user={currentUser.user}
-            loading={currentUser.loading}
-            method={currentUser.method}
           />
           <NotificationModal
             open={notificationOpen}

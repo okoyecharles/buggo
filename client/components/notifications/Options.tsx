@@ -2,7 +2,8 @@ import { BsCheck2All, BsFillTrashFill } from "react-icons/bs";
 import { Notification } from "@/core/types/models";
 import { OptionsButton } from "@/core/components/button";
 import OptionsPopup from "@/core/components/options";
-import store from "@/redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
+import { useSelector } from "react-redux";
 import {
   deleteNotification,
   readNotification,
@@ -12,17 +13,18 @@ const NotificationOptionsPopup: React.FC<{
   open: boolean;
   setOpen: any;
   notification: Notification;
-  method: {
-    [key: string]: boolean;
-  };
-}> = ({ open, setOpen, notification, method }) => {
+}> = ({ open, setOpen, notification }) => {
+  const pending = useSelector(
+    (store: storeType) => store.notifications.pending,
+  );
+
   return (
     <OptionsPopup open={open} setOpen={setOpen} style="top-12 right-2">
       {/* Nothing left to mark once it has been read */}
       {!notification.read && (
         <>
           <OptionsButton
-            processing={method.read}
+            processing={pending.read}
             onClick={() => {
               store.dispatch(readNotification(notification._id));
               setOpen(false);
@@ -38,7 +40,7 @@ const NotificationOptionsPopup: React.FC<{
 
       <OptionsButton
         color="red-500"
-        processing={method.delete}
+        processing={pending.delete}
         onClick={() => {
           store.dispatch(deleteNotification(notification._id));
           setOpen(false);

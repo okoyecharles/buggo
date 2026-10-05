@@ -29,8 +29,11 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   open,
   setOpen,
 }) => {
-  const { notifications, method } = useSelector(
-    (store: storeType) => store.notifications,
+  const notifications = useSelector(
+    (store: storeType) => store.notifications.notifications,
+  );
+  const readingAll = useSelector(
+    (store: storeType) => store.notifications.pending.readAll,
   );
   const unread = notifications.filter((notification) => !notification.read);
   const router = useRouter();
@@ -87,7 +90,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           <div className="flex justify-start px-4 lg:px-6 mb-4">
             <button
               className="bg-blue-500 hover:bg-blue-600 text-white text-ss font-medium rounded h-8 px-3 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-              disabled={method.readAll}
+              disabled={readingAll}
               onClick={() => {
                 store.dispatch(readNotifications());
               }}
@@ -181,7 +184,6 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                           open={openOptions === notification._id}
                           setOpen={() => setOpenOptions(null)}
                           notification={notification}
-                          method={method}
                         />
                       </div>
                     </div>

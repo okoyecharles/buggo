@@ -35,7 +35,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
   const project = useSelector((store: storeType) => store.project.project!);
-  const { loading, method } = useSelector((store: storeType) => store.ticket);
+  const updating = useSelector((store: storeType) => store.ticket.pending.update);
 
   const [closing, setClosing] = useState<boolean>(false);
   const [ticketAssignOpen, setTicketAssignOpen] = useState<boolean>(false);
@@ -79,7 +79,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
           <>
             <OptionsButton
               id={`remove-self-${ticket._id}`}
-              processing={loading && method.update}
+              processing={updating}
               onClick={handleTicketAssign}
             >
               {isInTeam(ticket) ? (
@@ -94,7 +94,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
             </OptionsButton>
 
             <OptionsButton
-              processing={loading && method.update}
+              processing={updating}
               onClick={() => {
                 setOpen(false);
                 setTicketAssignOpen((prev) => !prev);
@@ -108,16 +108,17 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
             {ticket.status !== ticketStatus.closed ? (
               <OptionsButton
-                processing={loading && method.update}
-                onClick={() => {
+                processing={updating}
+                onClick={async () => {
                   setClosing(true);
-                  store.dispatch(
+                  await store.dispatch(
                     updateTicket(ticket._id, { status: ticketStatus.closed })
                   );
+                  setClosing(false);
                 }}
               >
                 Close Ticket
-                {loading && method.update && closing ? (
+                {updating && closing ? (
                   <TailSpinLoader height="15" />
                 ) : (
                   <IoClose className="text-lg" />
@@ -142,15 +143,11 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
         open={ticketAssignOpen}
         setOpen={setTicketAssignOpen}
         ticket={ticket}
-        method={method}
-        loading={loading}
       />
       <TicketDeleteModal
         open={deleteTicketOpen}
         setOpen={setDeleteTicketOpen}
         ticket={ticket}
-        method={method}
-        loading={loading}
       />
     </>
   );

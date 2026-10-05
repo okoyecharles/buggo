@@ -43,7 +43,7 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    if (currentUser.user && !currentUser.loading) {
+    if (currentUser.user && !currentUser.pending.validate) {
       // Only an auth page can know the user is being bounced away, so the
       // notice lives here rather than in the session check that runs on
       // every mount. A real sign in shares the toast id and wins the race.
@@ -167,7 +167,7 @@ const Login = () => {
             />
           </div>
 
-          <Button overrideStyle="mt-6" processing={loginStore.loading}>
+          <Button overrideStyle="mt-6" processing={loginStore.pending}>
             Log In
           </Button>
 

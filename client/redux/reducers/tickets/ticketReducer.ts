@@ -5,9 +5,8 @@ import { Comment, Ticket } from "@/core/types/models";
 
 export interface TicketState {
   ticket: Ticket | null;
-  loading: boolean;
   error: { messsage: string } | null;
-  method: {
+  pending: {
     details: boolean;
     update: boolean;
     comment: boolean;
@@ -17,9 +16,8 @@ export interface TicketState {
 
 const initialState: TicketState = {
   ticket: null,
-  loading: false,
   error: null,
-  method: {
+  pending: {
     details: false,
     update: false,
     comment: false,
@@ -34,52 +32,55 @@ const ticketReducer = (state: TicketState = initialState, action: ActionType): T
     // Get details of a ticket
     case types.TICKET_DETAILS_REQUEST:
       return {
-        ...initialState, loading: true, error: null, method: {
-          ...state.method,
+        ...initialState, error: null, pending: {
+          ...initialState.pending,
           details: true,
         }
       };
     case types.TICKET_DETAILS_SUCCESS:
       return {
-        ...state, loading: false, error: null, method: {
-          ...state.method,
+        ...state, error: null, pending: {
+          ...state.pending,
           details: false,
         }, ...payload
       };
     case types.TICKET_DETAILS_FAIL:
       return {
-        ...state, loading: false, error: payload, method: {
-          ...state.method,
+        ...state, error: payload, pending: {
+          ...state.pending,
           details: false,
         }
       };
 
     case types.TICKET_UPDATE_REQUEST:
       return {
-        ...state, loading: true, error: null, method: {
-          ...state.method,
+        ...state, error: null, pending: {
+          ...state.pending,
           update: true
         }
       };
     case types.TICKET_UPDATE_SUCCESS:
       return {
-        ...state, loading: false, error: null, method: {
-          ...state.method,
+        ...state, error: null, pending: {
+          ...state.pending,
           update: false,
-        }, ...payload
+        },
+        // Updates to other tickets (from the list or a socket) must not
+        // replace the open one.
+        ticket: state.ticket?._id === payload.ticket._id ? payload.ticket : state.ticket
       };
     case types.TICKET_UPDATE_FAIL:
       return {
-        ...state, loading: false, error: payload, method: {
-          ...state.method,
+        ...state, error: payload, pending: {
+          ...state.pending,
           update: false,
         }
       };
 
     case types.TICKET_COMMENT_REQUEST:
       return {
-        ...state, loading: true, error: null, method: {
-          ...state.method,
+        ...state, error: null, pending: {
+          ...state.pending,
           comment: true
         }
       };
@@ -88,8 +89,8 @@ const ticketReducer = (state: TicketState = initialState, action: ActionType): T
       if (payload.ticketId && state.ticket._id !== payload.ticketId) return state;
 
       return {
-        ...state, loading: false, error: null, method: {
-          ...state.method,
+        ...state, error: null, pending: {
+          ...state.pending,
           comment: false,
         }, ticket: {
           ...state.ticket,
@@ -106,27 +107,28 @@ const ticketReducer = (state: TicketState = initialState, action: ActionType): T
       };
     case types.TICKET_COMMENT_FAIL:
       return {
-        ...state, loading: false, error: payload, method: {
-          ...state.method,
+        ...state, error: payload, pending: {
+          ...state.pending,
           comment: false,
         }
       };
 
     case types.TICKET_DELETE_REQUEST:
       return {
-        ...state, loading: true, error: null, method: {
-          ...state.method,
+        ...state, error: null, pending: {
+          ...state.pending,
           delete: true
         }
       };
     case types.TICKET_DELETE_SUCCESS:
       // A member deleting some other ticket must not clear the open one.
-      if (state.ticket && state.ticket._id !== payload.ticketId) return state;
+      if (state.ticket && state.ticket._id !== payload.ticketId)
+        return { ...state, pending: { ...state.pending, delete: false } };
       return initialState;
     case types.TICKET_DELETE_FAIL:
       return {
-        ...state, loading: false, error: payload, method: {
-          ...state.method,
+        ...state, error: payload, pending: {
+          ...state.pending,
           delete: false,
         }
       };

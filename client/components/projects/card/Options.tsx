@@ -6,28 +6,28 @@ import {
 } from "react-icons/bs";
 import { OptionsButton } from "@/core/components/button";
 import OptionsPopup from "@/core/components/options";
+import { useSelector } from "react-redux";
+import { storeType } from "@/redux/configureStore";
 
 const ProjectOptionsPopup: React.FC<{
   open: boolean;
-  loading: boolean;
-  method: any;
   setOpen: any;
   setProjectDeleteConfirm: any;
   handleEditMode: any;
   setProjectAssign: any;
 }> = ({
   open,
-  loading,
-  method,
   setOpen,
   handleEditMode,
   setProjectDeleteConfirm,
   setProjectAssign,
 }) => {
+  const pending = useSelector((store: storeType) => store.projects.pending);
+
   return (
     <OptionsPopup open={open} setOpen={setOpen}>
       <OptionsButton
-        processing={loading && method.update}
+        processing={pending.update}
         onClick={() => {
           setOpen(false);
           handleEditMode();
@@ -38,7 +38,7 @@ const ProjectOptionsPopup: React.FC<{
       </OptionsButton>
 
       <OptionsButton
-        processing={loading && method.update}
+        processing={pending.update}
         onClick={() => {
           setProjectAssign(true);
           setOpen(false);
@@ -52,7 +52,7 @@ const ProjectOptionsPopup: React.FC<{
 
       <OptionsButton
         color="red-500"
-        processing={loading && method.delete}
+        processing={pending.delete}
         onClick={() => setProjectDeleteConfirm(true)}
       >
         Delete Project

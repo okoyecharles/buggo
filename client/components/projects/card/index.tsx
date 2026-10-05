@@ -27,11 +27,7 @@ import { a } from "@react-spring/web";
 
 interface projectProps {
   project: Project;
-  loading: boolean;
   search: string;
-  method: {
-    [key: string]: any;
-  };
   currentEdit: string;
   setCurrentEdit: (id: string) => void;
   projectCardTrail: any
@@ -39,14 +35,15 @@ interface projectProps {
 
 const ProjectCard: React.FC<projectProps> = ({
   project,
-  loading,
   search,
-  method,
   currentEdit,
   setCurrentEdit,
   projectCardTrail
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
+  const updating = useSelector(
+    (store: storeType) => store.projects.pending.update,
+  );
   const router = useRouter();
 
   const [optionsOpen, setOptionsOpen] = useState(false);
@@ -198,7 +195,7 @@ const ProjectCard: React.FC<projectProps> = ({
             <button
               id={`edit-project-${project._id}`}
               className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
-              disabled={loading && method.update}
+              disabled={updating}
               tabIndex={-1}
               onClick={handleEditMode}
             >
@@ -209,7 +206,7 @@ const ProjectCard: React.FC<projectProps> = ({
               className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
               tabIndex={-1}
               onClick={handleInviteMembers}
-              disabled={loading && method.update}
+              disabled={updating}
             >
               <BsFillPersonCheckFill />
             </button>
@@ -245,8 +242,6 @@ const ProjectCard: React.FC<projectProps> = ({
       <Tooltip anchorId={`delete-project-${project._id}`} content="Delete" />
       <ProjectOptionsPopup
         open={optionsOpen}
-        loading={loading}
-        method={method}
         setOpen={setOptionsOpen}
         setProjectDeleteConfirm={setProjectDeleteConfirm}
         handleEditMode={handleEditMode}

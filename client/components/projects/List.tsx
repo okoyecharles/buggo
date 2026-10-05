@@ -5,17 +5,11 @@ import { a, useSpring, useTrail } from "@react-spring/web";
 import useMediaQuery from "@/hooks/useMediaQuery";
 interface ProjectsListType {
   projects: Project[];
-  loading: boolean;
   search: string;
-  method: {
-    [key: string]: any;
-  };
 }
 
 const ProjectsList: React.FC<ProjectsListType> = ({
   projects,
-  loading,
-  method,
   search,
 }) => {
   const [currentEdit, setCurrentEdit] = React.useState<string>("");
@@ -42,8 +36,6 @@ const ProjectsList: React.FC<ProjectsListType> = ({
         <ProjectCard
           key={project._id}
           project={project}
-          loading={loading}
-          method={method}
           search={search}
           currentEdit={currentEdit}
           setCurrentEdit={setCurrentEdit}

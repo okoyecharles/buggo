@@ -3,32 +3,29 @@ import Modal from "@/core/components/modal";
 import Image from "next/image";
 import Compressor from "compressorjs";
 import { toBase64 } from "@/core/utils/image/convert";
-import store from "@/redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
+import { useSelector } from "react-redux";
 import { updateUser } from "@/redux/actions/userActions";
 import {
   validateProfileImage,
   validateProfileName,
 } from "@/core/utils/validation/profile";
 import { ThreeDotsLoader } from "@/core/components/loader";
-import { User } from "@/core/types/models";
 import avatars from "@/core/assets/avatar";
 import { toast } from "react-toastify";
 
 interface EditProfileModalProps {
   open: boolean;
   setOpen: any;
-  user: User | null;
-  loading: boolean;
-  method: any;
 }
 
 const EditProfileModal: React.FC<EditProfileModalProps> = ({
   open,
   setOpen,
-  user,
-  loading,
-  method,
 }) => {
+  const { user, pending } = useSelector(
+    (store: storeType) => store.currentUser,
+  );
   const [name, setName] = useState(user?.name || "");
   const [nameError, setNameError] = useState<string | null>(null);
   const [image, setImage] = useState<File | Blob | null>(null);
@@ -36,8 +33,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const nameInputRef = React.useRef<HTMLInputElement>(null);
   const imageInputRef = React.useRef<HTMLInputElement>(null);
   const formRef = React.useRef<HTMLFormElement>(null);
-
-  const processing = loading;
 
   const handleEdit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -202,10 +197,10 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
         </button>
         <button
           className="px-6 p-2 bg-blue-600 text-green-50 rounded-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
-          disabled={(processing && method.delete) || !isEdited}
+          disabled={pending.update || !isEdited}
           onClick={() => formRef.current?.requestSubmit()}
         >
-          {processing && method.update ? <ThreeDotsLoader /> : "Save"}
+          {pending.update ? <ThreeDotsLoader /> : "Save"}
         </button>
       </div>
     </Modal>

@@ -6,13 +6,17 @@ import { Ticket } from "@/core/types/models";
 
 export interface TicketsState {
   tickets: Ticket[];
-  loading: boolean;
+  pending: {
+    list: boolean;
+  };
   error: { messsage: string } | null;
 };
 
 const initialState: TicketsState = {
   tickets: [],
-  loading: false,
+  pending: {
+    list: false,
+  },
   error: null,
 };
 
@@ -21,11 +25,11 @@ const ticketsReducer = (state: TicketsState = initialState, action: ActionType):
 
   switch (type) {
     case types.TICKET_LIST_REQUEST:
-      return { ...state, loading: true, error: null };
+      return { ...state, error: null, pending: { ...state.pending, list: true } };
     case types.TICKET_LIST_SUCCESS:
-      return { ...state, loading: false, ...payload, error: null };
+      return { ...state, ...payload, error: null, pending: { ...state.pending, list: false } };
     case types.TICKET_LIST_FAIL:
-      return { ...state, loading: false, error: payload };
+      return { ...state, error: payload, pending: { ...state.pending, list: false } };
 
     case types.TICKET_CREATE_SUCCESS:
       // Every project member is sent a creation, but this list is the user's

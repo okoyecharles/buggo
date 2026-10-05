@@ -1,6 +1,7 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { createProject } from "@/redux/actions/projectActions";
-import store from "@/redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
+import { useSelector } from "react-redux";
 import { validateProjectTitle } from "@/core/utils/validation/project";
 import Modal from "@/core/components/modal";
 import { IoMdClose } from "react-icons/io";
@@ -10,16 +11,13 @@ import { toast } from "react-toastify";
 const CreateProjectModal = ({
   open,
   setOpen,
-  loading,
-  method,
 }: {
   open: boolean;
   setOpen: any;
-  loading: boolean;
-  method: {
-    [key: string]: any;
-  };
 }) => {
+  const creating = useSelector(
+    (store: storeType) => store.projects.pending.create,
+  );
   const [title, setTitle] = useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -97,10 +95,10 @@ const CreateProjectModal = ({
 
         <button
           className="font-open font-semibold px-4 py-2 text-ss mt-4 bg-blue-600 text-white rounded hover:bg-blue-700 hover:text-blue-100 disabled:opacity-80 disabled:cursor-not-allowed  transition flex justify-center"
-          disabled={loading && method.create}
+          disabled={creating}
           type="submit"
         >
-          {loading && method.create ? <ThreeDotsLoader /> : "Create"}
+          {creating ? <ThreeDotsLoader /> : "Create"}
         </button>
       </form>
     </Modal>

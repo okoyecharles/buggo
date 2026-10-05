@@ -43,10 +43,11 @@ const TicketAssignModal: React.FC<{
   open: boolean;
   setOpen: any;
   ticket: Ticket;
-  loading: boolean;
-  method: any;
-}> = ({ open, setOpen, ticket, loading, method }) => {
+}> = ({ open, setOpen, ticket }) => {
   const project = useSelector((store: storeType) => store.project.project!);
+  const updating = useSelector(
+    (store: storeType) => store.ticket.pending.update,
+  );
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState<string>("");
@@ -236,7 +237,7 @@ const TicketAssignModal: React.FC<{
       <div className="flex gap-2 bg-gray-850 p-4 py-3 justify-end">
         <button
           className="px-6 p-2 bg-blue-600 text-blue-50 rounded-sm font-semibold hover:bg-blue-700 group transition disabled:opacity-75"
-          disabled={loading && method.update}
+          disabled={updating}
           onClick={async () => {
             const assignedTeam = members.map((member: User) => member._id);
 
@@ -257,7 +258,7 @@ const TicketAssignModal: React.FC<{
             }
           }}
         >
-          {loading && method.update ? <ThreeDotsLoader /> : "Assign"}
+          {updating ? <ThreeDotsLoader /> : "Assign"}
         </button>
       </div>
     </Modal>

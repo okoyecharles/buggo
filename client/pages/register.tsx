@@ -57,7 +57,7 @@ const Register = () => {
   }, []);
 
   useEffect(() => {
-    if (currentUser.user && !currentUser.loading) {
+    if (currentUser.user && !currentUser.pending.validate) {
       // Only an auth page can know the user is being bounced away, so the
       // notice lives here rather than in the session check that runs on
       // every mount. A real sign in shares the toast id and wins the race.
@@ -294,7 +294,7 @@ const Register = () => {
 
           <Button
             overrideStyle="mt-6"
-            processing={registerStore.loading || convertingImage}
+            processing={registerStore.pending || convertingImage}
           >
             Continue
           </Button>

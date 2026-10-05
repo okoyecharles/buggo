@@ -50,7 +50,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
 
   useEffect(() => {
     // If ticket is deleted, close the details bar
-    if (!ticketDetails.ticket && !ticketDetails.loading) {
+    if (!ticketDetails.ticket && !ticketDetails.pending.details) {
       setOpen(false);
     }
   }, [ticketDetails.ticket]);
@@ -66,7 +66,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (validateCommentText(comment) || ticketDetails.method.comment) return;
+    if (validateCommentText(comment) || ticketDetails.pending.comment) return;
 
     const ticket = ticketDetails.ticket!;
     const ok = await store.dispatch(commentOnTicket(ticket._id, comment));
@@ -137,7 +137,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           </button>
         </header>
 
-        {ticketDetails.loading && ticketDetails.method.details ? (
+        {ticketDetails.pending.details ? (
           <div className="p-3 aspect-square grid place-items-center">
             <div className="flex flex-col items-center gap-2">
               {" "}
@@ -215,8 +215,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           <button
             className="bg-blue-500 flex justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-blue-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors flex-1"
             disabled={
-              ticketDetails.loading ||
-              ticketDetails.method.update ||
+              ticketDetails.pending.update ||
               ticketDetails.ticket?.status === "closed" ||
               !getAuthorization(
                 "ticket",
@@ -234,7 +233,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
               );
             }}
           >
-            {ticketDetails.loading && ticketDetails.method.update ? (
+            {ticketDetails.pending.update ? (
               <ThreeDotsLoader />
             ) : (
               "Close Ticket"
@@ -249,12 +248,12 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           ) && (
             <button
               className={`bg-red-500 justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-red-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors flex-1 flex`}
-              disabled={ticketDetails.loading && ticketDetails.method.delete}
+              disabled={ticketDetails.pending.delete}
               onClick={() => {
                 setProjectDeleteModalOpen(true);
               }}
             >
-              {ticketDetails.loading && ticketDetails.method.delete ? (
+              {ticketDetails.pending.delete ? (
                 <ThreeDotsLoader />
               ) : (
                 "Delete Ticket"
@@ -268,8 +267,6 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           open={projectDeleteModalOpen}
           setOpen={setProjectDeleteModalOpen}
           ticket={ticketDetails.ticket!}
-          loading={ticketDetails.loading}
-          method={ticketDetails.method}
         />
       )}
     </aside>

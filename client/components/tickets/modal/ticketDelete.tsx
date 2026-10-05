@@ -1,5 +1,6 @@
 import { deleteTicket } from "@/redux/actions/ticketActions";
-import store from "@/redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
+import { useSelector } from "react-redux";
 import { Ticket } from "@/core/types/models";
 import Modal from "@/core/components/modal";
 import { ThreeDotsLoader } from "@/core/components/loader";
@@ -10,11 +11,10 @@ const TicketDeleteModal: React.FC<{
   open: boolean;
   setOpen: any;
   ticket: Ticket;
-  loading: boolean;
-  method: {
-    [key: string]: any;
-  };
-}> = ({ open, setOpen, ticket, loading, method }) => {
+}> = ({ open, setOpen, ticket }) => {
+  const deleting = useSelector(
+    (store: storeType) => store.ticket.pending.delete,
+  );
   const handleDelete = async () => {
     const ok = await store.dispatch(deleteTicket(ticket._id));
     if (ok) {
@@ -51,11 +51,11 @@ const TicketDeleteModal: React.FC<{
         </button>
         <button
           className="px-6 p-2 bg-red-500 text-red-50 rounded-sm font-semibold hover:bg-red-600 active:bg-red-700 transition-colors disabled:opacity-75"
-          disabled={loading && method.delete}
+          disabled={deleting}
           aria-label={`Delete ticket ${ticket.title}`}
           onClick={handleDelete}
         >
-          {loading && method.delete ? <ThreeDotsLoader /> : "Delete"}
+          {deleting ? <ThreeDotsLoader /> : "Delete"}
         </button>
       </div>
     </Modal>
