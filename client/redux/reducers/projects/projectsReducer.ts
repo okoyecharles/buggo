@@ -4,7 +4,7 @@ import * as userTypes from "@/redux/constants/userConstants";
 import * as ticketTypes from "@/redux/constants/ticketConstants";
 import { Project } from "@/core/types/models";
 
-interface ProjectsState {
+export interface ProjectsState {
   projects: Project[];
   loading: boolean;
   error: { messsage: string } | null;
@@ -18,7 +18,7 @@ interface ProjectsState {
   };
 };
 
-const initialState = {
+const initialState: ProjectsState = {
   projects: [],
   loading: false,
   error: null,

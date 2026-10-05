@@ -2,7 +2,7 @@ import { User } from '@/core/types/models';
 import * as types from '@/redux/constants/userConstants';
 import { ActionType } from '@/redux/types';
 
-type State = {
+export type CurrentUserState = {
   user: User | null,
   loading: boolean,
   method: {
@@ -10,7 +10,7 @@ type State = {
     validate: boolean;
   };
 };
-const initialState: State = {
+const initialState: CurrentUserState = {
   user: null,
   loading: false,
   method: {
@@ -20,9 +20,9 @@ const initialState: State = {
 };
 
 const currentUserReducer = (
-  state: State = initialState,
+  state: CurrentUserState = initialState,
   action: ActionType
-): State => {
+): CurrentUserState => {
   const { type, payload } = action;
   switch (type) {
     case types.USER_LOGIN_SUCCESS:

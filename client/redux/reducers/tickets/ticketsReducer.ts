@@ -4,13 +4,13 @@ import * as projectTypes from "@/redux/constants/projectConstants";
 import * as userTypes from "@/redux/constants/userConstants";
 import { Ticket } from "@/core/types/models";
 
-interface TicketsState {
+export interface TicketsState {
   tickets: Ticket[];
   loading: boolean;
   error: { messsage: string } | null;
 };
 
-const initialState = {
+const initialState: TicketsState = {
   tickets: [],
   loading: false,
   error: null,

@@ -4,7 +4,7 @@ import * as types from "@/redux/constants/notificationConstants";
 import * as projectTypes from "@/redux/constants/projectConstants";
 import * as userTypes from "@/redux/constants/userConstants";
 
-interface NotificationsState {
+export interface NotificationsState {
   notifications: Notification[];
   loading: boolean;
   error: { message: string } | null;
@@ -16,7 +16,7 @@ interface NotificationsState {
   };
 };
 
-const initialState = {
+const initialState: NotificationsState = {
   notifications: [],
   loading: false,
   error: null,

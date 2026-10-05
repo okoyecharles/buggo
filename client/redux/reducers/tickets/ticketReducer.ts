@@ -1,10 +1,9 @@
-
 import { ActionType } from "@/redux/types";
 import * as types from "@/redux/constants/ticketConstants";
 import * as userTypes from "@/redux/constants/userConstants";
 import { Comment, Ticket } from "@/core/types/models";
 
-interface TicketState {
+export interface TicketState {
   ticket: Ticket | null;
   loading: boolean;
   error: { messsage: string } | null;
@@ -16,7 +15,7 @@ interface TicketState {
   }
 };
 
-const initialState = {
+const initialState: TicketState = {
   ticket: null,
   loading: false,
   error: null,

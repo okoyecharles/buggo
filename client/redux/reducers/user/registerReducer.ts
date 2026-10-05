@@ -1,19 +1,19 @@
 import * as types from "@/redux/constants/userConstants";
 import { ActionType } from "@/redux/types";
 
-type State = {
+export type RegisterState = {
   loading: boolean;
   error: null | { message: string };
 };
-const initialState = {
+const initialState: RegisterState = {
   loading: false,
   error: null,
 };
 
 const registerReducer = (
-  state: State = initialState,
+  state: RegisterState = initialState,
   action: ActionType,
-): State => {
+): RegisterState => {
   const { type, payload } = action;
   switch (type) {
     case types.USER_REGISTER_REQUEST:
