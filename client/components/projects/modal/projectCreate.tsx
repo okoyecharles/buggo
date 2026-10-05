@@ -5,6 +5,7 @@ import { validateProjectTitle } from "@/core/utils/validation/project";
 import Modal from "@/core/components/modal";
 import { IoMdClose } from "react-icons/io";
 import { ThreeDotsLoader } from "@/core/components/loader";
+import { toast } from "react-toastify";
 
 const CreateProjectModal = ({
   open,
@@ -24,7 +25,7 @@ const CreateProjectModal = ({
 
   const [titleError, setTitleError] = useState<string | null>(null);
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setTitleError(null);
 
@@ -35,17 +36,14 @@ const CreateProjectModal = ({
     }
 
     const projectData = { title };
-    store.dispatch(createProject(projectData));
-  };
-
-  // Close modal if project has been created
-  useEffect(() => {
-    if (open && loading === false && !method.create) {
+    const ok = await store.dispatch(createProject(projectData));
+    if (ok) {
+      toast.success("Project created successfully");
       setOpen(false);
       setTitle("");
       setTitleError(null);
     }
-  }, [method.create]);
+  };
 
   useEffect(() => {
     if (open) {
@@ -74,7 +72,7 @@ const CreateProjectModal = ({
       <form action="" className="flex flex-col" onSubmit={handleSubmit}>
         <div className="flex flex-col mt-4">
           <label
-            htmlFor="name"
+            htmlFor="project-title"
             className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
               titleError && "text-red-300"
             }`}
@@ -86,7 +84,7 @@ const CreateProjectModal = ({
           </label>
           <input
             type="text"
-            id="name"
+            id="project-title"
             ref={inputRef}
             name="name"
             placeholder="eg. Limitless horizons"

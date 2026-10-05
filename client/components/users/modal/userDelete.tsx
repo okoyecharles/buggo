@@ -16,12 +16,12 @@ const UserDeleteModal: React.FC<{
 
   const handleDelete = async () => {
     setLoading(true);
-
     const newUsers = await deleteUser(user._id);
     setLoading(false);
-    setOpen(false);
-
-    setUsers(newUsers);
+    if (newUsers) {
+      setOpen(false);
+      setUsers(newUsers);
+    }
   };
 
   return (

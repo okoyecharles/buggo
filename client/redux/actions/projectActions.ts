@@ -1,4 +1,3 @@
-import { toast } from 'react-toastify';
 import { storeType } from './../configureStore';
 import SERVER_URL from '@/core/data/backend';
 import * as types from '@/redux/constants/projectConstants';
@@ -25,11 +24,13 @@ export const fetchProjects =
           userId: getState().currentUser.user?._id,
         },
       });
+      return true;
     } catch (error: any) {
       dispatch({
         type: types.PROJECT_LIST_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
+      return false;
     }
   };
 
@@ -46,17 +47,19 @@ export const fetchProjectById =
         type: types.PROJECT_DETAILS_SUCCESS,
         payload: data,
       });
+      return true;
     } catch (error: any) {
       dispatch({
         type: types.PROJECT_DETAILS_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
+      return false;
     }
   };
 
 export const createProject =
   (project: any) =>
-    async (dispatch: DispatchType, getState: () => storeType) => {
+    async (dispatch: DispatchType) => {
       try {
         dispatch({
           type: types.PROJECT_CREATE_REQUEST,
@@ -67,17 +70,18 @@ export const createProject =
           project,
           generateConfig()
         );
-        toast.success('Project created successfully');
 
         dispatch({
           type: types.PROJECT_CREATE_SUCCESS,
           payload: data,
         });
+        return true;
       } catch (error: any) {
         dispatch({
           type: types.PROJECT_CREATE_FAIL,
           payload: error.response?.data ? error.response.data : error.error,
         });
+        return false;
       }
     };
 
@@ -99,11 +103,13 @@ export const updateProject =
           type: types.PROJECT_UPDATE_SUCCESS,
           payload: data,
         });
+        return true;
       } catch (error: any) {
         dispatch({
           type: types.PROJECT_UPDATE_FAIL,
           payload: error.response?.data ? error.response.data : error.error,
         });
+        return false;
       }
     };
 
@@ -114,17 +120,18 @@ export const deleteProject =
         type: types.PROJECT_DELETE_REQUEST,
       });
       await axios.delete(`${SERVER_URL}/projects/${id}`, generateConfig());
-      toast.success("Project deleted successfully");
 
       dispatch({
         type: types.PROJECT_DELETE_SUCCESS,
         payload: id,
       });
+      return true;
     } catch (error: any) {
       dispatch({
         type: types.PROJECT_DELETE_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
+      return false;
     }
   };
 
@@ -143,17 +150,18 @@ export const inviteToProject = (id: string, invitees: {
         { invitees },
         generateConfig()
       );
-      toast.success("Members invited successfully");
 
       dispatch({
         type: types.PROJECT_INVITE_SUCCESS,
         payload: data
       });
+      return true;
     } catch (error: any) {
       dispatch({
         type: types.PROJECT_INVITE_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
+      return false;
     }
   };
 
@@ -169,17 +177,18 @@ export const acceptInvite = (id: string) =>
         {},
         generateConfig()
       );
-      toast.success("Invitation accepted successfully");
 
       dispatch({
         type: types.PROJECT_ACCEPT_INVITE_SUCCESS,
         payload: { ...data, projectId: id }
       });
+      return true;
     } catch (error: any) {
       dispatch({
         type: types.PROJECT_ACCEPT_INVITE_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
+      return false;
     }
   };
 
@@ -195,16 +204,17 @@ export const declineInvite = (id: string) =>
         {},
         generateConfig()
       );
-      toast.success("Invitation declined");
 
       dispatch({
         type: types.PROJECT_DECLINE_INVITE_SUCCESS,
         payload: { projectId: id }
       });
+      return true;
     } catch (error: any) {
       dispatch({
         type: types.PROJECT_DECLINE_INVITE_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
+      return false;
     }
   };

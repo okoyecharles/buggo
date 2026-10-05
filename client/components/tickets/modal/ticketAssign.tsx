@@ -72,13 +72,6 @@ const TicketAssignModal: React.FC<{
     }
   }, [open]);
 
-  useEffect(() => {
-    if (open && !loading && !method.update) {
-      setOpen(false);
-      toast.success("Members assigned successfully");
-    }
-  }, [loading, method]);
-
   return (
     <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
       <div className="modal__container p-4">
@@ -244,7 +237,7 @@ const TicketAssignModal: React.FC<{
         <button
           className="px-6 p-2 bg-blue-600 text-blue-50 rounded-sm font-semibold hover:bg-blue-700 group transition disabled:opacity-75"
           disabled={loading && method.update}
-          onClick={() => {
+          onClick={async () => {
             const assignedTeam = members.map((member: User) => member._id);
 
             const teamValidationError = validateTicketTeam(assignedTeam);
@@ -253,11 +246,15 @@ const TicketAssignModal: React.FC<{
               return;
             }
 
-            store.dispatch(
+            const ok = await store.dispatch(
               updateTicket(ticket._id, {
                 team: assignedTeam,
               })
             );
+            if (ok) {
+              toast.success("Members assigned successfully");
+              setOpen(false);
+            }
           }}
         >
           {loading && method.update ? <ThreeDotsLoader /> : "Assign"}

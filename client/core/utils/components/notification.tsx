@@ -9,6 +9,7 @@ import {
   acceptInvite,
   declineInvite,
 } from "@/redux/actions/projectActions";
+import { toast } from "react-toastify";
 
 export const getNotificationDescription = (notification: Notification) => {
   switch (notification.type) {
@@ -77,16 +78,24 @@ export const getNotificationActions = (
           label: "Accept Invite",
           icon: <BsCheck className="text-2xl" />,
           variant: "primary",
-          handler: () =>
-            store.dispatch(acceptInvite(notification.snapshot.project._id)),
+          handler: async () => {
+            const ok = await store.dispatch(
+              acceptInvite(notification.snapshot.project._id),
+            );
+            if (ok) toast.success("Invitation accepted successfully");
+          },
         },
         {
           key: "decline",
           label: "Decline",
           icon: <IoClose className="text-xl" />,
           variant: "danger",
-          handler: () =>
-            store.dispatch(declineInvite(notification.snapshot.project._id)),
+          handler: async () => {
+            const ok = await store.dispatch(
+              declineInvite(notification.snapshot.project._id),
+            );
+            if (ok) toast.success("Invitation declined");
+          },
         },
       ];
     default:

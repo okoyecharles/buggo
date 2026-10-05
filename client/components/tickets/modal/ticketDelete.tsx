@@ -1,10 +1,10 @@
 import { deleteTicket } from "@/redux/actions/ticketActions";
 import store from "@/redux/configureStore";
 import { Ticket } from "@/core/types/models";
-import { useEffect } from "react";
 import Modal from "@/core/components/modal";
 import { ThreeDotsLoader } from "@/core/components/loader";
 import getDate from "@/core/utils/strings/date";
+import { toast } from "react-toastify";
 
 const TicketDeleteModal: React.FC<{
   open: boolean;
@@ -15,15 +15,13 @@ const TicketDeleteModal: React.FC<{
     [key: string]: any;
   };
 }> = ({ open, setOpen, ticket, loading, method }) => {
-  const handleDelete = () => {
-    store.dispatch(deleteTicket(ticket._id));
-  };
-
-  useEffect(() => {
-    if (open && !method.delete) {
+  const handleDelete = async () => {
+    const ok = await store.dispatch(deleteTicket(ticket._id));
+    if (ok) {
+      toast.success("Ticket deleted successfully");
       setOpen(false);
     }
-  }, [method.delete]);
+  };
 
   return (
     <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
@@ -54,6 +52,7 @@ const TicketDeleteModal: React.FC<{
         <button
           className="px-6 p-2 bg-red-500 text-red-50 rounded-sm font-semibold hover:bg-red-600 active:bg-red-700 transition-colors disabled:opacity-75"
           disabled={loading && method.delete}
+          aria-label={`Delete ticket ${ticket.title}`}
           onClick={handleDelete}
         >
           {loading && method.delete ? <ThreeDotsLoader /> : "Delete"}

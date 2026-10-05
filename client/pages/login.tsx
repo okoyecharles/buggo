@@ -1,7 +1,10 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSpring, a } from "@react-spring/web";
-import { validateEmail, validatePassword } from "@/core/utils/validation/register";
+import {
+  validateEmail,
+  validatePassword,
+} from "@/core/utils/validation/register";
 import { useSelector } from "react-redux";
 import store, { storeType } from "@/redux/configureStore";
 import { useRouter } from "next/router";
@@ -57,7 +60,7 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setEmailError(null);
     setPasswordError(null);
@@ -68,10 +71,12 @@ const Login = () => {
 
     // Validate password
     let passwordValidationError = validatePassword(password);
-    if (passwordValidationError) return showError(passwordValidationError, "password");
+    if (passwordValidationError)
+      return showError(passwordValidationError, "password");
 
     // If no errors, send request to server
-    store.dispatch(login(email, password));
+    const ok = await store.dispatch(login(email, password));
+    if (ok) toast.success("Logged In successfully", { toastId: AUTH_TOAST_ID });
   };
 
   return (
@@ -88,7 +93,13 @@ const Login = () => {
           style={springs}
         >
           <div className="self-center mb-4 mt-4 sm:hidden">
-            <Image src={"/text-logo.png"} height={22} width={110} alt="buggo" />
+            <Image
+              src={"/text-logo.png"}
+              height={22}
+              width={110}
+              alt="buggo"
+              className="w-auto h-auto"
+            />
           </div>
           <h2 className="text-gray-100 text-xl font-semibold self-center mb-1">
             Welcome back!

@@ -1,10 +1,11 @@
 import { toast } from 'react-toastify';
 import SERVER_URL from '@/core/data/backend';
 import * as types from '@/redux/constants/userConstants';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { DispatchType } from '@/redux/types';
 import store, { storeType } from '@/redux/configureStore';
 import generateConfig from './config/axios';
+import { User } from '@/core/types/models';
 
 /*
  * Shared by every "you are signed in" notice: a real sign in and the auth
@@ -25,17 +26,18 @@ const login =
         { email, password },
         generateConfig()
       );
-      toast.success("Logged In successfully", { toastId: AUTH_TOAST_ID });
 
       dispatch({
         type: types.USER_LOGIN_SUCCESS,
         payload: data,
       });
+      return true;
     } catch (error: any) {
       dispatch({
         type: types.USER_LOGIN_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
+      return false;
     }
   };
 
@@ -49,17 +51,18 @@ const register = (formData: any) => async (dispatch: DispatchType) => {
       formData,
       generateConfig()
     );
-    toast.success("Signed Up successfully", { toastId: AUTH_TOAST_ID });
 
     dispatch({
       type: types.USER_REGISTER_SUCCESS,
       payload: data,
     });
+    return true;
   } catch (error: any) {
     dispatch({
       type: types.USER_REGISTER_FAIL,
       payload: error.response?.data ? error.response.data : error.error,
     });
+    return false;
   }
 };
 
@@ -92,12 +95,14 @@ const validateUserSession = () => async (dispatch: DispatchType) => {
       type: types.USER_VALIDATE_SUCCESS,
       payload: data,
     });
+    return true;
   } catch (error: any) {
     dispatch({
       type: types.USER_VALIDATE_FAIL,
     });
     // `auto` keeps this quiet: a dead session is not a deliberate sign out.
     store.dispatch(logout(true));
+    return false;
   }
 };
 
@@ -115,17 +120,18 @@ const updateUser = (formData: {
       formData,
       generateConfig()
     );
-    toast.success("User updated successfully");
 
     dispatch({
       type: types.USER_PROFILE_UPDATE_SUCCESS,
       payload: data,
     });
+    return true;
   } catch (error: any) {
     dispatch({
       type: types.USER_PROFILE_UPDATE_FAIL,
       payload: error.response?.data ? error.response.data : error.error,
     });
+    return false;
   }
 };
 
@@ -139,7 +145,7 @@ const deleteUser = async (id: string) => {
     const { data } = await axios.delete(
       `${SERVER_URL}/users/${id}`,
       generateConfig()
-    );
+    ) as AxiosResponse<{ users: User[] }>;
     toast.success("User deleted successfully");
     return data.users;
   } catch (error: any) {

@@ -20,11 +20,13 @@ export const fetchNotifications =
         type: types.NOTIFICATION_LIST_SUCCESS,
         payload: data,
       });
+      return true;
     } catch (error: any) {
       dispatch({
         type: types.NOTIFICATION_LIST_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
+      return false;
     }
   };
 
@@ -45,11 +47,13 @@ export const readNotification =
         type: types.NOTIFICATION_READ_SUCCESS,
         payload: data,
       });
+      return true;
     } catch (error: any) {
       dispatch({
         type: types.NOTIFICATION_READ_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
+      return false;
     }
   };
 
@@ -70,11 +74,13 @@ export const readNotifications =
         type: types.NOTIFICATION_READ_ALL_SUCCESS,
         payload: null,
       });
+      return true;
     } catch (error: any) {
       dispatch({
         type: types.NOTIFICATION_READ_ALL_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
+      return false;
     }
   };
 
@@ -94,10 +100,12 @@ export const deleteNotification =
         type: types.NOTIFICATION_DELETE_SUCCESS,
         payload: { notificationId: id },
       });
+      return true;
     } catch (error: any) {
       dispatch({
         type: types.NOTIFICATION_DELETE_FAIL,
         payload: error.response?.data ? error.response.data : error.error,
       });
+      return false;
     }
   };

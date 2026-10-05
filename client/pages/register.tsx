@@ -115,7 +115,8 @@ const Register = () => {
       password,
       image: base64Image || avatars[Math.floor(Math.random() * avatars.length)],
     };
-    store.dispatch(register(formData));
+    const ok = await store.dispatch(register(formData));
+    if (ok) toast.success("Signed Up successfully", { toastId: AUTH_TOAST_ID });
   };
 
   useEffect(() => {
@@ -149,7 +150,7 @@ const Register = () => {
           style={springs}
         >
           <div className="self-center mb-4 mt-4 sm:hidden">
-            <Image src={"/text-logo.png"} height={22} width={110} alt="buggo" />
+            <Image src={"/text-logo.png"} height={22} width={110} alt="buggo" className="w-auto h-auto" />
           </div>
           <h2 className="text-gray-100 text-xl font-semibold self-center mb-1">
             Create an account

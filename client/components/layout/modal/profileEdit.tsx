@@ -37,9 +37,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const imageInputRef = React.useRef<HTMLInputElement>(null);
   const formRef = React.useRef<HTMLFormElement>(null);
 
-  const [processing, setProcessing] = useState(false);
+  const processing = loading;
 
-  const handleEdit = (event: React.FormEvent) => {
+  const handleEdit = async (event: React.FormEvent) => {
     event.preventDefault();
     setNameError(null);
 
@@ -57,7 +57,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     }
 
     const userData = { name, image: base64Image };
-    store.dispatch(updateUser(userData));
+    const ok = await store.dispatch(updateUser(userData));
+    if (ok) {
+      toast.success("User updated successfully");
+      setOpen(false);
+    }
   };
 
   const isEdited = useMemo(() => {
@@ -68,13 +72,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     event.preventDefault();
     imageInputRef.current?.click();
   };
-
-  useEffect(() => {
-    setProcessing(loading);
-    if (open && !loading && !method.update) {
-      setOpen(false);
-    }
-  }, [loading, method]);
 
   useEffect(() => {
     if (open) {
