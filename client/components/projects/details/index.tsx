@@ -19,19 +19,16 @@ import { acceptInvite } from "@/redux/actions/projectActions";
 import { a, useSpring, useTrail } from "@react-spring/web";
 import getAuthorization from "@/core/utils/authorization";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 interface ProjectDetailsBarProps {
   project: Project | null;
-  loading: boolean;
-  method: any;
   setTicketCreateOpen: any;
   setProjectDeleteOpen: any;
 }
 
 const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   project,
-  loading,
-  method,
   setTicketCreateOpen,
   setProjectDeleteOpen,
 }) => {
@@ -43,6 +40,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   const router = useRouter();
 
   const user = useSelector((store: storeType) => store.currentUser.user);
+  const pending = useSelector((store: storeType) => store.project.pending);
 
   const isAuthorized = useMemo(() => {
     return getAuthorization("project", "update", user, project);
@@ -85,42 +83,50 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   return (
     <aside className="project-details-bar w-full lg:w-60 bg-gray-850 lg:relative z-30">
       {/* Project details header */}
-      <header
+      <div
         className="
-         shadow-sm shadow-gray-950 text-gray-300 cursor-pointer transition-colors bg-gray-850 z-10 hover:bg-gray-825 hover:text-gray-100 sticky top-[64px]
+         shadow-sm shadow-gray-950 text-gray-300 transition-colors bg-gray-850 z-10 hover:bg-gray-825 hover:text-gray-100 sticky top-[64px] w-full
         "
-        onClick={() => {
-          if (!isAuthorized) return;
-          setOptionsOpen(!optionsOpen);
-        }}
       >
-        <div className="relative flex items-center p-3 px-6 pl-3 h-16 lg:px-3">
+        <div className="relative flex items-center h-16 gap-[1ch]">
           <button
-            className="rounded p-1 bg-gray-900 active:bg-gray-950 transition-colors shadow-sm mr-[1ch] lg:hidden"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push("/dashboard");
-            }}
+						aria-label="Back to dashboard"
+            className="rounded p-1 bg-gray-900 active:bg-gray-950 transition-colors shadow-sm lg:hidden ml-3"
+            onClick={() => router.push("/dashboard")}
           >
             <IoIosArrowBack className="text-2xl text-white" />
           </button>
-          <span className="truncate font-bold text-gray-100 text-lg mr-auto">
-            {project?.title}
-          </span>
-          {isAuthorized && (
-            <div className="relative w-6 h-6">
-              <MdOutlineKeyboardArrowDown
-                className={`text-2xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
-                  optionsOpen ? "rotate-180 opacity-0" : "rotate-0 opacity-1"
-                } transition-all`}
-              />
-              <IoMdClose
-                className={`text-xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
-                  optionsOpen ? "rotate-0 opacity-1" : "-rotate-180 opacity-0"
-                } transition-all`}
-              />
-            </div>
-          )}
+          <h2 className="truncate font-bold text-gray-100 text-lg flex flex-1 h-full">
+            <button
+              className="flex items-center justify-between gap-2 w-full px-3"
+              onClick={() => {
+                if (!isAuthorized) return;
+                setOptionsOpen(!optionsOpen);
+              }}
+              aria-label="Project options"
+              aria-expanded={optionsOpen}
+            >
+              <span>{project?.title}</span>
+              {isAuthorized && (
+                <span className="relative w-6 h-6" aria-hidden>
+                  <MdOutlineKeyboardArrowDown
+                    className={`text-2xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
+                      optionsOpen
+                        ? "rotate-180 opacity-0"
+                        : "rotate-0 opacity-1"
+                    } transition-all`}
+                  />
+                  <IoMdClose
+                    className={`text-xl absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 ${
+                      optionsOpen
+                        ? "rotate-0 opacity-1"
+                        : "-rotate-180 opacity-0"
+                    } transition-all`}
+                  />
+                </span>
+              )}
+            </button>
+          </h2>
           {project && (
             <ProjectDetailsOptionsPopup
               setProjectDeleteOpen={setProjectDeleteOpen}
@@ -129,11 +135,10 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
               open={optionsOpen}
               setOpen={setOptionsOpen}
               project={project}
-              method={method}
             />
           )}
         </div>
-      </header>
+      </div>
 
       {/* Project details content */}
       <div className="project-info p-3 px-1 text-gray-300 flex flex-col">
@@ -146,10 +151,11 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
         {project?.invitees.some((i) => i.user._id === user?._id) && (
           <Button
             overrideStyle="mx-1"
-            onClick={() => {
-              store.dispatch(acceptInvite(project._id));
+            onClick={async () => {
+              const ok = await store.dispatch(acceptInvite(project._id));
+              if (ok) toast.success("Invitation accepted successfully");
             }}
-            processing={loading && method.acceptInvite}
+            processing={pending.acceptInvite}
           >
             Accept Invitation <FiCheckCircle className="ml-1 text-md" />
           </Button>
@@ -260,8 +266,6 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
           open={assignOpen}
           setOpen={setAssignOpen}
           project={project}
-          loading={loading}
-          method={method}
         />
       )}
     </aside>

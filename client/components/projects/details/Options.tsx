@@ -1,4 +1,3 @@
-import { useSpring, a } from "@react-spring/web";
 import { AiFillPlusCircle } from "react-icons/ai";
 import { BsFillPersonCheckFill, BsFillTrashFill } from "react-icons/bs";
 import { useSelector } from "react-redux";
@@ -11,24 +10,22 @@ const ProjectDetailsOptionsPopup: React.FC<{
   open: boolean;
   setOpen: any;
   project: Project;
-  method: {
-    [key: string]: boolean;
-  };
   setProjectAssignOpen: any;
   setTicketCreateOpen: any;
   setProjectDeleteOpen: any;
 }> = ({
   open,
   setOpen,
-  method,
   setProjectAssignOpen,
   setTicketCreateOpen,
   setProjectDeleteOpen,
 }) => {
+  const pending = useSelector((store: storeType) => store.project.pending);
+
   return (
     <OptionsPopup open={open} setOpen={setOpen} style="top-[5rem] right-2">
       <OptionsButton
-        processing={method.update}
+        processing={pending.createTicket}
         onClick={() => {
           setTicketCreateOpen(true);
         }}
@@ -40,7 +37,7 @@ const ProjectDetailsOptionsPopup: React.FC<{
       <hr className="border-gray-800" />
 
       <OptionsButton
-        processing={method.update}
+        processing={pending.update}
         onClick={() => {
           setProjectAssignOpen(true);
         }}
@@ -53,7 +50,7 @@ const ProjectDetailsOptionsPopup: React.FC<{
 
       <OptionsButton
         color="red-500"
-        processing={method.update}
+        processing={pending.delete}
         onClick={() => {
           setProjectDeleteOpen(true);
         }}

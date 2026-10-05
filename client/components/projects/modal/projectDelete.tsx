@@ -1,8 +1,8 @@
 import { toast } from "react-toastify";
 import { deleteProject } from "@/redux/actions/projectActions";
-import store from "@/redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
+import { useSelector } from "react-redux";
 import { Project } from "@/core/types/models";
-import { useEffect } from "react";
 import Modal from "@/core/components/modal";
 import moment from "moment";
 import { ThreeDotsLoader } from "@/core/components/loader";
@@ -13,24 +13,21 @@ const ProjectDeleteModal: React.FC<{
   open: boolean;
   setOpen: any;
   project: Project | null;
-  loading: boolean;
-  method: {
-    [key: string]: any;
-  };
-}> = ({ open, setOpen, project, loading, method }) => {
+}> = ({ open, setOpen, project }) => {
+  const deleting = useSelector(
+    (store: storeType) => store.project.pending.delete,
+  );
   const router = useRouter();
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!project) return;
-    store.dispatch(deleteProject(project._id));
-  };
-
-  useEffect(() => {
-    if (open && loading === false && !method.delete) {
+    const ok = await store.dispatch(deleteProject(project._id));
+    if (ok) {
+      toast.success("Project deleted successfully");
       setOpen(false);
       router.replace("/dashboard");
     }
-  }, [method.delete]);
+  };
 
   return (
     <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
@@ -61,10 +58,10 @@ const ProjectDeleteModal: React.FC<{
         </button>
         <button
           className="px-6 p-2 bg-red-500 text-red-50 rounded-sm font-semibold hover:bg-red-600 active:bg-red-700 transition-colors disabled:opacity-75"
-          disabled={loading && method.delete}
+          disabled={deleting}
           onClick={handleDelete}
         >
-          {loading && method.delete ? <ThreeDotsLoader /> : "Delete"}
+          {deleting ? <ThreeDotsLoader /> : "Delete"}
         </button>
       </div>
     </Modal>

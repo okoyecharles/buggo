@@ -9,24 +9,25 @@ import {
   validateTicketTitle,
   validateTicketType,
 } from "@/core/utils/validation/ticket";
-import store from "@/redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
 import { createTicket } from "@/redux/actions/ticketActions";
 import { useRouter } from "next/router";
 import { ThreeDotsLoader } from "@/core/components/loader";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 interface CreateTicketModalProps {
   open: boolean;
-  setOpen: any;
-  loading: boolean;
-  method: any;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   open,
   setOpen,
-  loading,
-  method,
 }) => {
+  const processing = useSelector(
+    (store: storeType) => store.project.pending.createTicket,
+  );
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [priority, setPriority] = useState<string>("");
@@ -38,10 +39,9 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   const [priorityError, setPriorityError] = useState<string | null>(null);
   const [typeError, setTypeError] = useState<string | null>(null);
   const [timeEstimateError, setTimeEstimateError] = useState<string | null>(
-    null
+    null,
   );
 
-  const [processing, setProcessing] = useState<boolean>(false);
   const { query } = useRouter();
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -86,7 +86,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
     }
 
     // Create ticket
-    store.dispatch(
+    const ok = await store.dispatch(
       createTicket(
         {
           title,
@@ -96,18 +96,14 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
           time_estimate: timeEstimate,
           status: ticketStatus.open,
         },
-        query.id as string
-      )
+        query.id as string,
+      ),
     );
-  };
-
-  useEffect(() => {
-    setProcessing(loading && method.createTicket);
-
-    if (open && !method.createTicket && !loading) {
+    if (ok) {
       setOpen(false);
+      toast.success("Ticket created successfully");
     }
-  }, [loading, method]);
+  };
 
   useEffect(() => {
     if (open) {
@@ -286,6 +282,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
 
         <button
           className="font-open font-semibold px-4 py-2 text-ss mt-4 bg-blue-600 text-white rounded hover:bg-blue-700 hover:text-blue-100 disabled:opacity-80 disabled:cursor-not-allowed  transition flex justify-center"
+          aria-label="Submit Ticket"
           disabled={processing}
           type="submit"
         >

@@ -36,10 +36,11 @@ const ProjectInviteModal: React.FC<{
   open: boolean;
   setOpen: any;
   project: Project;
-  loading: boolean;
-  method: any;
-}> = ({ open, setOpen, project, loading, method }) => {
+}> = ({ open, setOpen, project }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
+  const inviting = useSelector(
+    (store: storeType) => store.project.pending.update,
+  );
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState<string>("");
@@ -93,12 +94,6 @@ const ProjectInviteModal: React.FC<{
       searchRef.current?.focus();
     }
   }, [open]);
-
-  useEffect(() => {
-    if (open && !loading && !method.update) {
-      setOpen(false);
-    }
-  }, [loading, method]);
 
   return (
     <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
@@ -269,8 +264,8 @@ const ProjectInviteModal: React.FC<{
       <div className="flex gap-2 bg-gray-850 p-4 py-3 justify-end">
         <button
           className="px-6 p-2 bg-blue-600 text-blue-50 rounded-sm font-semibold hover:bg-blue-700 group transition disabled:opacity-75 disabled:cursor-not-allowed"
-          disabled={(loading && method.update) || !invitees.length}
-          onClick={() => {
+          disabled={inviting || !invitees.length}
+          onClick={async () => {
             const payload = invitees.map((invitee: User) => ({
               user: invitee._id,
               email: invitee.email,
@@ -282,10 +277,14 @@ const ProjectInviteModal: React.FC<{
               return;
             }
 
-            store.dispatch(inviteToProject(project._id, payload));
+            const ok = await store.dispatch(inviteToProject(project._id, payload));
+            if (ok) {
+              toast.success("Members invited successfully");
+              setOpen(false);
+            }
           }}
         >
-          {loading && method.update ? <ThreeDotsLoader /> : "Invite"}
+          {inviting ? <ThreeDotsLoader /> : "Invite"}
         </button>
       </div>
     </Modal>

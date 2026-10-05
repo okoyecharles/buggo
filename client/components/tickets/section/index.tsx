@@ -13,21 +13,18 @@ import { a, useSpring, useTrail } from "@react-spring/web";
 
 interface TicketsSectionProps {
   tickets: Ticket[] | undefined;
-  loading: boolean;
-  method: any;
   ticketCreateOpen: boolean;
-  setTicketCreateOpen: any;
+  setTicketCreateOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TicketsSection: React.FC<TicketsSectionProps> = ({
   ticketCreateOpen,
   setTicketCreateOpen,
   tickets,
-  loading,
-  method,
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
   const project = useSelector((store: storeType) => store.project.project);
+  const pending = useSelector((store: storeType) => store.project.pending);
 
   const [ticketDetailsOpen, setTicketDetailsOpen] = useState<boolean>(false);
   const [ticketDetails, setTicketDetails] = useState<Ticket | null>(null);
@@ -88,10 +85,12 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
             <button
               className="group cursor-pointer disabled:opacity-75"
               id="create-ticket"
+							title="Create Ticket"
+							aria-label="Open Create Ticket Modal"
               onClick={() => {
                 setTicketCreateOpen(true);
               }}
-              disabled={loading && method.details}
+              disabled={pending.details}
             >
               <BsPlusLg className="bg-gray-700 text-blue-400 group-hover:bg-blue-500 text-4xl p-3 rounded-full group-hover:text-white group-hover:rounded-xl group-active:bg-blue-600 transition disabled:opacity-75" />
             </button>
@@ -233,8 +232,6 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
       <CreateTicketModal
         open={ticketCreateOpen}
         setOpen={setTicketCreateOpen}
-        loading={loading}
-        method={method}
       />
       <TicketDetailsBar
         ticket={ticketDetails}

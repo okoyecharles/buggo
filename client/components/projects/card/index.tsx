@@ -92,6 +92,7 @@ const ProjectCard: React.FC<projectProps> = ({
 
   return (
     <a.li
+			id={`project-${project._id}`}
       key={project._id}
       className={`project flex flex-col bg-gray-850 p-4 group hover:bg-gray-900 rounded relative cursor-pointer`}
       style={projectCardTrail}
@@ -255,15 +256,11 @@ const ProjectCard: React.FC<projectProps> = ({
         open={projectInvite}
         setOpen={setProjectInvite}
         project={project}
-        loading={loading}
-        method={method}
       />
       <ProjectDeleteModal
         open={projectDeleteConfirm}
         setOpen={setProjectDeleteConfirm}
         project={project}
-        loading={loading}
-        method={method}
       />
     </a.li>
   );
