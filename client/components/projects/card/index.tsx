@@ -73,7 +73,7 @@ const ProjectCard: React.FC<projectProps> = ({
   }
 
   const editProject = async (id: string, fields: Pick<Project, "title">) => {
-		if (pending.update) return;
+    if (pending.update) return;
     if (project.title === editTitle) return setEditMode(false);
     const error = validateProjectTitle(editTitle);
     if (error) {
@@ -91,7 +91,7 @@ const ProjectCard: React.FC<projectProps> = ({
     }
   };
 
-	const escapeEdit = () => {
+  const escapeEdit = () => {
     setEditTitle(project.title);
     setEditMode(false);
   };
@@ -262,14 +262,6 @@ const ProjectCard: React.FC<projectProps> = ({
         anchorSelect={`#delete-project-${project._id}`}
         content="Delete"
       />
-      <ProjectOptionsPopup
-        project={project}
-        open={optionsOpen}
-        setOpen={setOptionsOpen}
-        setProjectDeleteConfirm={setProjectDeleteConfirm}
-        handleEditMode={handleEditMode}
-        setProjectAssign={setProjectInvite}
-      />
       <ProjectInviteModal
         open={projectInvite}
         setOpen={setProjectInvite}
@@ -280,6 +272,16 @@ const ProjectCard: React.FC<projectProps> = ({
         setOpen={setProjectDeleteConfirm}
         project={project}
       />
+      {isAuthorized && (
+        <ProjectOptionsPopup
+          project={project}
+          open={optionsOpen}
+          setOpen={setOptionsOpen}
+          setProjectDeleteConfirm={setProjectDeleteConfirm}
+          handleEditMode={handleEditMode}
+          setProjectAssign={setProjectInvite}
+        />
+      )}
     </a.li>
   );
 };
