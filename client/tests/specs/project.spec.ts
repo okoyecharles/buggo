@@ -1,3 +1,4 @@
+import { NotificationType } from "@/core/types/models";
 import { expect } from "@playwright/test";
 import { test } from "../fixtures";
 
@@ -189,5 +190,58 @@ test.describe("projects", () => {
       const button = projectCard.getByRole("button", { name }).first();
       await expect(button).toHaveCount(0);
     }
+  });
+
+  test("user recieves and accepts live invite", async ({
+    page,
+    projectId,
+    otherUser,
+    otherPage,
+  }) => {
+    await page.goto("/dashboard");
+    await otherPage.goto("/dashboard");
+
+    // Invite other user
+    const projectCard = page.locator("#project-" + projectId);
+    await expect(projectCard).toBeVisible();
+    await projectCard.hover();
+    const inviteButton = projectCard
+      .getByRole("button", {
+        name: "Invite Members to Project",
+      })
+      .first();
+    await inviteButton.click();
+    const inviteModal = page.locator("#invite-project-modal-" + projectId);
+    await inviteModal
+      .getByLabel("Search users to invite")
+      .fill(otherUser.details.email.split("@")[0]);
+    await inviteModal
+      .getByRole("checkbox", { name: "invite " + otherUser.details.email })
+      .check();
+    const confirmInvite = inviteModal.getByRole("button", {
+      name: "Confirm Invite",
+    });
+    await confirmInvite.click();
+    await expect(page.getByText("Members invited successfully")).toBeVisible();
+
+    // Accept invite from other user's notifications
+    await otherPage.getByRole("button", { name: "Open Notifications" }).click();
+    const notificationModal = otherPage.locator("#notifications-modal");
+    await expect(notificationModal).toBeVisible();
+    const notification = notificationModal.locator(
+      `#${NotificationType.PROJECT_INVITE}_${projectId}`,
+    );
+    const acceptInvite = notification.getByRole("button", {
+      name: "Accept Invite",
+    });
+    await acceptInvite.click();
+    await notificationModal
+      .getByRole("button", {
+        name: "Close Notifications",
+      })
+      .click();
+
+    // Check for project on other user's dashboard
+    await expect(otherPage.locator("#project-" + projectId)).toBeVisible();
   });
 });
