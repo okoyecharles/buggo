@@ -1,5 +1,5 @@
-import { Ticket } from "@/core/types/models";
-import { expect, APIRequestContext, APIResponse } from "@playwright/test";
+import { Comment, NotificationType, Ticket } from "@/core/types/models";
+import { expect, APIRequestContext, APIResponse, Page } from "@playwright/test";
 import { test } from "../fixtures";
 
 async function postTicket(req: APIRequestContext, projectId: string) {
@@ -15,6 +15,15 @@ async function postTicket(req: APIRequestContext, projectId: string) {
     },
   });
   return response as APIResponse<{ ticket: Ticket }>;
+}
+
+async function openTicketDetails(page: Page, ticket: Ticket) {
+  await page.locator("#ticket-title-" + ticket._id).click();
+  const details = page.locator("#ticket-details");
+  await expect(details.getByRole("heading", { level: 2 })).toHaveText(
+    ticket.title,
+  );
+  return details;
 }
 
 test.describe("tickets", () => {
@@ -99,5 +108,104 @@ test.describe("tickets", () => {
       "/api/tickets/" + body.ticket._id,
     );
     expect(getAfterDeleteResponse.status()).toBe(404);
+  });
+
+  test("assign a member to a ticket", async ({
+    page,
+    request,
+    sharedProjectId,
+    otherUser,
+    otherPage,
+  }) => {
+    const response = await postTicket(request, sharedProjectId);
+    expect(response.ok()).toBeTruthy();
+    const { ticket } = await response.json();
+
+    await page.goto("/project/" + sharedProjectId);
+    await otherPage.goto("/dashboard");
+
+    // Open the assign modal from the row options
+    const row = page.locator("li#ticket-row-" + ticket._id);
+    await row
+      .getByRole("button", { name: `Ticket options for ${ticket.title}` })
+      .click();
+    await row
+      .getByRole("button", { name: `Assign members to ${ticket.title}` })
+      .click();
+
+    // Pick the other member and assign
+    const modal = page.locator("#assign-ticket-modal-" + ticket._id);
+    await modal
+      .getByLabel("Search members to assign")
+      .fill(otherUser.details.email.split("@")[0]);
+    await modal
+      .getByRole("checkbox", {
+        name: "assign " + otherUser.details.email + " to ticket",
+      })
+      .check();
+    await modal.getByRole("button", { name: "Confirm Assign" }).click();
+    await expect(page.getByText("Members assigned successfully")).toBeVisible();
+
+    // The assignee is notified live
+    await otherPage.getByRole("button", { name: "Open Notifications" }).click();
+    await expect(
+      otherPage.locator(`#${NotificationType.TICKET_ASSIGN}_${ticket._id}`),
+    ).toBeVisible();
+
+    // Confirm assignment
+    const getAfterAssignResponse = (await request.get(
+      "/api/tickets/" + ticket._id,
+    )) as APIResponse<{ ticket: Ticket }>;
+    expect(getAfterAssignResponse.ok()).toBeTruthy();
+    const body = await getAfterAssignResponse.json();
+    expect(body.ticket.team.map((member) => member._id)).toContain(
+      otherUser.details._id,
+    );
+  });
+
+  test("members send and receive comments live", async ({
+    page,
+    request,
+    sharedProjectId,
+    otherUser,
+    otherPage,
+  }) => {
+    const response = await postTicket(request, sharedProjectId);
+    expect(response.ok()).toBeTruthy();
+    const { ticket } = await response.json();
+    // Only ticket members can comment, so add the other user to the team
+    const assignResponse = await request.put("/api/tickets/" + ticket._id, {
+      data: { team: [otherUser.details._id] },
+    });
+    expect(assignResponse.ok()).toBeTruthy();
+
+    await page.goto("/project/" + sharedProjectId);
+    await otherPage.goto("/project/" + sharedProjectId);
+    const details = await openTicketDetails(page, ticket);
+    const otherDetails = await openTicketDetails(otherPage, ticket);
+
+    // Author sends, member receives
+    const comment = "comment " + Date.now();
+    await details.getByLabel("Comment").fill(comment);
+    await details.getByLabel("Comment").press("Enter");
+    await expect(details.getByText(comment)).toBeVisible();
+    await expect(details.getByLabel("Comment")).toHaveValue("");
+    await expect(otherDetails.getByText(comment)).toBeVisible();
+
+    // Member replies, author receives
+    const reply = "reply " + Date.now();
+    await otherDetails.getByLabel("Comment").fill(reply);
+    await otherDetails.getByLabel("Comment").press("Enter");
+    await expect(otherDetails.getByText(reply)).toBeVisible();
+    await expect(details.getByText(reply)).toBeVisible();
+
+    // Confirm both comments were saved
+    const getAfterCommentResponse = (await request.get(
+      "/api/tickets/" + ticket._id,
+    )) as APIResponse<{ ticket: Ticket }>;
+    expect(getAfterCommentResponse.ok()).toBeTruthy();
+    const body = await getAfterCommentResponse.json();
+    const comments = body.ticket.comments as Comment[];
+    expect(comments.map((c) => c.text)).toEqual([comment, reply]);
   });
 });

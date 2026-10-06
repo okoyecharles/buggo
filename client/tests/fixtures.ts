@@ -12,6 +12,7 @@ import {
 const test = base.extend<
   {
     projectId: string;
+    sharedProjectId: string;
     otherPage: Page;
     otherRequest: APIRequestContext;
   },
@@ -62,6 +63,25 @@ const test = base.extend<
   },
   otherRequest: async ({ otherPage }, use) => {
     await use(otherPage.request);
+  },
+  sharedProjectId: async ({ projectId, request, otherUser, otherRequest }, use) => {
+    // The other user joins through the API, so specs start with two members
+    const inviteResponse = await request.put(
+      "/api/projects/" + projectId + "/invite",
+      {
+        data: {
+          invitees: [
+            { user: otherUser.details._id, email: otherUser.details.email },
+          ],
+        },
+      },
+    );
+    expect(inviteResponse.ok()).toBeTruthy();
+    const acceptResponse = await otherRequest.put(
+      "/api/projects/" + projectId + "/accept-invite",
+    );
+    expect(acceptResponse.ok()).toBeTruthy();
+    await use(projectId);
   },
   projectId: async ({ request }, use) => {
     const projectTitle = "te2e " + Date.now();

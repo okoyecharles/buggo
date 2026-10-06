@@ -1,5 +1,5 @@
-import { NotificationType } from "@/core/types/models";
-import { expect } from "@playwright/test";
+import { NotificationType, Project } from "@/core/types/models";
+import { APIResponse, expect } from "@playwright/test";
 import { test } from "../fixtures";
 
 test.describe("projects", () => {
@@ -138,31 +138,10 @@ test.describe("projects", () => {
   });
 
   test("A member and non-author should not be able see project options", async ({
-    projectId,
+    sharedProjectId,
     page,
-    request,
-    otherUser,
     otherPage,
-    otherRequest,
   }) => {
-    // invite other user to project
-    const inviteResponse = await request.put(
-      "/api/projects/" + projectId + "/invite",
-      {
-        data: {
-          invitees: [
-            { user: otherUser.details._id, email: otherUser.details.email },
-          ],
-        },
-      },
-    );
-    expect(inviteResponse.ok()).toBeTruthy();
-    // other user accepts invite
-    const acceptResponse = await otherRequest.put(
-      "/api/projects/" + projectId + "/accept-invite",
-    );
-    expect(acceptResponse.ok()).toBeTruthy();
-
     const buttonNames = [
       "Edit Project",
       "Invite Members to Project",
@@ -171,10 +150,10 @@ test.describe("projects", () => {
 
     await page.goto("/dashboard");
     // creator sees the project
-    await expect(page.locator("#project-" + projectId)).toBeVisible();
+    await expect(page.locator("#project-" + sharedProjectId)).toBeVisible();
     // creator sees action buttons
     for (const name of buttonNames) {
-      const projectCard = page.locator("#project-" + projectId);
+      const projectCard = page.locator("#project-" + sharedProjectId);
       await projectCard.hover();
       const button = projectCard.getByRole("button", { name }).first();
       await expect(button).toHaveCount(1);
@@ -182,10 +161,10 @@ test.describe("projects", () => {
 
     await otherPage.goto("/dashboard");
     // member sees the project
-    await expect(otherPage.locator("#project-" + projectId)).toBeVisible();
+    await expect(otherPage.locator("#project-" + sharedProjectId)).toBeVisible();
     // other user sees none
     for (const name of buttonNames) {
-      const projectCard = otherPage.locator("#project-" + projectId);
+      const projectCard = otherPage.locator("#project-" + sharedProjectId);
       await projectCard.hover();
       const button = projectCard.getByRole("button", { name }).first();
       await expect(button).toHaveCount(0);
@@ -197,6 +176,7 @@ test.describe("projects", () => {
     projectId,
     otherUser,
     otherPage,
+    otherRequest,
   }) => {
     await page.goto("/dashboard");
     await otherPage.goto("/dashboard");
@@ -243,5 +223,13 @@ test.describe("projects", () => {
 
     // Check for project on other user's dashboard
     await expect(otherPage.locator("#project-" + projectId)).toBeVisible();
+
+    // Check in database
+    const getProjectAfterInviteResponse = await otherRequest.get(
+      "/api/projects/" + projectId,
+    ) as APIResponse<{ project: Project }>;
+    expect(getProjectAfterInviteResponse.ok()).toBeTruthy();
+    const body = await getProjectAfterInviteResponse.json();
+    expect(body.project.team.length).toBe(2);
   });
 });
