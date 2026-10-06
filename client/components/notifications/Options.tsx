@@ -19,7 +19,7 @@ const NotificationOptionsPopup: React.FC<{
   );
 
   return (
-    <OptionsPopup open={open} setOpen={setOpen} style="top-12 right-2">
+    <OptionsPopup id={`notification-options-${notification._id}`} open={open} setOpen={setOpen} style="top-12 right-2">
       {/* Nothing left to mark once it has been read */}
       {!notification.read && (
         <>

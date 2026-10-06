@@ -124,7 +124,7 @@ const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   }, [open]);
 
   return (
-    <Modal open={open} setOpen={setOpen}>
+    <Modal id="create-ticket-modal" open={open} setOpen={setOpen}>
       <header className="header flex justify-between items-center">
         <h3 className="text-lg text-gray-100 font-semibold">Create a Ticket</h3>
         <button

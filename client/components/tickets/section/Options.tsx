@@ -76,7 +76,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
   return (
     <>
-      <OptionsPopup open={open} setOpen={setOpen} style="hidden lg:block">
+      <OptionsPopup id={`ticket-options-${ticket._id}`} open={open} setOpen={setOpen} style="hidden lg:block">
         {isAuthorized ? (
           <>
             <OptionsButton

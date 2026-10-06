@@ -25,7 +25,7 @@ const UserDeleteModal: React.FC<{
   };
 
   return (
-    <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
+    <Modal id={`delete-user-modal-${user._id}`} open={open} setOpen={setOpen} style={{ padding: 0 }}>
       <div className="p-4">
         <header className="flex flex-col gap-2">
           <h2 className="text-lg font-semibold text-white">Delete User</h2>

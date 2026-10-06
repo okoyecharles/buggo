@@ -51,7 +51,7 @@ const CreateProjectModal = ({
   }, [open]);
 
   return (
-    <Modal open={open} setOpen={setOpen}>
+    <Modal id="create-project-modal" open={open} setOpen={setOpen}>
       <header className="header flex justify-between items-center">
         <h3 className="text-lg text-gray-100 font-semibold">
           Create a Project
@@ -94,6 +94,7 @@ const CreateProjectModal = ({
         </div>
 
         <button
+					aria-label="Confirm Project Creation"
           className="font-open font-semibold px-4 py-2 text-ss mt-4 bg-blue-600 text-white rounded hover:bg-blue-700 hover:text-blue-100 disabled:opacity-80 disabled:cursor-not-allowed  transition flex justify-center"
           disabled={creating}
           type="submit"

@@ -28,7 +28,7 @@ const ProjectOptionsPopup: React.FC<{
   const pending = useSelector((store: storeType) => store.projects.pending);
 
   return (
-    <OptionsPopup open={open} setOpen={setOpen}>
+    <OptionsPopup id={`project-options-${project._id}`} open={open} setOpen={setOpen}>
       <OptionsButton
 				ariaLabel={`Edit project: ${project.title}`}
         processing={pending.update}

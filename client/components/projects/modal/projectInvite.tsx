@@ -98,7 +98,7 @@ const ProjectInviteModal: React.FC<{
   }, [open]);
 
   return (
-    <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
+    <Modal id={`invite-project-modal-${project._id}`} open={open} setOpen={setOpen} style={{ padding: 0 }}>
       <div className="modal__container p-4">
         <header className="header flex justify-between items-center">
           <h3 className="text-lg text-gray-100 font-semibold">

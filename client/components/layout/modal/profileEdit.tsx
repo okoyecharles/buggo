@@ -90,7 +90,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   }, [image]);
 
   return (
-    <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
+    <Modal id="edit-profile-modal" open={open} setOpen={setOpen} style={{ padding: 0 }}>
       <div className="p-4">
         <header>
           <h2 className="text-lg font-semibold text-white">Edit Profile</h2>

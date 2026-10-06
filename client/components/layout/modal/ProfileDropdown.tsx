@@ -32,6 +32,7 @@ const ProfileDropdown: React.FC<{
 
   return (
     <OptionsPopup
+      id="profile-options"
       open={open}
       setOpen={setOpen}
       style="top-[4rem] right-0"

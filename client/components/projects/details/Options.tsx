@@ -24,7 +24,7 @@ const ProjectDetailsOptionsPopup: React.FC<{
   const pending = useSelector((store: storeType) => store.project.pending);
 
   return (
-    <OptionsPopup open={open} setOpen={setOpen} style="top-[5rem] right-2">
+    <OptionsPopup id={`project-details-options-${project._id}`} open={open} setOpen={setOpen} style="top-[5rem] right-2">
       <OptionsButton
 				ariaLabel={`Create ticket in ${project.title}`}
         processing={pending.createTicket}

@@ -3,13 +3,20 @@ import React, { useEffect } from "react";
 import Portal from "@/core/components/portal";
 
 interface ModalProps {
+  id: string;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   children: React.ReactNode;
   style?: React.CSSProperties;
 }
 
-const Modal: React.FC<ModalProps> = ({ open, setOpen, children, style }) => {
+const Modal: React.FC<ModalProps> = ({
+  id,
+  open,
+  setOpen,
+  children,
+  style,
+}) => {
   // Open and closing animation
   const spring = useSpring({
     opacity: open ? 1 : 0,
@@ -40,6 +47,7 @@ const Modal: React.FC<ModalProps> = ({ open, setOpen, children, style }) => {
         >
           <animated.div
             className="modal-content z-50 bg-gray-800 w-[calc(100vw-2rem)] sm:w-96 p-3 rounded-md sm:rounded overflow-hidden"
+            id={id}
             style={{ ...spring, ...style }}
           >
             {children}
