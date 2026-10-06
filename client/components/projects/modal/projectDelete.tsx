@@ -4,7 +4,6 @@ import store, { storeType } from "@/redux/configureStore";
 import { useSelector } from "react-redux";
 import { Project } from "@/core/types/models";
 import Modal from "@/core/components/modal";
-import moment from "moment";
 import { ThreeDotsLoader } from "@/core/components/loader";
 import getDate from "@/core/utils/strings/date";
 import { useRouter } from "next/router";
@@ -53,6 +52,7 @@ const ProjectDeleteModal: React.FC<{
         <button
           className="px-6 p-2 hover:underline text-white font-semibold"
           onClick={() => setOpen(false)}
+					aria-label={`Cancel delete for project: ${project?.title}`}
         >
           Cancel
         </button>
@@ -60,6 +60,7 @@ const ProjectDeleteModal: React.FC<{
           className="px-6 p-2 bg-red-500 text-red-50 rounded-sm font-semibold hover:bg-red-600 active:bg-red-700 transition-colors disabled:opacity-75"
           disabled={deleting}
           onClick={handleDelete}
+					aria-label={`Confirm delete for project: ${project?.title}`}
         >
           {deleting ? <ThreeDotsLoader /> : "Delete"}
         </button>

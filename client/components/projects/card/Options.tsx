@@ -8,6 +8,7 @@ import { OptionsButton } from "@/core/components/button";
 import OptionsPopup from "@/core/components/options";
 import { useSelector } from "react-redux";
 import { storeType } from "@/redux/configureStore";
+import { Project } from "@/core/types/models";
 
 const ProjectOptionsPopup: React.FC<{
   open: boolean;
@@ -15,18 +16,21 @@ const ProjectOptionsPopup: React.FC<{
   setProjectDeleteConfirm: any;
   handleEditMode: any;
   setProjectAssign: any;
+	project: Project;
 }> = ({
   open,
   setOpen,
   handleEditMode,
   setProjectDeleteConfirm,
   setProjectAssign,
+	project,
 }) => {
   const pending = useSelector((store: storeType) => store.projects.pending);
 
   return (
     <OptionsPopup open={open} setOpen={setOpen}>
       <OptionsButton
+				ariaLabel={`Edit project: ${project.title}`}
         processing={pending.update}
         onClick={() => {
           setOpen(false);
@@ -38,6 +42,7 @@ const ProjectOptionsPopup: React.FC<{
       </OptionsButton>
 
       <OptionsButton
+				ariaLabel={`Invite members to project: ${project.title}`}
         processing={pending.update}
         onClick={() => {
           setProjectAssign(true);
@@ -51,6 +56,7 @@ const ProjectOptionsPopup: React.FC<{
       <hr className="border-gray-800" />
 
       <OptionsButton
+				ariaLabel={`Delete project: ${project.title}`}
         color="red-500"
         processing={pending.delete}
         onClick={() => setProjectDeleteConfirm(true)}

@@ -60,7 +60,9 @@ const ProjectInviteModal: React.FC<{
     filteredUsers = filteredUsers.filter((searchedUser) => {
       return (
         searchedUser._id !== project.author._id &&
-        !project.invitees.find((invitee) => invitee.user._id === searchedUser._id) &&
+        !project.invitees.find(
+          (invitee) => invitee.user._id === searchedUser._id,
+        ) &&
         !project.team.find((member) => member._id === searchedUser._id)
       );
     });
@@ -78,7 +80,7 @@ const ProjectInviteModal: React.FC<{
         setTimeout(() => {
           searchUsers();
           setSearching(true);
-        }, 1000)
+        }, 1000),
       );
     } else {
       clearTimeout(searchTimeOutID);
@@ -103,7 +105,8 @@ const ProjectInviteModal: React.FC<{
             Invite Members
           </h3>
           <button
-            name="close modal"
+            title="close"
+            aria-label="close modal"
             className="p-1 text-2xl text-gray-400 hover:text-gray-200 rounded-full transition-all focus:outline-none active:bg-gray-700"
             onClick={() => {
               setOpen(false);
@@ -138,12 +141,16 @@ const ProjectInviteModal: React.FC<{
                   />
                 </div>
                 <span className="truncate">{invitee.name.split(" ")[0]}</span>
-                <IoMdClose
-                  className="text-xl cursor-pointer text-gray-600 hover:text-gray-200 transition"
+                <button
+                  className="text-xl text-gray-600 hover:text-gray-200 transition"
+                  title="remove"
+                  aria-label={"Remove " + invitee.email + " from invitees"}
                   onClick={() => {
                     updateInvitees({ type: "REMOVE", payload: invitee._id });
                   }}
-                />
+                >
+                  <IoMdClose />
+                </button>
               </li>
             </>
           ))}
@@ -151,14 +158,17 @@ const ProjectInviteModal: React.FC<{
 
         {/* Search */}
         <div className="search-wrapper relative mt-4">
-          <input
-            ref={searchRef}
-            type="text"
-            placeholder="Search user by name or email"
-            className="bg-gray-900 text-ss placeholder:text-gray-500 hover:bg-gray-950 focus:bg-gray-950 focus:ring-1 ring-blue-500/75 text-gray-200 rounded py-2 px-3 pr-9 outline-none w-full transition-all"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <label>
+            <span className="sr-only">Search Users to Invite</span>
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder="Search user by name or email"
+              className="bg-gray-900 text-ss placeholder:text-gray-500 hover:bg-gray-950 focus:bg-gray-950 focus:ring-1 ring-blue-500/75 text-gray-200 rounded py-2 px-3 pr-9 outline-none w-full transition-all"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </label>
           <FaSearch
             className={`search-icon text-gray-500 cursor-pointer absolute top-1/2 -translate-y-1/2 right-3 lg:right-2 hover:text-gray-400 transition ${
               showClose
@@ -223,7 +233,7 @@ const ProjectInviteModal: React.FC<{
                       autoEscape={true}
                       textToHighlight={restrictLength(
                         user.email.split("@")[0],
-                        30
+                        30,
                       )}
                       searchWords={[search.trim()]}
                       highlightClassName="bg-blue-500/0 text-blue-500"
@@ -237,7 +247,11 @@ const ProjectInviteModal: React.FC<{
                   id="default-checkbox"
                   type="checkbox"
                   checked={invitees.some(
-                    (invitee: User) => invitee._id === user._id
+                    (invitee: User) => invitee._id === user._id,
+                  )}
+                  aria-label={"invite " + user.email + " to project"}
+                  aria-checked={invitees.some(
+                    (invitee: User) => invitee._id === user._id,
                   )}
                   onChange={(e) => {
                     if (e.target.checked) {
@@ -277,7 +291,9 @@ const ProjectInviteModal: React.FC<{
               return;
             }
 
-            const ok = await store.dispatch(inviteToProject(project._id, payload));
+            const ok = await store.dispatch(
+              inviteToProject(project._id, payload),
+            );
             if (ok) {
               toast.success("Members invited successfully");
               setOpen(false);

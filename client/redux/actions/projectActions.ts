@@ -87,7 +87,7 @@ export const createProject =
 
 export const updateProject =
   ({ id, project }: { id: string; project: any }) =>
-    async (dispatch: DispatchType, getState: () => storeType) => {
+    async (dispatch: DispatchType) => {
       try {
         dispatch({
           type: types.PROJECT_UPDATE_REQUEST,

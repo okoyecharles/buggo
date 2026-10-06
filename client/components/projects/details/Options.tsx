@@ -19,12 +19,14 @@ const ProjectDetailsOptionsPopup: React.FC<{
   setProjectAssignOpen,
   setTicketCreateOpen,
   setProjectDeleteOpen,
+	project,
 }) => {
   const pending = useSelector((store: storeType) => store.project.pending);
 
   return (
     <OptionsPopup open={open} setOpen={setOpen} style="top-[5rem] right-2">
       <OptionsButton
+				ariaLabel={`Create ticket in ${project.title}`}
         processing={pending.createTicket}
         onClick={() => {
           setTicketCreateOpen(true);
@@ -38,6 +40,7 @@ const ProjectDetailsOptionsPopup: React.FC<{
 
       <OptionsButton
         processing={pending.update}
+				ariaLabel={`Invite members to ${project.title}`}
         onClick={() => {
           setProjectAssignOpen(true);
         }}
@@ -50,6 +53,7 @@ const ProjectDetailsOptionsPopup: React.FC<{
 
       <OptionsButton
         color="red-500"
+				ariaLabel={`Delete ${project.title}`}
         processing={pending.delete}
         onClick={() => {
           setProjectDeleteOpen(true);

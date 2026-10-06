@@ -35,7 +35,9 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
   const project = useSelector((store: storeType) => store.project.project!);
-  const updating = useSelector((store: storeType) => store.ticket.pending.update);
+  const updating = useSelector(
+    (store: storeType) => store.ticket.pending.update,
+  );
 
   const [closing, setClosing] = useState<boolean>(false);
   const [ticketAssignOpen, setTicketAssignOpen] = useState<boolean>(false);
@@ -62,7 +64,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
     store.dispatch(
       updateTicket(ticket._id, {
         team: newTeam,
-      })
+      }),
     );
 
     setOpen(false);
@@ -81,6 +83,11 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
               id={`remove-self-${ticket._id}`}
               processing={updating}
               onClick={handleTicketAssign}
+              ariaLabel={
+                isInTeam(ticket)
+                  ? "Remove yourself from " + ticket.title
+                  : "Assign yourself to " + ticket.title
+              }
             >
               {isInTeam(ticket) ? (
                 <>
@@ -99,6 +106,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
                 setOpen(false);
                 setTicketAssignOpen((prev) => !prev);
               }}
+							ariaLabel={`Assign members to ${ticket.title}`}
             >
               Assign Members
               <BsFillPersonCheckFill />
@@ -108,11 +116,12 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
             {ticket.status !== ticketStatus.closed ? (
               <OptionsButton
+								ariaLabel={`Close ${ticket.title}`}
                 processing={updating}
                 onClick={async () => {
                   setClosing(true);
                   await store.dispatch(
-                    updateTicket(ticket._id, { status: ticketStatus.closed })
+                    updateTicket(ticket._id, { status: ticketStatus.closed }),
                   );
                   setClosing(false);
                 }}
@@ -132,6 +141,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
                 setDeleteTicketOpen(true);
                 setOpen(false);
               }}
+              ariaLabel={`Delete ${ticket.title}`}
             >
               Delete Ticket
               <BsFillTrashFill />
