@@ -13,6 +13,8 @@ import { Project } from "@/core/types/models";
 const ProjectOptionsPopup: React.FC<{
   open: boolean;
   setOpen: any;
+  projectDeleteConfirm: boolean;
+  projectInvite: boolean;
   setProjectDeleteConfirm: any;
   handleEditMode: any;
   setProjectAssign: any;
@@ -21,6 +23,8 @@ const ProjectOptionsPopup: React.FC<{
   open,
   setOpen,
   handleEditMode,
+  projectDeleteConfirm,
+  projectInvite,
   setProjectDeleteConfirm,
   setProjectAssign,
 	project,
@@ -43,6 +47,8 @@ const ProjectOptionsPopup: React.FC<{
 
       <OptionsButton
 				ariaLabel={`Invite members to project: ${project.title}`}
+        ariaExpanded={projectInvite}
+        ariaControls={`invite-project-modal-${project._id}`}
         processing={pending.update}
         onClick={() => {
           setProjectAssign(true);
@@ -57,6 +63,8 @@ const ProjectOptionsPopup: React.FC<{
 
       <OptionsButton
 				ariaLabel={`Delete project: ${project.title}`}
+        ariaExpanded={projectDeleteConfirm}
+        ariaControls={`delete-project-modal-${project._id}`}
         color="red-500"
         processing={pending.delete}
         onClick={() => setProjectDeleteConfirm(true)}

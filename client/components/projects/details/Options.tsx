@@ -10,12 +10,18 @@ const ProjectDetailsOptionsPopup: React.FC<{
   open: boolean;
   setOpen: any;
   project: Project;
+  ticketCreateOpen: boolean;
+  projectAssignOpen: boolean;
+  projectDeleteOpen: boolean;
   setProjectAssignOpen: any;
   setTicketCreateOpen: any;
   setProjectDeleteOpen: any;
 }> = ({
   open,
   setOpen,
+  ticketCreateOpen,
+  projectAssignOpen,
+  projectDeleteOpen,
   setProjectAssignOpen,
   setTicketCreateOpen,
   setProjectDeleteOpen,
@@ -27,6 +33,8 @@ const ProjectDetailsOptionsPopup: React.FC<{
     <OptionsPopup id={`project-details-options-${project._id}`} open={open} setOpen={setOpen} style="top-[5rem] right-2">
       <OptionsButton
 				ariaLabel={`Create ticket in ${project.title}`}
+        ariaExpanded={ticketCreateOpen}
+        ariaControls="create-ticket-modal"
         processing={pending.createTicket}
         onClick={() => {
           setTicketCreateOpen(true);
@@ -41,6 +49,8 @@ const ProjectDetailsOptionsPopup: React.FC<{
       <OptionsButton
         processing={pending.update}
 				ariaLabel={`Invite members to ${project.title}`}
+        ariaExpanded={projectAssignOpen}
+        ariaControls={`invite-project-modal-${project._id}`}
         onClick={() => {
           setProjectAssignOpen(true);
         }}
@@ -54,6 +64,8 @@ const ProjectDetailsOptionsPopup: React.FC<{
       <OptionsButton
         color="red-500"
 				ariaLabel={`Delete ${project.title}`}
+        ariaExpanded={projectDeleteOpen}
+        ariaControls={`delete-project-modal-${project._id}`}
         processing={pending.delete}
         onClick={() => {
           setProjectDeleteOpen(true);

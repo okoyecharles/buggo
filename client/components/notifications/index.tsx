@@ -173,7 +173,9 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                       ))}
                       <div className="relative">
                         <button
-                          name="notification options"
+                          aria-label="Notification options"
+                          aria-expanded={openOptions === notification._id}
+                          aria-controls={`notification-options-${notification._id}`}
                           className="h-10 w-10 rounded-full lg:h-8 lg:w-8 lg:rounded flex items-center justify-center text-gray-300 ring-1 ring-gray-600 hover:text-gray-100 hover:ring-gray-400 transition-colors"
                           onClick={() => {
                             setOpenOptions(

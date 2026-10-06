@@ -8,10 +8,11 @@ import getDate from "@/core/utils/strings/date";
 import { toast } from "react-toastify";
 
 const TicketDeleteModal: React.FC<{
+  id: string;
   open: boolean;
   setOpen: any;
   ticket: Ticket;
-}> = ({ open, setOpen, ticket }) => {
+}> = ({ id, open, setOpen, ticket }) => {
   const deleting = useSelector(
     (store: storeType) => store.ticket.pending.delete,
   );
@@ -24,7 +25,7 @@ const TicketDeleteModal: React.FC<{
   };
 
   return (
-    <Modal id={`delete-ticket-modal-${ticket._id}`} open={open} setOpen={setOpen} style={{ padding: 0 }}>
+    <Modal id={id} open={open} setOpen={setOpen} style={{ padding: 0 }}>
       <div className="p-4">
         <header className="flex flex-col gap-2">
           <h2 className="text-lg font-semibold text-white">Delete Ticket</h2>

@@ -220,6 +220,8 @@ const ProjectCard: React.FC<projectProps> = ({
               className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
               title="Invite members"
               aria-label={`Invite members to project: ${project.title}`}
+              aria-expanded={projectInvite}
+              aria-controls={`invite-project-modal-${project._id}`}
               tabIndex={-1}
               onClick={handleInviteMembers}
               disabled={pending.update}
@@ -236,6 +238,8 @@ const ProjectCard: React.FC<projectProps> = ({
                       aspect-square items-center justify-center transition-colors"
               title="Delete project"
               aria-label={`Delete project: ${project.title}`}
+              aria-expanded={projectDeleteConfirm}
+              aria-controls={`delete-project-modal-${project._id}`}
               tabIndex={-1}
               disabled={pending.delete}
               onClick={() => setProjectDeleteConfirm(true)}
@@ -244,6 +248,9 @@ const ProjectCard: React.FC<projectProps> = ({
             </button>
             <button
               className="h-full lg:hidden hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square flex items-center justify-center transition"
+              aria-label={`Project options for ${project.title}`}
+              aria-expanded={optionsOpen}
+              aria-controls={`project-options-${project._id}`}
               onClick={() => {
                 setOptionsOpen(true);
               }}
@@ -277,6 +284,8 @@ const ProjectCard: React.FC<projectProps> = ({
           project={project}
           open={optionsOpen}
           setOpen={setOptionsOpen}
+          projectDeleteConfirm={projectDeleteConfirm}
+          projectInvite={projectInvite}
           setProjectDeleteConfirm={setProjectDeleteConfirm}
           handleEditMode={handleEditMode}
           setProjectAssign={setProjectInvite}

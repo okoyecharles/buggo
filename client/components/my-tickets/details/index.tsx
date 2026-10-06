@@ -17,6 +17,7 @@ const MyTicketsDetailsBar: React.FC<MyTicketsDetailsBarProps> = ({
 }) => {
   return (
     <aside
+      id="my-tickets-details-bar"
       className={`
       my-tickets-details-bar
       fixed top-[64px] bottom-[60px] lg:static

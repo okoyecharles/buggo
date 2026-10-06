@@ -27,6 +27,7 @@ const LandingHeader = () => {
         </div>
 
         <ul
+          id="landing-links"
           className={`text-ss font-bold gap-6 flex flex-col lg:flex-row fixed lg:static bg-gray-900 border-r border-gray-800 lg:border-none lg:bg-transparent top-0 left-0 h-full lg:h-auto pl-4 pr-10 py-20 lg:p-0 uppercase lg:normal-case z-40 lg:z-auto ${
             linksOpen ? "-translate-x-0" : "-translate-x-full"
           } lg:translate-x-0 transition-all`}
@@ -69,6 +70,8 @@ const LandingHeader = () => {
             setLinksOpen((prev) => !prev);
           }}
           aria-label="menu toggle"
+          aria-expanded={linksOpen}
+          aria-controls="landing-links"
         >
           <HiOutlineMenuAlt3
             className={`text-3xl absolute top-0 left-0 ${

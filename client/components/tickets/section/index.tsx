@@ -87,6 +87,8 @@ const TicketsSection: React.FC<TicketsSectionProps> = ({
               id="create-ticket"
 							title="Create Ticket"
 							aria-label="Open Create Ticket Modal"
+              aria-expanded={ticketCreateOpen}
+              aria-controls="create-ticket-modal"
               onClick={() => {
                 setTicketCreateOpen(true);
               }}

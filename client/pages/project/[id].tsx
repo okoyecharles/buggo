@@ -49,6 +49,8 @@ export default function ProjectDetails() {
       <div className="flex flex-col lg:flex-row h-full isolate">
         <ProjectDetailsBar
           project={project.project}
+          projectDeleteOpen={projectDeleteOpen}
+          ticketCreateOpen={ticketCreateOpen}
           setProjectDeleteOpen={setProjectDeleteOpen}
           setTicketCreateOpen={setTicketCreateOpen}
         />

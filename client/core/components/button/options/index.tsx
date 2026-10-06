@@ -8,7 +8,9 @@ const OptionsButton: React.FC<ButtonProps> = ({
   children,
   onClick,
   overrideStyle,
-	ariaLabel,
+  ariaLabel,
+  ariaExpanded,
+  ariaControls,
 }) => {
   const colors = useMemo(() => ({
     text: color.split("-")[0] === "red" ? "text-red-500" : "text-gray-300",
@@ -19,7 +21,9 @@ const OptionsButton: React.FC<ButtonProps> = ({
   return (
     <button
       id={id}
-			aria-label={ariaLabel}
+      aria-label={ariaLabel}
+      aria-expanded={ariaExpanded}
+      aria-controls={ariaControls}
       className={`
         group rounded-sm p-2 text-sm
         flex justify-between items-center

@@ -23,12 +23,16 @@ import { toast } from "react-toastify";
 
 interface ProjectDetailsBarProps {
   project: Project | null;
+  ticketCreateOpen: boolean;
+  projectDeleteOpen: boolean;
   setTicketCreateOpen: any;
   setProjectDeleteOpen: any;
 }
 
 const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
   project,
+  ticketCreateOpen,
+  projectDeleteOpen,
   setTicketCreateOpen,
   setProjectDeleteOpen,
 }) => {
@@ -105,6 +109,7 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
               }}
               aria-label="Project options"
               aria-expanded={optionsOpen}
+              aria-controls={`project-details-options-${project?._id}`}
             >
               <span>{project?.title}</span>
               {isAuthorized && (
@@ -129,6 +134,9 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
           </h2>
           {project && (
             <ProjectDetailsOptionsPopup
+              ticketCreateOpen={ticketCreateOpen}
+              projectAssignOpen={assignOpen}
+              projectDeleteOpen={projectDeleteOpen}
               setProjectDeleteOpen={setProjectDeleteOpen}
               setTicketCreateOpen={setTicketCreateOpen}
               setProjectAssignOpen={setAssignOpen}
@@ -220,13 +228,18 @@ const ProjectDetailsBar: React.FC<ProjectDetailsBarProps> = ({
               >
                 Invited Members
               </span>
-              <BsPlus
+              <button
                 className="text-2xl bg-orange-500 text-white hover:bg-orange-600 rounded-full transition-colors mr-2"
                 id="assign-members"
+                aria-label="Invite members"
+                aria-expanded={assignOpen}
+                aria-controls={`invite-project-modal-${project?._id}`}
                 onClick={() => {
                   if (project) setAssignOpen(true);
                 }}
-              />
+              >
+                <BsPlus />
+              </button>
               <Tooltip anchorId="assign-members" content="Invite Members" />
             </div>
             <a.ul

@@ -121,6 +121,7 @@ const TicketRow: React.FC<TicketRowProps> = ({
               className="p-1 pr-4 items-center justify-center transition hidden lg:flex"
 							name="options"
 							aria-expanded={optionsOpen}
+              aria-controls={`ticket-options-${ticket?._id}`}
 							aria-label={`Ticket options for ${ticket?.title}`}
               onClick={(e) => {
                 e.stopPropagation();

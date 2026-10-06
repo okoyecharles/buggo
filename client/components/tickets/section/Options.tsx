@@ -107,6 +107,8 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
                 setTicketAssignOpen((prev) => !prev);
               }}
 							ariaLabel={`Assign members to ${ticket.title}`}
+              ariaExpanded={ticketAssignOpen}
+              ariaControls={`assign-ticket-modal-${ticket._id}`}
             >
               Assign Members
               <BsFillPersonCheckFill />
@@ -142,6 +144,8 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
                 setOpen(false);
               }}
               ariaLabel={`Delete ${ticket.title}`}
+              ariaExpanded={deleteTicketOpen}
+              ariaControls={`delete-ticket-modal-${ticket._id}`}
             >
               Delete Ticket
               <BsFillTrashFill />
@@ -155,6 +159,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
         ticket={ticket}
       />
       <TicketDeleteModal
+        id={`delete-ticket-modal-${ticket._id}`}
         open={deleteTicketOpen}
         setOpen={setDeleteTicketOpen}
         ticket={ticket}

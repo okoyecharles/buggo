@@ -79,6 +79,7 @@ export default function Tickets() {
           group={ticketsByProjects}
         />
         <MyTicketsSection
+          detailsBarOpen={detailsBarOpen}
           setDetailsBarOpen={setDetailsBarOpen}
           group={ticketsByProjects}
           scrolledTicketGroup={scrolledTicketGroup}

@@ -87,6 +87,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
 
   return (
     <aside
+      id="ticket-details"
       className={`bg-gray-850 fixed top-16 w-screen right-0 bottom-[60px] border-gray-700 lg:absolute lg:top-0 lg:w-80 lg:h-full lg:border-l z-50 ${
         open ? "translate-x-0" : "translate-x-full"
       } transition-all`}
@@ -127,7 +128,8 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
             </p>
           </div>
           <button
-            name="close modal"
+            aria-label="Close ticket details"
+            title="Close ticket details"
             className="p-1 text-2xl text-gray-500 ring-1 ring-gray-500 hover:text-gray-300 hover:ring-gray-300 rounded-full transition-all focus:outline-none active:bg-gray-700 h-fit"
             onClick={() => {
               setOpen(false);
@@ -185,6 +187,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
                 {isCommentAuthorized ? (
                   <form onSubmit={handleCommentSubmit}>
                     <input
+                      aria-label="Comment"
                       className="absolute bottom-2 w-[calc(100%-1.5rem)] left-3 rounded-sm bg-gray-900 outline-none px-3 py-2 shadow-sm text-sm text-white font-medium placeholder:text-gray-300 font-noto"
                       type="text"
                       value={comment}
@@ -248,6 +251,8 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           ) && (
             <button
               className={`bg-red-500 justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-red-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors flex-1 flex`}
+              aria-expanded={projectDeleteModalOpen}
+              aria-controls={`ticket-details-delete-modal-${ticketDetails.ticket?._id}`}
               disabled={ticketDetails.pending.delete}
               onClick={() => {
                 setProjectDeleteModalOpen(true);
@@ -264,6 +269,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
       </div>
       {ticketDetails.ticket && (
         <TicketDeleteModal
+          id={`ticket-details-delete-modal-${ticketDetails.ticket._id}`}
           open={projectDeleteModalOpen}
           setOpen={setProjectDeleteModalOpen}
           ticket={ticketDetails.ticket!}

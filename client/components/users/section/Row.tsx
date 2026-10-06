@@ -71,6 +71,9 @@ const UserRow: React.FC<UserRowProps> = ({ user, setUsers, search }) => {
           <>
             <button
               id={`delete-user-${user._id}`}
+              aria-label={`Delete ${user.name}`}
+              aria-expanded={deleteOpen}
+              aria-controls={`delete-user-modal-${user._id}`}
               className="p-2 text-gray-400 hover:text-white transition-all"
               onClick={() => {
                 setDeleteOpen(true);

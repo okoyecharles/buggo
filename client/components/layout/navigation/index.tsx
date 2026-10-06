@@ -76,15 +76,18 @@ const Navigation: React.FC<NavigationProps> = ({
               {currentUser.user?.admin ? "admin" : "dev"}
             </p>
           </div>
-          <MdOutlineArrowDropDown
+          <button
             id="account-toggle"
-            role="button"
-            name="account toggle"
+            aria-label="Account options"
+            aria-expanded={openDropdown}
+            aria-controls="profile-options"
             className={`text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none ${
               openDropdown && "rotate-180 bg-gray-700 text-gray-200"
             }`}
             onClick={() => setOpenDropdown((state) => !state)}
-          />
+          >
+            <MdOutlineArrowDropDown />
+          </button>
           <Tooltip
             anchorId="account-toggle"
             content="Account"
@@ -94,6 +97,7 @@ const Navigation: React.FC<NavigationProps> = ({
             open={openDropdown}
             user={currentUser.user}
             setOpen={setOpenDropdown}
+            editProfile={editProfile}
             setEditProfile={setEditProfile}
           />
           <EditProfileModal
