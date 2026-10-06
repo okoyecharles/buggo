@@ -16,17 +16,20 @@ test.describe("projects", () => {
 
   test("create project", async ({ page }) => {
     await page.goto("/dashboard");
-    await page.getByRole("button", { name: "Create Project" }).click();
 
     // Create Project
-    const projectName = "ce2e " + Date.now();
-    const titleInput = page.getByLabel("Title");
+    const projectName = "project " + Date.now();
+
+    await page.getByRole("button", { name: "Create Project" }).click();
+    const modal = page.locator("#create-project-modal");
+    const titleInput = modal.getByLabel("Title");
     await titleInput.fill(projectName);
     await titleInput.press("Enter");
-    await expect(page.getByRole("main")).toContainText(projectName);
+    const heading = page.getByRole("heading", { name: projectName, level: 2 });
+    await expect(heading).toBeVisible();
 
     // Get project id for cleanup
-    await page.getByRole("heading", { name: projectName }).click();
+    await heading.click();
     await page.waitForURL("/project/*");
     createdProjectId = page.url().split("/").pop();
   });
@@ -97,16 +100,19 @@ test.describe("projects", () => {
 
     // Delete Project
     await page.goto("/project/" + body.project._id);
-    const options = page.getByRole("button", { name: "Project options" });
-    await expect(options).toContainText(projectName);
-    await options.click();
+    const optionsToggle = page.getByRole("button", { name: "Project options" });
+    await expect(optionsToggle).toContainText(projectName);
+    await optionsToggle.click();
 
-    const deleteOption = page.getByRole("button", { name: "Delete Project" });
+    const options = page.locator(
+      "#project-details-options-" + body.project._id,
+    );
+    const deleteOption = options.getByRole("button", { name: "Delete" });
     await deleteOption.click();
 
-    const confirmDelete = page.getByRole("button", {
-      name: "Delete",
-      exact: true,
+    const modal = page.locator("#delete-project-modal-" + body.project._id);
+    const confirmDelete = modal.getByRole("button", {
+      name: "Confirm Delete",
     });
     await confirmDelete.click();
     await page.waitForURL("/dashboard");
@@ -156,26 +162,31 @@ test.describe("projects", () => {
     );
     expect(acceptResponse.ok()).toBeTruthy();
 
-    await page.goto("/dashboard");
-    await otherPage.goto("/dashboard");
-
-    // they both see the project
-    await expect(page.locator("#project-" + projectId)).toBeVisible();
-    await expect(otherPage.locator("#project-" + projectId)).toBeVisible();
-
-    const buttonIds = [
-      "delete-project-" + projectId,
-      "edit-project-" + projectId,
-      "invite-project-" + projectId,
+    const buttonNames = [
+      "Edit Project",
+      "Invite Members to Project",
+      "Delete Project",
     ];
-    // author sees action buttons
-    for (const buttonId of buttonIds) {
-      const button = page.locator("#" + buttonId);
+
+    await page.goto("/dashboard");
+    // creator sees the project
+    await expect(page.locator("#project-" + projectId)).toBeVisible();
+    // creator sees action buttons
+    for (const name of buttonNames) {
+      const projectCard = page.locator("#project-" + projectId);
+      await projectCard.hover();
+      const button = projectCard.getByRole("button", { name }).first();
       await expect(button).toHaveCount(1);
     }
+
+    await otherPage.goto("/dashboard");
+    // member sees the project
+    await expect(otherPage.locator("#project-" + projectId)).toBeVisible();
     // other user sees none
-    for (const buttonId of buttonIds) {
-      const button = otherPage.locator("#" + buttonId);
+    for (const name of buttonNames) {
+      const projectCard = otherPage.locator("#project-" + projectId);
+      await projectCard.hover();
+      const button = projectCard.getByRole("button", { name }).first();
       await expect(button).toHaveCount(0);
     }
   });
