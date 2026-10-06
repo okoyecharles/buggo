@@ -190,12 +190,14 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
       <div className="flex gap-2 bg-gray-850 p-4 py-3 justify-end">
         <button
+          aria-label="Cancel profile edit"
           className="px-6 p-2 hover:underline text-white font-semibold"
           onClick={() => setOpen(false)}
         >
           Cancel
         </button>
         <button
+          aria-label="Save profile"
           className="px-6 p-2 bg-blue-600 text-green-50 rounded-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
           disabled={pending.update || !isEdited}
           onClick={() => formRef.current?.requestSubmit()}

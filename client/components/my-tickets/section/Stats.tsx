@@ -31,7 +31,7 @@ const MyTicketsStats: React.FC<MyTicketsStatsProps> = ({ group }) => {
   return (
     <ul className="flex gap-2 overflow-x-scroll px-4 py-3">
       <li className="h-24 min-w-[7rem] rounded bg-gray-900 hover:bg-gray-950 flex flex-col justify-center items-center select-none transition-colors p-2">
-        <p className="text-3xl font-bold text-blue-400">
+        <p id="open-tickets-count" className="text-3xl font-bold text-blue-400">
           {returnWithTwoDigitsOrMore(
             group.reduce((a, b) => a + b.ticketCount.open, 0)
           )}
@@ -39,7 +39,7 @@ const MyTicketsStats: React.FC<MyTicketsStatsProps> = ({ group }) => {
         <p className="font-bold text-sm text-blue-500">Open Tickets</p>
       </li>
       <li className="h-24 min-w-[7rem] rounded bg-gray-900 hover:bg-gray-950 flex flex-col justify-center items-center select-none transition-colors p-2">
-        <p className="text-3xl font-bold text-red-400">
+        <p id="closed-tickets-count" className="text-3xl font-bold text-red-400">
           {returnWithTwoDigitsOrMore(
             group.reduce((a, b) => a + b.ticketCount.closed, 0)
           )}
@@ -47,13 +47,13 @@ const MyTicketsStats: React.FC<MyTicketsStatsProps> = ({ group }) => {
         <p className="font-bold text-sm text-red-500">Closed Tickets</p>
       </li>
       <li className="h-24 min-w-[7rem] rounded bg-gray-900 hover:bg-gray-950 flex flex-col justify-center items-center select-none transition-colors p-2">
-        <p className="text-3xl font-bold text-green-400">
+        <p id="week-tickets-count" className="text-3xl font-bold text-green-400">
           {returnWithTwoDigitsOrMore(getTicketsCreatedThisWeek(tickets))}
         </p>
         <p className="font-bold text-sm text-green-500">This week</p>
       </li>
       <li className="h-24 min-w-[7rem] rounded bg-gray-900 hover:bg-gray-950 flex flex-col justify-center items-center select-none transition-colors p-2">
-        <p className="text-3xl font-bold text-green-400">
+        <p id="month-tickets-count" className="text-3xl font-bold text-green-400">
           {returnWithTwoDigitsOrMore(getTicketsCreatedThisMonth(tickets))}
         </p>
         <p className="font-bold text-sm text-green-500">This month</p>
