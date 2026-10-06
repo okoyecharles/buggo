@@ -6,7 +6,9 @@ test.describe("projects", () => {
 
   test.afterEach(async ({ request }) => {
     if (createdProjectId) {
-      const response = await request.delete("/api/projects/" + createdProjectId);
+      const response = await request.delete(
+        "/api/projects/" + createdProjectId,
+      );
       expect(response.ok()).toBeTruthy();
       createdProjectId = undefined;
     }
@@ -27,6 +29,61 @@ test.describe("projects", () => {
     await page.getByRole("heading", { name: projectName }).click();
     await page.waitForURL("/project/*");
     createdProjectId = page.url().split("/").pop();
+  });
+
+  test("edit project title", async ({ page, projectId, request }) => {
+    await page.goto("/dashboard");
+    const projectCard = page.locator("#project-" + projectId);
+    await expect(projectCard).toBeVisible();
+
+    // Edit Project
+    // Get first because there are two edit buttons
+    // one for mobile and one for desktop
+    await projectCard.hover();
+    const heading = projectCard.getByRole("heading", { level: 2 });
+    const editButton = projectCard
+      .getByRole("button", { name: "Edit Project" })
+      .first();
+    const titleInput = projectCard.getByLabel("Edit Title");
+
+    // Test edit
+    const t1 = "project " + Date.now();
+    await editButton.click();
+    await titleInput.fill(t1);
+    await titleInput.press("Enter");
+    await expect(heading).toBeVisible();
+    await expect(heading).toContainText(t1);
+
+    // Test cancel
+    const t2 = "project " + Date.now();
+    await editButton.click();
+    await titleInput.fill(t2);
+    await titleInput.press("Escape");
+    // Check that the input is reset
+    await editButton.click();
+    await expect(titleInput).toHaveValue(t1);
+    await titleInput.press("Escape");
+    await expect(heading).toBeVisible();
+    await expect(heading).toContainText(t1);
+
+    // Test wrong length
+    const t3 = "p";
+    await editButton.click();
+    await titleInput.fill(t3);
+    await titleInput.press("Enter");
+    await expect(heading).not.toBeVisible();
+    await expect(
+      page.getByText("Title must be at least 5 characters"),
+    ).toBeVisible();
+    await titleInput.press("Escape");
+
+    // Confirm edit
+    const getAfterEditResponse = await request.get(
+      "/api/projects/" + projectId,
+    );
+    expect(getAfterEditResponse.ok()).toBeTruthy();
+    const body = await getAfterEditResponse.json();
+    expect(body.project.title).toBe(t1);
   });
 
   test("delete project", async ({ page, request }) => {
@@ -100,7 +157,7 @@ test.describe("projects", () => {
     expect(acceptResponse.ok()).toBeTruthy();
 
     await page.goto("/dashboard");
-		await otherPage.goto("/dashboard");
+    await otherPage.goto("/dashboard");
 
     // they both see the project
     await expect(page.locator("#project-" + projectId)).toBeVisible();
