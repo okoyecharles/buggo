@@ -71,7 +71,7 @@ const ticketsReducer = (state: TicketsState = initialState, action: ActionType):
     case projectTypes.PROJECT_DELETE_SUCCESS:
       return {
         ...state,
-        tickets: state.tickets.filter((ticket) => ticket.project._id !== payload),
+        tickets: state.tickets.filter((ticket) => ticket.project && ticket.project._id !== payload),
       };
     
     case types.TICKET_COMMENT_SUCCESS:
