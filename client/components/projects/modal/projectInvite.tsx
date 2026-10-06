@@ -37,7 +37,6 @@ const ProjectInviteModal: React.FC<{
   setOpen: any;
   project: Project;
 }> = ({ open, setOpen, project }) => {
-  const user = useSelector((store: storeType) => store.currentUser.user);
   const inviting = useSelector(
     (store: storeType) => store.project.pending.update,
   );
@@ -277,6 +276,7 @@ const ProjectInviteModal: React.FC<{
       {/* Buttons */}
       <div className="flex gap-2 bg-gray-850 p-4 py-3 justify-end">
         <button
+					aria-label="Confirm Invite"
           className="px-6 p-2 bg-blue-600 text-blue-50 rounded-sm font-semibold hover:bg-blue-700 group transition disabled:opacity-75 disabled:cursor-not-allowed"
           disabled={inviting || !invitees.length}
           onClick={async () => {

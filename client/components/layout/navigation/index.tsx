@@ -38,6 +38,10 @@ const Navigation: React.FC<NavigationProps> = ({
           </Link>
         </div>
         <button
+					aria-label="Open Notifications"
+					title="Open Notifications"
+					aria-expanded={notificationOpen}
+					aria-controls="notifications-modal"
           className="p-2 notifications ml-auto text-3xl lg:text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none"
           onClick={() => {
             setNotificationOpen(true);

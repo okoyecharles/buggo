@@ -11,6 +11,7 @@ import {
   getNotificationDescription,
   getNotificationIcon,
   getNotificationTitle,
+  getNotificationTypeKey,
 } from "@/core/utils/components/notification";
 import { ThreeDotsLoader } from "@/core/components/loader";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -58,6 +59,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   return (
     <Portal>
       <a.section
+        id="notifications-modal"
         className="notifications fixed top-0 left-0 w-screen h-screen bg-gray-825 text-gray-300 flex flex-col"
         style={{
           ...spring,
@@ -74,7 +76,8 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             Notifications
           </h3>
           <button
-            name="close modal"
+						aria-label="Close Notifications"
+						title="Close Notifications"
             className="p-1 text-2xl text-gray-300 ring-1 ring-gray-300 hover:text-gray-200 hover:ring-gray-200 rounded-full transition-all focus:outline-none active:bg-gray-700 relative"
             onClick={() => {
               setOpen(false);
@@ -105,6 +108,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
               {notifications?.map((notification) => {
                 return (
                   <li
+                    id={`${notification.type}_${getNotificationTypeKey(notification)}`}
                     key={notification._id}
                     className={`p-3 lg:px-6 flex items-center gap-3 border-l-2 border-b border-b-gray-700 first:border-t border-t-gray-700 ${
                       notification.read
@@ -140,6 +144,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                       {getNotificationActions(notification).map((action) => (
                         <button
                           key={action.key}
+                          aria-label={action.label}
                           className={`text-ss rounded-full lg:rounded h-10 w-10 lg:h-8 flex items-center justify-center ${
                             action.variant === "primary"
                               ? "bg-blue-500 hover:bg-blue-600 text-white lg:w-32"

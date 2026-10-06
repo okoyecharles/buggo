@@ -5,10 +5,7 @@ import Link from "next/link";
 import { TiUserAdd } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 import store from "@/redux/configureStore";
-import {
-  acceptInvite,
-  declineInvite,
-} from "@/redux/actions/projectActions";
+import { acceptInvite, declineInvite } from "@/redux/actions/projectActions";
 import { toast } from "react-toastify";
 
 export const getNotificationDescription = (notification: Notification) => {
@@ -111,5 +108,16 @@ export const getNotificationTitle = (notification: Notification): string => {
       return "Ticket Assignment";
     default:
       return "Notification";
+  }
+};
+
+export const getNotificationTypeKey = (notification: Notification): string => {
+  switch (notification.type) {
+    case NotificationType.PROJECT_INVITE:
+      return notification.snapshot.project._id;
+    case NotificationType.TICKET_ASSIGN:
+      return notification.snapshot.ticket._id;
+    default:
+      return "";
   }
 };
