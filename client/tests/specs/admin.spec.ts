@@ -2,6 +2,7 @@ import avatars from "@/core/assets/avatar";
 import { User } from "@/core/types/models";
 import { expect, Page } from "@playwright/test";
 import { test as base } from "../fixtures";
+import { gotoWithSocket } from "../helpers";
 
 // A user made for one test so deleting it can't affect anything else
 const test = base.extend<{ victim: { details: User; page: Page } }>({
@@ -28,21 +29,7 @@ const test = base.extend<{ victim: { details: User; page: Page } }>({
   },
 });
 
-// Live events are missed if they fire before the page's socket connects
-async function gotoWithSocket(page: Page, url: string) {
-  const connected = page
-    .waitForEvent("websocket", (ws) => ws.url().includes("socket.io"))
-    .then((ws) =>
-      // "40" is socket.io's connect acknowledgement, sent once rooms are joined
-      ws.waitForEvent("framereceived", (frame) =>
-        frame.payload.toString().startsWith("40"),
-      ),
-    );
-  await page.goto(url);
-  await connected;
-}
-
-test.describe("admin", () => {
+test.describe("admin tests", () => {
   test("non-admins can't open the users page", async ({ page }) => {
     await page.goto("/users");
     await expect(page.getByText("You're not authorized")).toBeVisible();

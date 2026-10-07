@@ -1,7 +1,7 @@
 import { Comment, NotificationType, Ticket } from "@/core/types/models";
 import { expect, APIResponse, Page } from "@playwright/test";
 import { test } from "../fixtures";
-import { postTicket } from "../helpers";
+import { gotoWithSocket, postTicket } from "../helpers";
 
 async function openTicketDetails(page: Page, ticket: Ticket) {
   await page.locator("#ticket-title-" + ticket._id).click();
@@ -12,7 +12,7 @@ async function openTicketDetails(page: Page, ticket: Ticket) {
   return details;
 }
 
-test.describe("tickets", () => {
+test.describe("ticket tests", () => {
   test("create ticket", async ({ page, projectId }) => {
     await page.goto("/project/" + projectId);
 
@@ -108,7 +108,7 @@ test.describe("tickets", () => {
     const { ticket } = await response.json();
 
     await page.goto("/project/" + sharedProjectId);
-    await otherPage.goto("/dashboard");
+    await gotoWithSocket(otherPage, "/dashboard");
 
     // Open the assign modal from the row options
     const row = page.locator("li#ticket-row-" + ticket._id);
@@ -165,8 +165,8 @@ test.describe("tickets", () => {
     });
     expect(assignResponse.ok()).toBeTruthy();
 
-    await page.goto("/project/" + sharedProjectId);
-    await otherPage.goto("/project/" + sharedProjectId);
+    await gotoWithSocket(page, "/project/" + sharedProjectId);
+    await gotoWithSocket(otherPage, "/project/" + sharedProjectId);
     const details = await openTicketDetails(page, ticket);
     const otherDetails = await openTicketDetails(otherPage, ticket);
 

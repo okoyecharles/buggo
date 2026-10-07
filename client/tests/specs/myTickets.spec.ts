@@ -5,7 +5,7 @@ import { postTicket } from "../helpers";
 
 const twoDigits = (count: number) => count.toString().padStart(2, "0");
 
-test.describe("my tickets", () => {
+test.describe("my ticket tests", () => {
   test("stats match the user's tickets", async ({
     sharedProjectId,
     request,

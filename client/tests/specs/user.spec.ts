@@ -3,8 +3,8 @@ import { expect, APIResponse } from "@playwright/test";
 import path from "path";
 import { test } from "../fixtures";
 
-test.describe("user", () => {
-  // Edits the worker's other user, so the shared main account stays untouched
+test.describe("user tests", () => {
+  // Edits the other user, so the shared main account stays untouched
   test("edit profile", async ({ otherPage, otherRequest }) => {
     await otherPage.goto("/dashboard");
 

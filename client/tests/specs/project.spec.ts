@@ -1,8 +1,9 @@
 import { NotificationType, Project } from "@/core/types/models";
 import { APIResponse, expect } from "@playwright/test";
 import { test } from "../fixtures";
+import { gotoWithSocket } from "../helpers";
 
-test.describe("projects", () => {
+test.describe("project tests", () => {
   let createdProjectId: string | undefined;
 
   test.afterEach(async ({ request }) => {
@@ -133,8 +134,9 @@ test.describe("projects", () => {
     await otherPage.goto("/project/" + projectId);
     // Check for redirect and error
     await otherPage.waitForURL("/dashboard");
-    const alert = otherPage.locator("#PROJECT_DETAILS_FAIL");
-    await expect(alert).toContainText("User not authorized");
+    await expect(otherPage.getByText("User not authorized")).toContainText(
+      "User not authorized",
+    );
   });
 
   test("A member and non-author should not be able see project options", async ({
@@ -149,6 +151,7 @@ test.describe("projects", () => {
     ];
 
     await page.goto("/dashboard");
+
     // creator sees the project
     await expect(page.locator("#project-" + sharedProjectId)).toBeVisible();
     // creator sees action buttons
@@ -161,7 +164,9 @@ test.describe("projects", () => {
 
     await otherPage.goto("/dashboard");
     // member sees the project
-    await expect(otherPage.locator("#project-" + sharedProjectId)).toBeVisible();
+    await expect(
+      otherPage.locator("#project-" + sharedProjectId),
+    ).toBeVisible();
     // other user sees none
     for (const name of buttonNames) {
       const projectCard = otherPage.locator("#project-" + sharedProjectId);
@@ -171,7 +176,7 @@ test.describe("projects", () => {
     }
   });
 
-  test("user recieves and accepts live invite", async ({
+  test("other user recieves and accepts live invite", async ({
     page,
     projectId,
     otherUser,
@@ -179,7 +184,7 @@ test.describe("projects", () => {
     otherRequest,
   }) => {
     await page.goto("/dashboard");
-    await otherPage.goto("/dashboard");
+    await gotoWithSocket(otherPage, "/dashboard");
 
     // Invite other user
     const projectCard = page.locator("#project-" + projectId);
@@ -225,9 +230,9 @@ test.describe("projects", () => {
     await expect(otherPage.locator("#project-" + projectId)).toBeVisible();
 
     // Check in database
-    const getProjectAfterInviteResponse = await otherRequest.get(
+    const getProjectAfterInviteResponse = (await otherRequest.get(
       "/api/projects/" + projectId,
-    ) as APIResponse<{ project: Project }>;
+    )) as APIResponse<{ project: Project }>;
     expect(getProjectAfterInviteResponse.ok()).toBeTruthy();
     const body = await getProjectAfterInviteResponse.json();
     expect(body.project.team.length).toBe(2);

@@ -16,10 +16,14 @@ type UserContext = {
 
 const test = base.extend<
   {
+		// ID of the project created by the default logged-in user
     projectId: string;
+		// projectId but joined by other user
     sharedProjectId: string;
+		// Page and request for other user
     otherPage: Page;
     otherRequest: APIRequestContext;
+    // Page and request for admin
     adminPage: Page;
     adminRequest: APIRequestContext;
   },
