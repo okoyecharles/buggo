@@ -16,7 +16,10 @@ const UserRow: React.FC<UserRowProps> = ({ user, search }) => {
   const [deleteOpen, setDeleteOpen] = React.useState<boolean>(false);
 
   return (
-    <li className="grid grid-cols-8 gap-2 border-b border-gray-700 lg:hover:bg-gray-850 transition-all relative">
+    <li
+      id={`user-row-${user._id}`}
+      className="grid grid-cols-8 gap-2 border-b border-gray-700 lg:hover:bg-gray-850 transition-all relative"
+    >
       <div className="col-span-4 lg:col-span-3 flex items-center gap-2 pl-4 p-2">
         <div className="h-8 lg:h-10 aspect-square flex rounded-full bg-gray-700">
           <Image

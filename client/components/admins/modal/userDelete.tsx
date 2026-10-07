@@ -42,6 +42,7 @@ const UserDeleteModal: React.FC<{
       <div className="flex gap-2 bg-gray-850 p-4 py-3 justify-end">
         <button
           className="px-6 p-2 hover:underline text-white font-semibold"
+          aria-label={`Cancel delete for user: ${user.name}`}
           onClick={() => setOpen(false)}
         >
           Cancel
@@ -49,6 +50,7 @@ const UserDeleteModal: React.FC<{
         <button
           className="px-6 p-2 bg-red-500 text-red-50 rounded-sm font-semibold hover:bg-red-600 active:bg-red-700 transition-colors disabled:opacity-75"
           disabled={pending.delete}
+          aria-label={`Confirm delete for user: ${user.name}`}
           onClick={async () => {
             const ok = await store.dispatch(deleteUser(user._id));
             if (ok) {

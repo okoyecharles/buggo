@@ -54,9 +54,11 @@ export default function Users() {
           All Users
         </h1>
         <p className="text-sm font-noto font-semibold text-gray-400 ml-2 lg:ml-4 flex items-center">
-          <span className="text-white">{users.length} total</span>
+          <span id="users-total-count" className="text-white">
+            {users.length} total
+          </span>
           <BsDot className="text-xl text-gray-600 hidden lg:block" />
-          <span className="text-blue-400 hidden lg:block">
+          <span id="users-admin-count" className="text-blue-400 hidden lg:block">
             {users.filter((user) => user.admin).length} admin
           </span>
         </p>
