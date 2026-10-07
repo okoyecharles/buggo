@@ -1,7 +1,10 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSpring, a } from "@react-spring/web";
-import { validateEmail, validatePassword } from "@/core/utils/validation/register";
+import {
+  validateEmail,
+  validatePassword,
+} from "@/core/utils/validation/register";
 import { useSelector } from "react-redux";
 import store, { storeType } from "@/redux/configureStore";
 import { useRouter } from "next/router";
@@ -20,6 +23,7 @@ const Login = () => {
   const [emailError, setEmailError] = useState<null | string>(null);
   const [password, setPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState<null | string>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const [springs, api] = useSpring(() => ({
     opacity: 0.5,
@@ -40,11 +44,12 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    if (currentUser.user && !currentUser.loading) {
-      // Only an auth page can know the user is being bounced away, so the
-      // notice lives here rather than in the session check that runs on
-      // every mount. A real sign in shares the toast id and wins the race.
-      toast.success("You're already signed in", { toastId: AUTH_TOAST_ID });
+    if (currentUser.user) {
+      if (loggingIn) {
+        toast.success("Logged In successfully", { toastId: AUTH_TOAST_ID });
+      } else {
+        toast.success("You're already signed in", { toastId: AUTH_TOAST_ID });
+      }
       router.replace("/dashboard");
     }
   }, [currentUser]);
@@ -57,7 +62,7 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setEmailError(null);
     setPasswordError(null);
@@ -68,10 +73,13 @@ const Login = () => {
 
     // Validate password
     let passwordValidationError = validatePassword(password);
-    if (passwordValidationError) return showError(passwordValidationError, "password");
+    if (passwordValidationError)
+      return showError(passwordValidationError, "password");
 
     // If no errors, send request to server
-    store.dispatch(login(email, password));
+		setLoggingIn(true);
+    await store.dispatch(login(email, password));
+		setLoggingIn(false);
   };
 
   return (
@@ -88,7 +96,13 @@ const Login = () => {
           style={springs}
         >
           <div className="self-center mb-4 mt-4 sm:hidden">
-            <Image src={"/text-logo.png"} height={22} width={110} alt="buggo" />
+            <Image
+              src={"/text-logo.png"}
+              height={22}
+              width={110}
+              alt="buggo"
+              className="w-auto h-auto"
+            />
           </div>
           <h2 className="text-gray-100 text-xl font-semibold self-center mb-1">
             Welcome back!
@@ -156,7 +170,7 @@ const Login = () => {
             />
           </div>
 
-          <Button overrideStyle="mt-6" processing={loginStore.loading}>
+          <Button overrideStyle="mt-6" processing={loginStore.pending}>
             Log In
           </Button>
 

@@ -43,10 +43,11 @@ const TicketAssignModal: React.FC<{
   open: boolean;
   setOpen: any;
   ticket: Ticket;
-  loading: boolean;
-  method: any;
-}> = ({ open, setOpen, ticket, loading, method }) => {
+}> = ({ open, setOpen, ticket }) => {
   const project = useSelector((store: storeType) => store.project.project!);
+  const updating = useSelector(
+    (store: storeType) => store.ticket.pending.update,
+  );
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState<string>("");
@@ -72,22 +73,16 @@ const TicketAssignModal: React.FC<{
     }
   }, [open]);
 
-  useEffect(() => {
-    if (open && !loading && !method.update) {
-      setOpen(false);
-      toast.success("Members assigned successfully");
-    }
-  }, [loading, method]);
-
   return (
-    <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
+    <Modal id={`assign-ticket-modal-${ticket._id}`} open={open} setOpen={setOpen} style={{ padding: 0 }}>
       <div className="modal__container p-4">
         <header className="header flex justify-between items-center">
           <h3 className="text-lg text-gray-100 font-semibold">
             Assign Members
           </h3>
           <button
-            name="close modal"
+            title="close"
+            aria-label="close modal"
             className="p-1 text-2xl text-gray-400 hover:text-gray-200 rounded-full transition-all focus:outline-none active:bg-gray-700 relative"
             onClick={() => {
               setOpen(false);
@@ -123,12 +118,16 @@ const TicketAssignModal: React.FC<{
                   />
                 </div>
                 <span className="truncate">{member.name.split(" ")[0]}</span>
-                <IoMdClose
-                  className="text-xl cursor-pointer text-gray-600 hover:text-gray-200 transition"
+                <button
+                  className="text-xl text-gray-600 hover:text-gray-200 transition"
+                  title="remove"
+                  aria-label={"Remove " + member.email + " from members"}
                   onClick={() => {
                     updateMembers({ type: "REMOVE", payload: member._id });
                   }}
-                />
+                >
+                  <IoMdClose />
+                </button>
               </li>
             </>
           ))}
@@ -136,14 +135,17 @@ const TicketAssignModal: React.FC<{
 
         {/* Search */}
         <div className="search-wrapper relative mt-4">
-          <input
-            ref={searchRef}
-            type="text"
-            placeholder="Search member by name or email"
-            className="bg-gray-900 text-ss placeholder:text-gray-500 hover:bg-gray-950 focus:bg-gray-950 focus:ring-1 ring-blue-500/75 text-gray-200 rounded py-2 px-3 pr-9 outline-none w-full transition-all"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <label>
+            <span className="sr-only">Search members to assign</span>
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder="Search member by name or email"
+              className="bg-gray-900 text-ss placeholder:text-gray-500 hover:bg-gray-950 focus:bg-gray-950 focus:ring-1 ring-blue-500/75 text-gray-200 rounded py-2 px-3 pr-9 outline-none w-full transition-all"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </label>
           <FaSearch
             className={`search-icon text-gray-500 cursor-pointer absolute top-1/2 -translate-y-1/2 right-3 lg:right-2 hover:text-gray-400 transition ${
               showClose
@@ -213,11 +215,11 @@ const TicketAssignModal: React.FC<{
                   </p>
                 </div>
                 <input
-                  id="default-checkbox"
                   type="checkbox"
                   checked={members.some(
                     (user: User) => user._id === member._id
                   )}
+                  aria-label={"assign " + member.email + " to ticket"}
                   onChange={(e) => {
                     if (e.target.checked) {
                       updateMembers({
@@ -242,9 +244,10 @@ const TicketAssignModal: React.FC<{
       {/* Buttons */}
       <div className="flex gap-2 bg-gray-850 p-4 py-3 justify-end">
         <button
+          aria-label="Confirm Assign"
           className="px-6 p-2 bg-blue-600 text-blue-50 rounded-sm font-semibold hover:bg-blue-700 group transition disabled:opacity-75"
-          disabled={loading && method.update}
-          onClick={() => {
+          disabled={updating}
+          onClick={async () => {
             const assignedTeam = members.map((member: User) => member._id);
 
             const teamValidationError = validateTicketTeam(assignedTeam);
@@ -253,14 +256,18 @@ const TicketAssignModal: React.FC<{
               return;
             }
 
-            store.dispatch(
+            const ok = await store.dispatch(
               updateTicket(ticket._id, {
                 team: assignedTeam,
               })
             );
+            if (ok) {
+              toast.success("Members assigned successfully");
+              setOpen(false);
+            }
           }}
         >
-          {loading && method.update ? <ThreeDotsLoader /> : "Assign"}
+          {updating ? <ThreeDotsLoader /> : "Assign"}
         </button>
       </div>
     </Modal>

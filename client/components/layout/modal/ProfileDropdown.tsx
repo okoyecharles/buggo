@@ -10,9 +10,10 @@ import { OptionsButton } from "@/core/components/button";
 const ProfileDropdown: React.FC<{
   open: boolean;
   setOpen: any;
+  editProfile: boolean;
   setEditProfile: any;
   user: User | null;
-}> = ({ open, setOpen, setEditProfile, user }) => {
+}> = ({ open, setOpen, editProfile, setEditProfile, user }) => {
   const spring = useSpring({
     opacity: 0,
     y: -10,
@@ -32,6 +33,7 @@ const ProfileDropdown: React.FC<{
 
   return (
     <OptionsPopup
+      id="profile-options"
       open={open}
       setOpen={setOpen}
       style="top-[4rem] right-0"
@@ -53,6 +55,9 @@ const ProfileDropdown: React.FC<{
       </header>
 
       <OptionsButton
+        ariaLabel="Edit profile"
+        ariaExpanded={editProfile}
+        ariaControls="edit-profile-modal"
         onClick={() => {
           setEditProfile(true);
           setOpen(false);

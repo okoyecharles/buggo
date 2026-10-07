@@ -48,6 +48,7 @@ const TicketRow: React.FC<TicketRowProps> = ({
   return (
     <a.li
       className="ticket-row min-h-[70px] grid gap-2 grid-cols-6 lg:grid-cols-16 xl:grid-cols-15 border-b border-gray-600 hover:bg-gray-850 transition-colors group relative cursor-pointer"
+      id={`ticket-row-${ticket?._id}`}
       onClick={() => {
         setTicketDetails(ticket);
         showTicketDetails(true);
@@ -78,22 +79,22 @@ const TicketRow: React.FC<TicketRowProps> = ({
         </div>
       </header>
       <div className="flex items-center px-1 lg:col-span-2">
-        <button
+        <span
           className={`${getTicketPriority(
             ticket?.priority
-          )} capitalize rounded p-2 py-1 text-center w-24 font-semibold text-sm xl:text-ss font-noto focus:ring-4 transition-all`}
+          )} capitalize rounded p-2 py-1 text-center w-24 font-semibold text-sm xl:text-ss font-noto hover:ring-4 transition-all`}
         >
           {ticket?.priority}
-        </button>
+        </span>
       </div>
       <div className="flex items-center px-1 lg:col-span-2">
-        <button
+        <span
           className={`${getTicketStatus(
             ticket?.status
-          )} capitalize rounded p-2 py-1 text-center w-24 font-semibold text-sm xl:text-ss font-noto focus:ring-4 transition-all`}
+          )} capitalize rounded p-2 py-1 text-center w-24 font-semibold text-sm xl:text-ss font-noto hover:ring-4 transition-all`}
         >
           {ticket?.status}
-        </button>
+        </span>
       </div>
       <div className="flex items-center px-1 lg:col-span-2">
         <span className="capitalize text-sm xl:text-ss text-orange-400 font-semibold font-noto">
@@ -118,6 +119,10 @@ const TicketRow: React.FC<TicketRowProps> = ({
           canUpdateTicket ? (
             <button
               className="p-1 pr-4 items-center justify-center transition hidden lg:flex"
+							name="options"
+							aria-expanded={optionsOpen}
+              aria-controls={`ticket-options-${ticket?._id}`}
+							aria-label={`Ticket options for ${ticket?.title}`}
               onClick={(e) => {
                 e.stopPropagation();
                 setOptionsOpen(!optionsOpen);

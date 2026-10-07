@@ -36,10 +36,10 @@ export default function ProjectDetails() {
   // Send the user back if the project could not be loaded; the error
   // middleware has already explained why
   useEffect(() => {
-    if (pageLoaded && !project.loading && !project.project) {
+    if (pageLoaded && !project.pending.details && !project.project) {
       router.replace("/dashboard");
     }
-  }, [project.project, project.loading, pageLoaded]);
+  }, [project.project, project.pending.details, pageLoaded]);
 
   return (
     <>
@@ -49,23 +49,19 @@ export default function ProjectDetails() {
       <div className="flex flex-col lg:flex-row h-full isolate">
         <ProjectDetailsBar
           project={project.project}
-          loading={project.loading}
-          method={project.method}
+          projectDeleteOpen={projectDeleteOpen}
+          ticketCreateOpen={ticketCreateOpen}
           setProjectDeleteOpen={setProjectDeleteOpen}
           setTicketCreateOpen={setTicketCreateOpen}
         />
         <TicketsSection
           tickets={project.project?.tickets}
-          loading={project.loading}
-          method={project.method}
           ticketCreateOpen={ticketCreateOpen}
           setTicketCreateOpen={setTicketCreateOpen}
         />
         <ProjectDeleteModal
           open={projectDeleteOpen}
           setOpen={setProjectDeleteOpen}
-          loading={project.loading}
-          method={project.method}
           project={project.project}
         />
       </div>

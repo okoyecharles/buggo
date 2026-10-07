@@ -5,6 +5,9 @@ interface ButtonProps {
   processing?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   overrideStyle?: string;
+  ariaLabel?: string;
+  ariaExpanded?: boolean;
+  ariaControls?: string;
 }
 
 export default ButtonProps;

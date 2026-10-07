@@ -1,30 +1,29 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { createProject } from "@/redux/actions/projectActions";
-import store from "@/redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
+import { useSelector } from "react-redux";
 import { validateProjectTitle } from "@/core/utils/validation/project";
 import Modal from "@/core/components/modal";
 import { IoMdClose } from "react-icons/io";
 import { ThreeDotsLoader } from "@/core/components/loader";
+import { toast } from "react-toastify";
 
 const CreateProjectModal = ({
   open,
   setOpen,
-  loading,
-  method,
 }: {
   open: boolean;
   setOpen: any;
-  loading: boolean;
-  method: {
-    [key: string]: any;
-  };
 }) => {
+  const creating = useSelector(
+    (store: storeType) => store.projects.pending.create,
+  );
   const [title, setTitle] = useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const [titleError, setTitleError] = useState<string | null>(null);
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setTitleError(null);
 
@@ -35,17 +34,14 @@ const CreateProjectModal = ({
     }
 
     const projectData = { title };
-    store.dispatch(createProject(projectData));
-  };
-
-  // Close modal if project has been created
-  useEffect(() => {
-    if (open && loading === false && !method.create) {
+    const ok = await store.dispatch(createProject(projectData));
+    if (ok) {
+      toast.success("Project created successfully");
       setOpen(false);
       setTitle("");
       setTitleError(null);
     }
-  }, [method.create]);
+  };
 
   useEffect(() => {
     if (open) {
@@ -55,7 +51,7 @@ const CreateProjectModal = ({
   }, [open]);
 
   return (
-    <Modal open={open} setOpen={setOpen}>
+    <Modal id="create-project-modal" open={open} setOpen={setOpen}>
       <header className="header flex justify-between items-center">
         <h3 className="text-lg text-gray-100 font-semibold">
           Create a Project
@@ -74,7 +70,7 @@ const CreateProjectModal = ({
       <form action="" className="flex flex-col" onSubmit={handleSubmit}>
         <div className="flex flex-col mt-4">
           <label
-            htmlFor="name"
+            htmlFor="project-title"
             className={`mb-1 uppercase font-bold text-xsm flex items-center gap-1 ${
               titleError && "text-red-300"
             }`}
@@ -86,7 +82,7 @@ const CreateProjectModal = ({
           </label>
           <input
             type="text"
-            id="name"
+            id="project-title"
             ref={inputRef}
             name="name"
             placeholder="eg. Limitless horizons"
@@ -98,11 +94,12 @@ const CreateProjectModal = ({
         </div>
 
         <button
+					aria-label="Confirm Project Creation"
           className="font-open font-semibold px-4 py-2 text-ss mt-4 bg-blue-600 text-white rounded hover:bg-blue-700 hover:text-blue-100 disabled:opacity-80 disabled:cursor-not-allowed  transition flex justify-center"
-          disabled={loading && method.create}
+          disabled={creating}
           type="submit"
         >
-          {loading && method.create ? <ThreeDotsLoader /> : "Create"}
+          {creating ? <ThreeDotsLoader /> : "Create"}
         </button>
       </form>
     </Modal>

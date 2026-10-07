@@ -31,13 +31,20 @@ const Navigation: React.FC<NavigationProps> = ({
 
   return (
     <header className="flex flex-col fixed w-full top-0 z-40">
-      <nav className="flex items-center shadow-sm shadow-gray-950 bg-gray-800 p-3 text-gray-100 font-open md:px-8 gap-4 h-16">
+      <nav
+        aria-label="Main"
+        className="flex items-center shadow-sm shadow-gray-950 bg-gray-800 p-3 text-gray-100 font-open md:px-8 gap-4 h-16"
+      >
         <div className="logo font-bold">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <Image src={"/text-logo.png"} height={20} width={100} alt="buggo" />
+            <Image src={"/text-logo.png"} height={20} width={100} alt="buggo" className="w-auto h-auto" />
           </Link>
         </div>
         <button
+					aria-label="Open Notifications"
+					title="Open Notifications"
+					aria-expanded={notificationOpen}
+					aria-controls="notifications-modal"
           className="p-2 notifications ml-auto text-3xl lg:text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none"
           onClick={() => {
             setNotificationOpen(true);
@@ -72,15 +79,18 @@ const Navigation: React.FC<NavigationProps> = ({
               {currentUser.user?.admin ? "admin" : "dev"}
             </p>
           </div>
-          <MdOutlineArrowDropDown
+          <button
             id="account-toggle"
-            role="button"
-            name="account toggle"
+            aria-label="Account options"
+            aria-expanded={openDropdown}
+            aria-controls="profile-options"
             className={`text-4xl text-gray-300 hover:text-gray-200 z-10 cursor-pointer hover:bg-gray-700 rounded-full transition focus:outline-none ${
               openDropdown && "rotate-180 bg-gray-700 text-gray-200"
             }`}
             onClick={() => setOpenDropdown((state) => !state)}
-          />
+          >
+            <MdOutlineArrowDropDown />
+          </button>
           <Tooltip
             anchorId="account-toggle"
             content="Account"
@@ -90,14 +100,12 @@ const Navigation: React.FC<NavigationProps> = ({
             open={openDropdown}
             user={currentUser.user}
             setOpen={setOpenDropdown}
+            editProfile={editProfile}
             setEditProfile={setEditProfile}
           />
           <EditProfileModal
             open={editProfile}
             setOpen={setEditProfile}
-            user={currentUser.user}
-            loading={currentUser.loading}
-            method={currentUser.method}
           />
           <NotificationModal
             open={notificationOpen}

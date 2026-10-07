@@ -9,16 +9,12 @@ import CreateProjectModal from "./modal/projectCreate";
 
 interface ProjectSectionProps {
   projects: Project[];
-  loading: boolean;
-  method: {};
   search: string;
   setSearch: any;
 }
 
 const ProjectSection: React.FC<ProjectSectionProps> = ({
   projects,
-  loading,
-  method,
   search,
   setSearch,
 }) => {
@@ -54,6 +50,9 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
           <button
             className="group cursor-pointer"
             id="create-project"
+						aria-label="Create Project"
+            aria-expanded={createModalOpen}
+            aria-controls="create-project-modal"
             onClick={() => {
               setCreateModalOpen(true);
             }}
@@ -67,8 +66,6 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
         </div>
         <ProjectsList
           projects={currentProjects}
-          loading={loading}
-          method={method}
           search={search}
         />
       </div>
@@ -83,8 +80,6 @@ const ProjectSection: React.FC<ProjectSectionProps> = ({
       <CreateProjectModal
         open={createModalOpen}
         setOpen={setCreateModalOpen}
-        loading={loading}
-        method={method}
       />
     </section>
   );

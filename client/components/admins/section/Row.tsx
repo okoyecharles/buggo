@@ -4,20 +4,22 @@ import Image from "next/image";
 import getDate from "@/core/utils/strings/date";
 import { BsTrashFill } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
-import UserDeleteModal from "@/components/users/modal/userDelete";
 import Highlighter from "react-highlight-words";
+import UserDeleteModal from "../modal/userDelete";
 
 interface UserRowProps {
   user: User;
-  setUsers: any;
   search: string;
 }
 
-const UserRow: React.FC<UserRowProps> = ({ user, setUsers, search }) => {
+const UserRow: React.FC<UserRowProps> = ({ user, search }) => {
   const [deleteOpen, setDeleteOpen] = React.useState<boolean>(false);
 
   return (
-    <li className="grid grid-cols-8 gap-2 border-b border-gray-700 lg:hover:bg-gray-850 transition-all relative">
+    <li
+      id={`user-row-${user._id}`}
+      className="grid grid-cols-8 gap-2 border-b border-gray-700 lg:hover:bg-gray-850 transition-all relative"
+    >
       <div className="col-span-4 lg:col-span-3 flex items-center gap-2 pl-4 p-2">
         <div className="h-8 lg:h-10 aspect-square flex rounded-full bg-gray-700">
           <Image
@@ -71,6 +73,9 @@ const UserRow: React.FC<UserRowProps> = ({ user, setUsers, search }) => {
           <>
             <button
               id={`delete-user-${user._id}`}
+              aria-label={`Delete ${user.name}`}
+              aria-expanded={deleteOpen}
+              aria-controls={`delete-user-modal-${user._id}`}
               className="p-2 text-gray-400 hover:text-white transition-all"
               onClick={() => {
                 setDeleteOpen(true);
@@ -89,7 +94,6 @@ const UserRow: React.FC<UserRowProps> = ({ user, setUsers, search }) => {
       <UserDeleteModal
         open={deleteOpen}
         setOpen={setDeleteOpen}
-        setUsers={setUsers}
         user={user}
       />
     </li>

@@ -1,9 +1,11 @@
 import { Socket } from "socket.io-client";
 import store from "@/redux/configureStore";
-import * as projectTypes from "@/redux/constants/projectConstants";
-import * as ticketTypes from "@/redux/constants/ticketConstants";
-import * as notificationTypes from "@/redux/constants/notificationConstants";
-import { handleAccountDeleted } from "@/redux/actions/userActions";
+import * as projectTypes from "@/redux/types/project";
+import * as ticketTypes from "@/redux/types/ticket";
+import * as notificationTypes from "@/redux/types/notification";
+import * as adminTypes from "@/redux/types/admin";
+import { toast } from "react-toastify";
+import { logout } from "@/redux/actions/userActions";
 
 /*
  * Every event carries the record it changed, so these are plain dispatches --
@@ -73,9 +75,21 @@ const bindSocketEvents = (socket: Socket) => {
     });
   });
 
-  // Sent to the deleted account's own room, so it only ever reaches them.
-  socket.on("user:delete", ({ userId }) => {
-    handleAccountDeleted(userId);
+  // Sent to the deleted account's own room and to every admin.
+  socket.on("user:delete", ({ userId, byAdmin }) => {
+    const currentUser = store.getState().currentUser.user;
+    if (currentUser?._id !== userId) {
+      // An admin, so the user disappears from their list
+      store.dispatch({
+        type: adminTypes.ADMIN_DELETE_USER_SUCCESS,
+        payload: userId,
+      });
+      return;
+    }
+    if (byAdmin) {
+      toast.warn("Due to policy violation, This account has been deleted");
+    }
+    store.dispatch(logout(true));
   });
 };
 

@@ -1,84 +1,74 @@
 import { User } from '@/core/types/models';
-import * as types from '@/redux/constants/userConstants';
+import * as types from '@/redux/types/user';
 import { ActionType } from '@/redux/types';
 
-type State = {
+export type CurrentUserState = {
   user: User | null,
-  loading: boolean,
-  method: {
+  pending: {
     update: boolean;
     validate: boolean;
   };
 };
-const initialState: State = {
+const initialState: CurrentUserState = {
   user: null,
-  loading: false,
-  method: {
+  pending: {
     update: false,
     validate: true
   }
 };
 
 const currentUserReducer = (
-  state: State = initialState,
+  state: CurrentUserState = initialState,
   action: ActionType
-): State => {
+): CurrentUserState => {
   const { type, payload } = action;
   switch (type) {
     case types.USER_LOGIN_SUCCESS:
       return {
         ...payload,
-        loading: false,
-        method: { ...state.method, update: false }
+        pending: { ...state.pending, update: false }
       };
     case types.USER_REGISTER_SUCCESS:
       return {
         ...payload,
-        loading: false,
-        method: { ...state.method, update: false }
+        pending: { ...state.pending, update: false }
       };
     case types.USER_LOGOUT:
       return {
         ...initialState,
-        method: { ...state.method, validate: false }
+        pending: { ...state.pending, validate: false }
       };
 
     case types.USER_PROFILE_UPDATE_REQUEST:
       return {
         ...state,
-        loading: true,
-        method: { ...state.method, update: true }
+        pending: { ...state.pending, update: true }
       };
     case types.USER_PROFILE_UPDATE_SUCCESS:
       return {
         ...payload,
-        loading: false,
-        method: { ...state.method, update: false }
+        pending: { ...state.pending, update: false }
       };
     case types.USER_PROFILE_UPDATE_FAIL:
       return {
         ...state,
-        loading: false,
-        method: { ...state.method, update: false }
+        pending: { ...state.pending, update: false }
       };
 
     case types.USER_VALIDATE_REQUEST:
       return {
         ...state,
-        loading: true,
-        method: { ...state.method, validate: true }
+        pending: { ...state.pending, validate: true }
       };
     case types.USER_VALIDATE_SUCCESS:
       return {
         ...payload,
-        loading: false,
-        method: { ...state.method, validate: false }
+        pending: { ...state.pending, validate: false }
       };
     case types.USER_VALIDATE_FAIL:
       return {
         ...state,
-        loading: false,
-        method: { ...state.method, validate: false }
+        pending: { ...state.pending, validate: false }
       };
     default:
       return state;

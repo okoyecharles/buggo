@@ -76,7 +76,7 @@ const LandingFooter = () => {
 
         <div className="flex items-center justify-between border-t border-gray-800 pt-6">
           <div className="footer-logo">
-            <Image src={"/text-logo.png"} height={20} width={100} alt="buggo" />
+            <Image src={"/text-logo.png"} height={20} width={100} alt="buggo" className="w-auto h-auto" / >
           </div>
 
           <Link

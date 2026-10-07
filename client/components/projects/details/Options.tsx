@@ -1,4 +1,3 @@
-import { useSpring, a } from "@react-spring/web";
 import { AiFillPlusCircle } from "react-icons/ai";
 import { BsFillPersonCheckFill, BsFillTrashFill } from "react-icons/bs";
 import { useSelector } from "react-redux";
@@ -11,24 +10,32 @@ const ProjectDetailsOptionsPopup: React.FC<{
   open: boolean;
   setOpen: any;
   project: Project;
-  method: {
-    [key: string]: boolean;
-  };
+  ticketCreateOpen: boolean;
+  projectAssignOpen: boolean;
+  projectDeleteOpen: boolean;
   setProjectAssignOpen: any;
   setTicketCreateOpen: any;
   setProjectDeleteOpen: any;
 }> = ({
   open,
   setOpen,
-  method,
+  ticketCreateOpen,
+  projectAssignOpen,
+  projectDeleteOpen,
   setProjectAssignOpen,
   setTicketCreateOpen,
   setProjectDeleteOpen,
+	project,
 }) => {
+  const pending = useSelector((store: storeType) => store.project.pending);
+
   return (
-    <OptionsPopup open={open} setOpen={setOpen} style="top-[5rem] right-2">
+    <OptionsPopup id={`project-details-options-${project._id}`} open={open} setOpen={setOpen} style="top-[5rem] right-2">
       <OptionsButton
-        processing={method.update}
+				ariaLabel={`Create ticket in ${project.title}`}
+        ariaExpanded={ticketCreateOpen}
+        ariaControls="create-ticket-modal"
+        processing={pending.createTicket}
         onClick={() => {
           setTicketCreateOpen(true);
         }}
@@ -40,7 +47,10 @@ const ProjectDetailsOptionsPopup: React.FC<{
       <hr className="border-gray-800" />
 
       <OptionsButton
-        processing={method.update}
+        processing={pending.update}
+				ariaLabel={`Invite members to ${project.title}`}
+        ariaExpanded={projectAssignOpen}
+        ariaControls={`invite-project-modal-${project._id}`}
         onClick={() => {
           setProjectAssignOpen(true);
         }}
@@ -53,7 +63,10 @@ const ProjectDetailsOptionsPopup: React.FC<{
 
       <OptionsButton
         color="red-500"
-        processing={method.update}
+				ariaLabel={`Delete ${project.title}`}
+        ariaExpanded={projectDeleteOpen}
+        ariaControls={`delete-project-modal-${project._id}`}
+        processing={pending.delete}
         onClick={() => {
           setProjectDeleteOpen(true);
         }}

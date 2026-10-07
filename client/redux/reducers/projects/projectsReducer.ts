@@ -1,14 +1,13 @@
 import { ActionType } from "@/redux/types";
-import * as types from "@/redux/constants/projectConstants";
-import * as userTypes from "@/redux/constants/userConstants";
-import * as ticketTypes from "@/redux/constants/ticketConstants";
+import * as types from "@/redux/types/project";
+import * as userTypes from "@/redux/types/user";
+import * as ticketTypes from "@/redux/types/ticket";
 import { Project } from "@/core/types/models";
 
-interface ProjectsState {
+export interface ProjectsState {
   projects: Project[];
-  loading: boolean;
   error: { messsage: string } | null;
-  method: {
+  pending: {
     list: boolean;
     create: boolean;
     update: boolean;
@@ -18,11 +17,10 @@ interface ProjectsState {
   };
 };
 
-const initialState = {
+const initialState: ProjectsState = {
   projects: [],
-  loading: false,
   error: null,
-  method: {
+  pending: {
     list: false,
     create: false,
     update: false,
@@ -43,23 +41,20 @@ const projectsReducer = (
     case types.PROJECT_LIST_REQUEST:
       return {
         ...state,
-        loading: true,
         error: null,
-        method: { ...state.method, list: true },
+        pending: { ...state.pending, list: true },
       };
     case types.PROJECT_LIST_SUCCESS:
       return {
         ...state,
         error: null,
-        loading: false,
-        method: { ...state.method, list: false },
+        pending: { ...state.pending, list: false },
         projects: payload.projects,
       };
     case types.PROJECT_LIST_FAIL:
       return {
         ...state,
-        loading: false,
-        method: { ...state.method, list: false },
+        pending: { ...state.pending, list: false },
         error: payload,
       };
 
@@ -67,16 +62,14 @@ const projectsReducer = (
     case types.PROJECT_CREATE_REQUEST:
       return {
         ...state,
-        loading: true,
         error: null,
-        method: { ...state.method, create: true },
+        pending: { ...state.pending, create: true },
       };
     case types.PROJECT_CREATE_SUCCESS:
       return {
         ...state,
         error: null,
-        loading: false,
-        method: { ...state.method, create: false },
+        pending: { ...state.pending, create: false },
         // Socket delivery can repeat what the request already applied.
         projects: [
           payload.project,
@@ -88,8 +81,7 @@ const projectsReducer = (
     case types.PROJECT_CREATE_FAIL:
       return {
         ...state,
-        loading: false,
-        method: { ...state.method, create: false },
+        pending: { ...state.pending, create: false },
         error: payload,
       };
 
@@ -97,95 +89,84 @@ const projectsReducer = (
     case types.PROJECT_DELETE_REQUEST:
       return {
         ...state,
-        loading: true,
         error: null,
-        method: { ...state.method, delete: true },
+        pending: { ...state.pending, delete: true },
       };
     case types.PROJECT_DELETE_SUCCESS:
       return {
         ...state,
         error: null,
-        loading: false,
         projects: state.projects.filter((project) => project._id !== payload),
-        method: { ...state.method, delete: false },
+        pending: { ...state.pending, delete: false },
       };
     case types.PROJECT_DELETE_FAIL:
       return {
         ...state,
-        loading: false,
         error: payload,
-        method: { ...state.method, delete: false },
+        pending: { ...state.pending, delete: false },
       };
 
     // Update a project
     case types.PROJECT_UPDATE_REQUEST:
       return {
         ...state,
-        loading: true,
         error: null,
-        method: { ...state.method, update: true },
+        pending: { ...state.pending, update: true },
       };
     case types.PROJECT_UPDATE_SUCCESS:
       return {
         ...state,
         error: null,
-        loading: false,
         projects: state.projects.map((project) => {
           if (project._id === payload.project._id) {
             return payload.project;
           }
           return project;
         }),
-        method: { ...state.method, update: false },
+        pending: { ...state.pending, update: false },
       };
     case types.PROJECT_UPDATE_FAIL:
       return {
         ...state,
-        loading: false,
         error: payload,
-        method: { ...state.method, update: false },
+        pending: { ...state.pending, update: false },
       };
 
     case types.PROJECT_INVITE_REQUEST:
       return {
         ...state,
-        loading: true,
         error: null,
-        method: { ...state.method, update: true },
+        pending: { ...state.pending, update: true },
       };
     case types.PROJECT_INVITE_SUCCESS:
       return {
         ...state,
         error: null,
-        loading: false,
         projects: state.projects.map((project) => {
           if (project._id === payload.project._id) {
             return payload.project;
           }
           return project;
         }),
-        method: { ...state.method, update: false },
+        pending: { ...state.pending, update: false },
       };
     case types.PROJECT_INVITE_FAIL:
       return {
         ...state,
-        loading: false,
         error: payload,
-        method: { ...state.method, update: false },
+        pending: { ...state.pending, update: false },
       };
 
     case types.PROJECT_ACCEPT_INVITE_REQUEST:
       return {
         ...state,
-        loading: true,
         error: null,
-        method: { ...state.method, acceptInvite: true },
+        pending: { ...state.pending, acceptInvite: true },
       };
     case types.PROJECT_ACCEPT_INVITE_SUCCESS:
       return {
         ...state,
         error: null,
-        loading: false,
         // Accepting is usually the first time this project reaches the store,
         // since a user is only sent projects they are a part of. Admins are
         // sent every project, so guard against a second copy.
@@ -195,22 +176,20 @@ const projectsReducer = (
             (project) => project._id !== payload.project._id,
           ),
         ],
-        method: { ...state.method, acceptInvite: false },
+        pending: { ...state.pending, acceptInvite: false },
       };
     case types.PROJECT_ACCEPT_INVITE_FAIL:
       return {
         ...state,
-        loading: false,
         error: payload,
-        method: { ...state.method, acceptInvite: false },
+        pending: { ...state.pending, acceptInvite: false },
       };
 
     case types.PROJECT_DECLINE_INVITE_REQUEST:
       return {
         ...state,
-        loading: true,
         error: null,
-        method: { ...state.method, declineInvite: true },
+        pending: { ...state.pending, declineInvite: true },
       };
     /*
      * Declining changes nothing here. An invitee is never sent the project in
@@ -221,15 +200,13 @@ const projectsReducer = (
       return {
         ...state,
         error: null,
-        loading: false,
-        method: { ...state.method, declineInvite: false },
+        pending: { ...state.pending, declineInvite: false },
       };
     case types.PROJECT_DECLINE_INVITE_FAIL:
       return {
         ...state,
-        loading: false,
         error: payload,
-        method: { ...state.method, declineInvite: false },
+        pending: { ...state.pending, declineInvite: false },
       };
 
     /*

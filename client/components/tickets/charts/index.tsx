@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AiFillInfoCircle } from "react-icons/ai";
 import { Tooltip } from "react-tooltip";
 import { Cell, Pie, PieChart, Tooltip as ChartTooltip } from "recharts";
@@ -10,12 +10,18 @@ interface Props {
 }
 const COLORS = ["#f78c54", "#f56c24", "#db520a", "#db520a", "#7a2e06"];
 const TicketGroupChart: React.FC<Props> = ({ tickets, subject }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const data = useMemo(() => {
     const data: any[] = [];
+		if (!mounted) return data;
     for (const ticket of tickets) {
       const ticketField = ticket[subject];
       const ticketFieldIndex = data.findIndex(
-        (obj) => obj.name === ticketField
+        (obj) => obj.name === ticketField,
       );
       if (ticketFieldIndex === -1) {
         data.push({ name: ticketField, count: 1 });
@@ -24,7 +30,7 @@ const TicketGroupChart: React.FC<Props> = ({ tickets, subject }) => {
       }
     }
     return data;
-  }, [tickets]);
+  }, [tickets, mounted]);
 
   return (
     <>
@@ -36,38 +42,40 @@ const TicketGroupChart: React.FC<Props> = ({ tickets, subject }) => {
         anchorId={`ticketStat${subject}__info`}
         html={`<div class="text-center">Percentage of tickets you've created,<br> grouped by ${subject}.</div>`}
       />
-      <div className="flex justify-center">
-        <PieChart height={130} width={130}>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            label={renderCustomizedLabel}
-            labelLine={false}
-            outerRadius={65}
-            strokeWidth={3}
-            stroke="#242629"
-            dataKey="count"
-          >
-            {data.map((_entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
-              />
-            ))}
-          </Pie>
-          <ChartTooltip
-            itemStyle={{
-              color: "#bbbec4",
-              fontSize: "12px",
-            }}
-            contentStyle={{
-              backgroundColor: "#1a1c1f",
-              borderRadius: "5px",
-              border: "none",
-            }}
-          />
-        </PieChart>
+      <div className="flex justify-center items-center min-h-[160px]">
+        {mounted && (
+          <PieChart height={130} width={130}>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              label={renderCustomizedLabel}
+              labelLine={false}
+              outerRadius={65}
+              strokeWidth={3}
+              stroke="#242629"
+              dataKey="count"
+            >
+              {data.map((_entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+            <ChartTooltip
+              itemStyle={{
+                color: "#bbbec4",
+                fontSize: "12px",
+              }}
+              contentStyle={{
+                backgroundColor: "#1a1c1f",
+                borderRadius: "5px",
+                border: "none",
+              }}
+            />
+          </PieChart>
+        )}
       </div>
       <p className="font-bold text-xsm uppercase text-gray-200 flex justify-between absolute bottom-2 left-2 select-none">
         {subject}

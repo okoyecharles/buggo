@@ -24,29 +24,25 @@ import getDate from "@/core/utils/strings/date";
 import getAuthorization from "@/core/utils/authorization";
 import { useRouter } from "next/router";
 import { a } from "@react-spring/web";
+import { toast } from "react-toastify";
 
 interface projectProps {
   project: Project;
-  loading: boolean;
   search: string;
-  method: {
-    [key: string]: any;
-  };
   currentEdit: string;
   setCurrentEdit: (id: string) => void;
-  projectCardTrail: any
+  projectCardTrail: any;
 }
 
 const ProjectCard: React.FC<projectProps> = ({
   project,
-  loading,
   search,
-  method,
   currentEdit,
   setCurrentEdit,
-  projectCardTrail
+  projectCardTrail,
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
+  const pending = useSelector((store: storeType) => store.projects.pending);
   const router = useRouter();
 
   const [optionsOpen, setOptionsOpen] = useState(false);
@@ -76,13 +72,27 @@ const ProjectCard: React.FC<projectProps> = ({
     }, 0);
   }
 
-  const editProject = (id: string, fields: any) => {
-    store.dispatch(
+  const editProject = async (id: string, fields: Pick<Project, "title">) => {
+    if (pending.update) return;
+    if (project.title === editTitle) return setEditMode(false);
+    const error = validateProjectTitle(editTitle);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    const ok = await store.dispatch(
       updateProject({
         id,
         project: fields,
-      })
+      }),
     );
+    if (ok) {
+      setEditMode(false);
+    }
+  };
+
+  const escapeEdit = () => {
+    setEditTitle(project.title);
     setEditMode(false);
   };
 
@@ -92,6 +102,7 @@ const ProjectCard: React.FC<projectProps> = ({
 
   return (
     <a.li
+      id={`project-${project._id}`}
       key={project._id}
       className={`project flex flex-col bg-gray-850 p-4 group hover:bg-gray-900 rounded relative cursor-pointer`}
       style={projectCardTrail}
@@ -111,31 +122,34 @@ const ProjectCard: React.FC<projectProps> = ({
           highlightClassName="bg-orange-500/75 text-white"
         />
       </h2>
-      <div
+      <label
         className={`relative mb-2 ${editMode ? "" : "hidden"}`}
         onClick={(e) => {
           e.stopPropagation();
         }}
       >
+        <span className="sr-only">Edit title</span>
         <input
           type="text"
           ref={editInputRef}
-          className="p-1 text-lg font-bold bg-gray-800 rounded outline-none text-gray-200 w-full "
+          className="p-1 text-lg font-bold bg-gray-800 rounded outline-none text-gray-200 w-full disabled:opacity-50"
           value={editTitle}
+          disabled={pending.update}
           onChange={(e) => {
             setEditTitle(e.target.value);
           }}
-          onKeyDown={(event: KeyboardEvent) => {
-            if (event.key === "Enter") {
-              if (
-                project.title !== editTitle &&
-                !validateProjectTitle(editTitle)
-              )
-                editProject(project._id, { title: editTitle });
-              setEditMode(false);
-            }
-            if (event.key === "Escape") {
-              setEditMode(false);
+          onKeyDown={async (event: KeyboardEvent) => {
+            switch (event.key) {
+              case "Enter":
+                editProject(project._id, {
+                  title: editTitle,
+                });
+                break;
+              case "Escape":
+                escapeEdit();
+                break;
+              default:
+                break;
             }
           }}
         />
@@ -143,9 +157,7 @@ const ProjectCard: React.FC<projectProps> = ({
           escape to{" "}
           <span
             className="text-blue-500 hover:underline cursor-pointer"
-            onClick={() => {
-              setEditMode(false);
-            }}
+            onClick={escapeEdit}
           >
             cancel
           </span>{" "}
@@ -154,7 +166,6 @@ const ProjectCard: React.FC<projectProps> = ({
             className="text-blue-500 hover:underline cursor-pointer"
             onClick={() => {
               editProject(project._id, { title: editTitle });
-              setEditMode(false);
             }}
           >
             save
@@ -165,11 +176,10 @@ const ProjectCard: React.FC<projectProps> = ({
             className="absolute right-1 top-1/2 -translate-y-1/2 text-2xl p-1 bg-orange-500 text-orange-100 hover:bg-orange-600 transition-colors rounded"
             onClick={() => {
               editProject(project._id, { title: editTitle });
-              setEditMode(false);
             }}
           />
         </button>
-      </div>
+      </label>
       <ProjectCardMembers project={project} />
       <div className="flex flex-col lg:flex-row lg:mt-0  lg:gap-4">
         <div className="text-gray-500 uppercase text-xsm flex items-center gap-2">
@@ -196,8 +206,10 @@ const ProjectCard: React.FC<projectProps> = ({
           <>
             <button
               id={`edit-project-${project._id}`}
-              className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
-              disabled={loading && method.update}
+              className="edit-project hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
+              title="Edit project"
+              aria-label={`Edit project: ${project.title}`}
+              disabled={pending.update}
               tabIndex={-1}
               onClick={handleEditMode}
             >
@@ -206,9 +218,13 @@ const ProjectCard: React.FC<projectProps> = ({
             <button
               id={`invite-project-${project._id}`}
               className="hidden lg:flex h-full hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square items-center justify-center transition-colors disabled:opacity-50"
+              title="Invite members"
+              aria-label={`Invite members to project: ${project.title}`}
+              aria-expanded={projectInvite}
+              aria-controls={`invite-project-modal-${project._id}`}
               tabIndex={-1}
               onClick={handleInviteMembers}
-              disabled={loading && method.update}
+              disabled={pending.update}
             >
               <BsFillPersonCheckFill />
             </button>
@@ -220,13 +236,21 @@ const ProjectCard: React.FC<projectProps> = ({
                       lg:hover:text-red-100 hover:text-orange-50
                       lg:text-red-500/90 text-orange-500 
                       aspect-square items-center justify-center transition-colors"
+              title="Delete project"
+              aria-label={`Delete project: ${project.title}`}
+              aria-expanded={projectDeleteConfirm}
+              aria-controls={`delete-project-modal-${project._id}`}
               tabIndex={-1}
+              disabled={pending.delete}
               onClick={() => setProjectDeleteConfirm(true)}
             >
               <BsFillTrashFill />
             </button>
             <button
               className="h-full lg:hidden hover:bg-gray-700 active:bg-gray-750 hover:text-white aspect-square flex items-center justify-center transition"
+              aria-label={`Project options for ${project.title}`}
+              aria-expanded={optionsOpen}
+              aria-controls={`project-options-${project._id}`}
               onClick={() => {
                 setOptionsOpen(true);
               }}
@@ -236,35 +260,37 @@ const ProjectCard: React.FC<projectProps> = ({
           </>
         )}
       </div>
-      <Tooltip anchorId={`edit-project-${project._id}`} content="Edit" />
+      <Tooltip anchorSelect={`#edit-project-${project._id}`} content="Edit" />
       <Tooltip
-        anchorId={`invite-project-${project._id}`}
+        anchorSelect={`#invite-project-${project._id}`}
         content="Invite Members"
       />
-      <Tooltip anchorId={`delete-project-${project._id}`} content="Delete" />
-      <ProjectOptionsPopup
-        open={optionsOpen}
-        loading={loading}
-        method={method}
-        setOpen={setOptionsOpen}
-        setProjectDeleteConfirm={setProjectDeleteConfirm}
-        handleEditMode={handleEditMode}
-        setProjectAssign={setProjectInvite}
+      <Tooltip
+        anchorSelect={`#delete-project-${project._id}`}
+        content="Delete"
       />
       <ProjectInviteModal
         open={projectInvite}
         setOpen={setProjectInvite}
         project={project}
-        loading={loading}
-        method={method}
       />
       <ProjectDeleteModal
         open={projectDeleteConfirm}
         setOpen={setProjectDeleteConfirm}
         project={project}
-        loading={loading}
-        method={method}
       />
+      {isAuthorized && (
+        <ProjectOptionsPopup
+          project={project}
+          open={optionsOpen}
+          setOpen={setOptionsOpen}
+          projectDeleteConfirm={projectDeleteConfirm}
+          projectInvite={projectInvite}
+          setProjectDeleteConfirm={setProjectDeleteConfirm}
+          handleEditMode={handleEditMode}
+          setProjectAssign={setProjectInvite}
+        />
+      )}
     </a.li>
   );
 };

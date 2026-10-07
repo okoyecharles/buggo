@@ -5,10 +5,8 @@ import Link from "next/link";
 import { TiUserAdd } from "react-icons/ti";
 import { IoClose } from "react-icons/io5";
 import store from "@/redux/configureStore";
-import {
-  acceptInvite,
-  declineInvite,
-} from "@/redux/actions/projectActions";
+import { acceptInvite, declineInvite } from "@/redux/actions/projectActions";
+import { toast } from "react-toastify";
 
 export const getNotificationDescription = (notification: Notification) => {
   switch (notification.type) {
@@ -77,16 +75,24 @@ export const getNotificationActions = (
           label: "Accept Invite",
           icon: <BsCheck className="text-2xl" />,
           variant: "primary",
-          handler: () =>
-            store.dispatch(acceptInvite(notification.snapshot.project._id)),
+          handler: async () => {
+            const ok = await store.dispatch(
+              acceptInvite(notification.snapshot.project._id),
+            );
+            if (ok) toast.success("Invitation accepted successfully");
+          },
         },
         {
           key: "decline",
           label: "Decline",
           icon: <IoClose className="text-xl" />,
           variant: "danger",
-          handler: () =>
-            store.dispatch(declineInvite(notification.snapshot.project._id)),
+          handler: async () => {
+            const ok = await store.dispatch(
+              declineInvite(notification.snapshot.project._id),
+            );
+            if (ok) toast.success("Invitation declined");
+          },
         },
       ];
     default:
@@ -102,5 +108,16 @@ export const getNotificationTitle = (notification: Notification): string => {
       return "Ticket Assignment";
     default:
       return "Notification";
+  }
+};
+
+export const getNotificationTypeKey = (notification: Notification): string => {
+  switch (notification.type) {
+    case NotificationType.PROJECT_INVITE:
+      return notification.snapshot.project._id;
+    case NotificationType.TICKET_ASSIGN:
+      return notification.snapshot.ticket._id;
+    default:
+      return "";
   }
 };

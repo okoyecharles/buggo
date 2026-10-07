@@ -1,15 +1,13 @@
 import React from "react";
 import { storeType } from "@/redux/configureStore";
+import { useSelector } from "react-redux";
 import { a, useTrail } from "@react-spring/web";
 import TicketGroupChart from "./charts";
 
-interface Props {
-  ticketStore: storeType["tickets"];
-}
-
-const TicketStats: React.FC<Props> = ({
-  ticketStore: { loading, tickets },
-}) => {
+const TicketStats: React.FC = () => {
+  const { tickets, pending } = useSelector(
+    (store: storeType) => store.tickets,
+  );
   const trail = useTrail(3, {
     from: { y: 40, opacity: 0 },
     to: { y: 0, opacity: 1 },
@@ -18,7 +16,7 @@ const TicketStats: React.FC<Props> = ({
 
   return (
     <>
-      <div className="flex flex-col md:flex-row xl:flex-col gap-4 relative">
+      <div className="flex flex-col md:flex-row xl:flex-col gap-4 relative overflow-hidden">
         <a.div
           style={trail[0]}
           className="row-span-1 bg-gray-900 p-3 rounded shadow flex-1 relative"
@@ -39,7 +37,7 @@ const TicketStats: React.FC<Props> = ({
         </a.div>
         <div
           className={`no-tickets flex flex-col justify-center xl:flex-1 absolute top-0 left-0 w-full h-full bg-gray-850 ${
-            tickets.length === 0 && !loading
+            tickets.length === 0 && !pending.list
               ? "opacity-100 pointer-events-auto"
               : "opacity-0 pointer-events-none"
           } transition-all`}

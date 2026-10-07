@@ -16,11 +16,18 @@ const LandingHeader = () => {
       <div className="flex items-center p-3 px-6 text-gray-100 font-open md:px-[40px] gap-4 h-20 w-[min(100%,1260px)]">
         <div className="logo font-bold mr-auto">
           <Link href="/" className="flex items-center gap-2" aria-label="Logo">
-            <Image src={"/text-logo.png"} height={20} width={100} alt="buggo" />
+            <Image
+              src={"/text-logo.png"}
+              height={20}
+              width={100}
+              alt="buggo"
+              className="w-auto h-auto"
+            />
           </Link>
         </div>
 
         <ul
+          id="landing-links"
           className={`text-ss font-bold gap-6 flex flex-col lg:flex-row fixed lg:static bg-gray-900 border-r border-gray-800 lg:border-none lg:bg-transparent top-0 left-0 h-full lg:h-auto pl-4 pr-10 py-20 lg:p-0 uppercase lg:normal-case z-40 lg:z-auto ${
             linksOpen ? "-translate-x-0" : "-translate-x-full"
           } lg:translate-x-0 transition-all`}
@@ -63,6 +70,8 @@ const LandingHeader = () => {
             setLinksOpen((prev) => !prev);
           }}
           aria-label="menu toggle"
+          aria-expanded={linksOpen}
+          aria-controls="landing-links"
         >
           <HiOutlineMenuAlt3
             className={`text-3xl absolute top-0 left-0 ${

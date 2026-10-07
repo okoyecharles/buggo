@@ -8,9 +8,7 @@ import {
 } from "@/redux/actions/ticketActions";
 import { useSelector } from "react-redux";
 import { TailSpinLoader, ThreeDotsLoader } from "@/core/components/loader";
-import {
-  returnWithLineBreaks,
-} from "@/core/utils/components/string";
+import { returnWithLineBreaks } from "@/core/utils/components/string";
 import Pluralize from "react-pluralize";
 import TicketComments from "./comments";
 import { validateCommentText } from "@/core/utils/validation/comment";
@@ -52,7 +50,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
 
   useEffect(() => {
     // If ticket is deleted, close the details bar
-    if (!ticketDetails.ticket && !ticketDetails.loading) {
+    if (!ticketDetails.ticket && !ticketDetails.pending.details) {
       setOpen(false);
     }
   }, [ticketDetails.ticket]);
@@ -68,9 +66,11 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
   const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!validateCommentText(comment) && !ticketDetails.method.comment) {
-      const ticket = ticketDetails.ticket!;
-      store.dispatch(commentOnTicket(ticket._id, comment));
+    if (validateCommentText(comment) || ticketDetails.pending.comment) return;
+
+    const ticket = ticketDetails.ticket!;
+    const ok = await store.dispatch(commentOnTicket(ticket._id, comment));
+    if (ok) {
       setComment("");
     }
   };
@@ -81,12 +81,13 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
       "comment-create",
       user,
       project,
-      ticketDetails.ticket
+      ticketDetails.ticket,
     );
   }, [user, ticketDetails.ticket]);
 
   return (
     <aside
+      id="ticket-details"
       className={`bg-gray-850 fixed top-16 w-screen right-0 bottom-[60px] border-gray-700 lg:absolute lg:top-0 lg:w-80 lg:h-full lg:border-l z-50 ${
         open ? "translate-x-0" : "translate-x-full"
       } transition-all`}
@@ -127,7 +128,8 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
             </p>
           </div>
           <button
-            name="close modal"
+            aria-label="Close ticket details"
+            title="Close ticket details"
             className="p-1 text-2xl text-gray-500 ring-1 ring-gray-500 hover:text-gray-300 hover:ring-gray-300 rounded-full transition-all focus:outline-none active:bg-gray-700 h-fit"
             onClick={() => {
               setOpen(false);
@@ -137,7 +139,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           </button>
         </header>
 
-        {ticketDetails.loading && ticketDetails.method.details ? (
+        {ticketDetails.pending.details ? (
           <div className="p-3 aspect-square grid place-items-center">
             <div className="flex flex-col items-center gap-2">
               {" "}
@@ -185,6 +187,7 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
                 {isCommentAuthorized ? (
                   <form onSubmit={handleCommentSubmit}>
                     <input
+                      aria-label="Comment"
                       className="absolute bottom-2 w-[calc(100%-1.5rem)] left-3 rounded-sm bg-gray-900 outline-none px-3 py-2 shadow-sm text-sm text-white font-medium placeholder:text-gray-300 font-noto"
                       type="text"
                       value={comment}
@@ -215,26 +218,25 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
           <button
             className="bg-blue-500 flex justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-blue-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors flex-1"
             disabled={
-              ticketDetails.loading ||
-              ticketDetails.method.update ||
+              ticketDetails.pending.update ||
               ticketDetails.ticket?.status === "closed" ||
               !getAuthorization(
                 "ticket",
                 "update",
                 user,
                 project,
-                ticketDetails.ticket
+                ticketDetails.ticket,
               )
             }
             onClick={() => {
               store.dispatch(
                 updateTicket(ticketDetails.ticket?._id!, {
                   status: ticketStatus.closed,
-                })
+                }),
               );
             }}
           >
-            {ticketDetails.loading && ticketDetails.method.update ? (
+            {ticketDetails.pending.update ? (
               <ThreeDotsLoader />
             ) : (
               "Close Ticket"
@@ -245,16 +247,18 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
             "delete",
             user,
             project,
-            ticketDetails.ticket
+            ticketDetails.ticket,
           ) && (
             <button
               className={`bg-red-500 justify-center p-2 text-ss font-semibold rounded text-blue-50 hover:bg-red-600 disabled:opacity-75 disabled:cursor-not-allowed transition-colors flex-1 flex`}
-              disabled={ticketDetails.loading || ticketDetails.method.delete}
+              aria-expanded={projectDeleteModalOpen}
+              aria-controls={`ticket-details-delete-modal-${ticketDetails.ticket?._id}`}
+              disabled={ticketDetails.pending.delete}
               onClick={() => {
                 setProjectDeleteModalOpen(true);
               }}
             >
-              {ticketDetails.loading && ticketDetails.method.delete ? (
+              {ticketDetails.pending.delete ? (
                 <ThreeDotsLoader />
               ) : (
                 "Delete Ticket"
@@ -265,11 +269,10 @@ const TicketDetailsBar: React.FC<TicketDetailsBarProps> = ({
       </div>
       {ticketDetails.ticket && (
         <TicketDeleteModal
+          id={`ticket-details-delete-modal-${ticketDetails.ticket._id}`}
           open={projectDeleteModalOpen}
           setOpen={setProjectDeleteModalOpen}
           ticket={ticketDetails.ticket!}
-          loading={ticketDetails.loading}
-          method={ticketDetails.method}
         />
       )}
     </aside>

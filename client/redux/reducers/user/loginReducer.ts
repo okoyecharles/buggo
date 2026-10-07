@@ -1,27 +1,27 @@
-import * as types from '@/redux/constants/userConstants';
+import * as types from '@/redux/types/user';
 import { ActionType } from '@/redux/types';
 
-type State = {
-  loading: boolean;
+export type LoginState = {
+  pending: boolean;
   error: null | { message: string };
 };
-const initialState = {
-  loading: false,
+const initialState: LoginState = {
+  pending: false,
   error: null,
 };
 
 const loginReducer = (
-  state: State = initialState,
+  state: LoginState = initialState,
   action: ActionType
-): State => {
+): LoginState => {
   const { type, payload } = action;
   switch (type) {
     case types.USER_LOGIN_REQUEST:
-      return { ...state, loading: true, error: null };
+      return { ...state, pending: true, error: null };
 		case types.USER_LOGIN_SUCCESS:
-      return { ...state, loading: false, error: null };
+      return { ...state, pending: false, error: null };
     case types.USER_LOGIN_FAIL:
-      return { ...state, loading: false, error: payload };
+      return { ...state, pending: false, error: payload };
     case types.USER_LOGOUT:
       return initialState;
     default:

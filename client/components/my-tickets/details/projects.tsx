@@ -49,14 +49,22 @@ const MyTicketsProjects: React.FC<MyTicketsProjectsProps> = ({
       </header>
       <div className="ticket-group-project-list flex-1 relative">
         <ul className="flex flex-col text-ss font-semibold overflow-y-scroll w-full absolute top-0 bottom-0 p-4 lg:px-0 lg:pl-2">
-          <li className="bg-gray-700 p-2 rounded lg:rounded-l-md lg:rounded-r-none text-gray-100 flex gap-1 mb-4 select-none cursor-pointer transition-colors">
+          <li
+            id="project-ticket-count-all"
+            className="bg-gray-700 p-2 rounded lg:rounded-l-md lg:rounded-r-none text-gray-100 flex gap-1 mb-4 select-none cursor-pointer transition-colors">
             <span>All Projects</span>
-            <span className="ml-auto flex items-center justify-end w-6 truncate text-sm">
+            <span
+              aria-label="Open tickets"
+              className="ml-auto flex items-center justify-end w-6 truncate text-sm"
+            >
               {returnWithTwoDigitsOrMore(
                 group.reduce((a, b) => a + b.ticketCount.open, 0)
               )}
             </span>
-            <span className="w-6 flex items-center justify-end text-gray-400 mr-1 truncate text-sm">
+            <span
+              aria-label="Closed tickets"
+              className="w-6 flex items-center justify-end text-gray-400 mr-1 truncate text-sm"
+            >
               {returnWithTwoDigitsOrMore(
                 group.reduce((a, b) => a + b.ticketCount.closed, 0)
               )}
@@ -64,6 +72,7 @@ const MyTicketsProjects: React.FC<MyTicketsProjectsProps> = ({
           </li>
           {group.map((project) => (
             <li
+              id={`project-ticket-count-${project._id}`}
               className="hover:bg-gray-750 active:bg-gray-700 p-2 rounded lg:rounded-l-md lg:rounded-r-none text-gray-100 flex gap-1 select-none cursor-pointer transition-colors"
               key={project._id}
               onClick={() => {
@@ -72,10 +81,16 @@ const MyTicketsProjects: React.FC<MyTicketsProjectsProps> = ({
               }}
             >
               <span className="truncate">{project.title}</span>
-              <span className="ml-auto flex items-center justify-end w-6 truncate text-sm">
+              <span
+              aria-label="Open tickets"
+              className="ml-auto flex items-center justify-end w-6 truncate text-sm"
+            >
                 {returnWithTwoDigitsOrMore(project.ticketCount.open)}
               </span>
-              <span className="w-6 flex items-center justify-end text-gray-400 mr-1 truncate text-sm">
+              <span
+              aria-label="Closed tickets"
+              className="w-6 flex items-center justify-end text-gray-400 mr-1 truncate text-sm"
+            >
                 {returnWithTwoDigitsOrMore(project.ticketCount.closed)}
               </span>
             </li>

@@ -24,13 +24,13 @@ export default function Home() {
     if (!user) return;
 
     // Fetch projects if user state updates
-    if (!projects.loading && !projects.method.list)
+    if (!projects.pending.list)
       store.dispatch(fetchProjects());
 
     if (pageLoaded) return;
 
     // Fetch tickets only on initial load
-    if (!tickets.loading) store.dispatch(fetchTickets());
+    if (!tickets.pending.list) store.dispatch(fetchTickets());
 
     setPageLoaded(true);
   }, [user]);
@@ -52,8 +52,6 @@ export default function Home() {
       <div className="grid gap-16 xl:gap-4 xl:grid-cols-4 m-4">
         <ProjectSection
           projects={searchProjectByName(projectSearch, projects.projects)}
-          loading={projects.loading}
-          method={projects.method}
           search={projectSearch}
           setSearch={setProjectSearch}
         />
@@ -71,7 +69,7 @@ export default function Home() {
               content="Statistics based on your tickets"
             />
           </header>
-          <TicketStats ticketStore={tickets} />
+          <TicketStats />
         </section>
       </div>
     </>

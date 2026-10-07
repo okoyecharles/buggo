@@ -1,5 +1,5 @@
 export type User = {
-  _id: string,
+  _id: string;
   name: string;
   image: string;
   email: string;
@@ -9,6 +9,7 @@ export type User = {
   createdAt: any;
 };
 
+export type SearchedUser = Pick<User, "_id" | "name" | "email" | "image">;
 
 export type Project = {
   _id: string;
@@ -43,7 +44,7 @@ export type GroupedTickets = {
     closed: number;
   };
   tickets: Ticket[];
-}
+};
 
 export type Comment = {
   _id: string;

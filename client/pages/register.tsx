@@ -23,6 +23,7 @@ const Register = () => {
   const router = useRouter();
   const currentUser = useSelector((store: storeType) => store.currentUser);
   const registerStore = useSelector((store: storeType) => store.register);
+  const [signingUp, setSigningUp] = useState(false);
 
   const [name, setName] = useState<string>("");
   const [nameError, setNameError] = useState<null | string>(null);
@@ -57,11 +58,12 @@ const Register = () => {
   }, []);
 
   useEffect(() => {
-    if (currentUser.user && !currentUser.loading) {
-      // Only an auth page can know the user is being bounced away, so the
-      // notice lives here rather than in the session check that runs on
-      // every mount. A real sign in shares the toast id and wins the race.
-      toast.success("You're already signed in", { toastId: AUTH_TOAST_ID });
+    if (currentUser.user) {
+      if (signingUp) {
+        toast.success("Signed up successfully", { toastId: AUTH_TOAST_ID });
+      } else {
+        toast.success("You're already signed in", { toastId: AUTH_TOAST_ID });
+      }
       router.replace("/dashboard");
     }
   }, [currentUser]);
@@ -115,7 +117,9 @@ const Register = () => {
       password,
       image: base64Image || avatars[Math.floor(Math.random() * avatars.length)],
     };
-    store.dispatch(register(formData));
+    setSigningUp(true);
+    await store.dispatch(register(formData));
+    setSigningUp(false);
   };
 
   useEffect(() => {
@@ -149,7 +153,13 @@ const Register = () => {
           style={springs}
         >
           <div className="self-center mb-4 mt-4 sm:hidden">
-            <Image src={"/text-logo.png"} height={22} width={110} alt="buggo" />
+            <Image
+              src={"/text-logo.png"}
+              height={22}
+              width={110}
+              alt="buggo"
+              className="w-auto h-auto"
+            />
           </div>
           <h2 className="text-gray-100 text-xl font-semibold self-center mb-1">
             Create an account
@@ -293,7 +303,7 @@ const Register = () => {
 
           <Button
             overrideStyle="mt-6"
-            processing={registerStore.loading || convertingImage}
+            processing={registerStore.pending || convertingImage}
           >
             Continue
           </Button>

@@ -35,7 +35,9 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 }) => {
   const user = useSelector((store: storeType) => store.currentUser.user);
   const project = useSelector((store: storeType) => store.project.project!);
-  const { loading, method } = useSelector((store: storeType) => store.ticket);
+  const updating = useSelector(
+    (store: storeType) => store.ticket.pending.update,
+  );
 
   const [closing, setClosing] = useState<boolean>(false);
   const [ticketAssignOpen, setTicketAssignOpen] = useState<boolean>(false);
@@ -62,7 +64,7 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
     store.dispatch(
       updateTicket(ticket._id, {
         team: newTeam,
-      })
+      }),
     );
 
     setOpen(false);
@@ -74,13 +76,18 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
   return (
     <>
-      <OptionsPopup open={open} setOpen={setOpen} style="hidden lg:block">
+      <OptionsPopup id={`ticket-options-${ticket._id}`} open={open} setOpen={setOpen} style="hidden lg:block">
         {isAuthorized ? (
           <>
             <OptionsButton
               id={`remove-self-${ticket._id}`}
-              processing={loading && method.update}
+              processing={updating}
               onClick={handleTicketAssign}
+              ariaLabel={
+                isInTeam(ticket)
+                  ? "Remove yourself from " + ticket.title
+                  : "Assign yourself to " + ticket.title
+              }
             >
               {isInTeam(ticket) ? (
                 <>
@@ -94,11 +101,14 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
             </OptionsButton>
 
             <OptionsButton
-              processing={loading && method.update}
+              processing={updating}
               onClick={() => {
                 setOpen(false);
                 setTicketAssignOpen((prev) => !prev);
               }}
+							ariaLabel={`Assign members to ${ticket.title}`}
+              ariaExpanded={ticketAssignOpen}
+              ariaControls={`assign-ticket-modal-${ticket._id}`}
             >
               Assign Members
               <BsFillPersonCheckFill />
@@ -108,16 +118,18 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
 
             {ticket.status !== ticketStatus.closed ? (
               <OptionsButton
-                processing={loading && method.update}
-                onClick={() => {
+								ariaLabel={`Close ${ticket.title}`}
+                processing={updating}
+                onClick={async () => {
                   setClosing(true);
-                  store.dispatch(
-                    updateTicket(ticket._id, { status: ticketStatus.closed })
+                  await store.dispatch(
+                    updateTicket(ticket._id, { status: ticketStatus.closed }),
                   );
+                  setClosing(false);
                 }}
               >
                 Close Ticket
-                {loading && method.update && closing ? (
+                {updating && closing ? (
                   <TailSpinLoader height="15" />
                 ) : (
                   <IoClose className="text-lg" />
@@ -131,6 +143,9 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
                 setDeleteTicketOpen(true);
                 setOpen(false);
               }}
+              ariaLabel={`Delete ${ticket.title}`}
+              ariaExpanded={deleteTicketOpen}
+              ariaControls={`delete-ticket-modal-${ticket._id}`}
             >
               Delete Ticket
               <BsFillTrashFill />
@@ -142,15 +157,12 @@ const TicketOptionsPopup: React.FC<TicketOptionsPopupProps> = ({
         open={ticketAssignOpen}
         setOpen={setTicketAssignOpen}
         ticket={ticket}
-        method={method}
-        loading={loading}
       />
       <TicketDeleteModal
+        id={`delete-ticket-modal-${ticket._id}`}
         open={deleteTicketOpen}
         setOpen={setDeleteTicketOpen}
         ticket={ticket}
-        method={method}
-        loading={loading}
       />
     </>
   );

@@ -2,11 +2,12 @@ import React from "react";
 import { useSpring, a } from "@react-spring/web";
 
 const OptionsPopup: React.FC<{
+  id: string;
   open: boolean;
   setOpen: any;
   children: React.ReactNode;
   style?: string;
-}> = ({ open, setOpen, children, style }) => {
+}> = ({ id, open, setOpen, children, style }) => {
   const spring = useSpring({
     opacity: 0,
     y: -10,
@@ -24,6 +25,7 @@ const OptionsPopup: React.FC<{
 
   return (
     <a.div
+      id={id}
       className={`absolute top-4 right-4 w-48 bg-gray-950 shadow-lg shadow-gray-950/40 rounded-md p-2 z-40 isolate ring-1 ring-gray-800 ${style || ""}`}
       style={{
         ...spring,

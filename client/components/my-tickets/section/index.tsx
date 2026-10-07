@@ -7,12 +7,14 @@ import { HiOutlineMenuAlt3 } from "react-icons/hi";
 interface MyTicketsSectionProps {
   group: GroupedTickets[];
   scrolledTicketGroup: { id: string } | null;
+  detailsBarOpen: boolean;
   setDetailsBarOpen: any;
 }
 
 const MyTicketsSection: React.FC<MyTicketsSectionProps> = ({
   group,
   scrolledTicketGroup,
+  detailsBarOpen,
   setDetailsBarOpen,
 }) => {
   return (
@@ -23,6 +25,9 @@ const MyTicketsSection: React.FC<MyTicketsSectionProps> = ({
         </h1>
         <button
           className="rounded p-1 bg-gray-825 active:bg-gray-850 transition-colors shadow-sm lg:hidden"
+          aria-label="Open projects"
+          aria-expanded={detailsBarOpen}
+          aria-controls="my-tickets-details-bar"
           onClick={() => {
             setDetailsBarOpen(true);
           }}

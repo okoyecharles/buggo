@@ -1,3 +1,5 @@
+import React from "react";
+
 export const restrictLength = (str: string = "", length: number) => {
   if (str.length > length) {
     return str.slice(0, length) + "...";
@@ -7,10 +9,10 @@ export const restrictLength = (str: string = "", length: number) => {
 
 export const returnWithLineBreaks = (str: string = "") => {
   return str.split("\n").map((line: string, index: number) => (
-    <>
+    <React.Fragment key={index}>
       <span key={index}>{line}</span>
       <br />
-    </>
+    </React.Fragment>
   ));
 };
 

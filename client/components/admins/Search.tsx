@@ -22,6 +22,7 @@ const UsersSearch: React.FC<UsersSearchProps> = ({ search, setSearch, fit }) => 
         ref={searchRef}
         type="text"
         placeholder="Search user"
+        aria-label="Search users"
         className={`bg-gray-850 text-ss placeholder:text-gray-500 hover:bg-gray-900 focus:bg-gray-900 text-gray-200 rounded py-2 px-3 pr-9 lg:py-1 lg:px-2 lg:pr-7 outline-none transition-all font-semibold ${fit ? "w-full" : ""}`}
         value={search}
         onChange={(e) => setSearch(e.target.value)}

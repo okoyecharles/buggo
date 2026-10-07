@@ -1,32 +1,31 @@
 import { deleteTicket } from "@/redux/actions/ticketActions";
-import store from "@/redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
+import { useSelector } from "react-redux";
 import { Ticket } from "@/core/types/models";
-import { useEffect } from "react";
 import Modal from "@/core/components/modal";
 import { ThreeDotsLoader } from "@/core/components/loader";
 import getDate from "@/core/utils/strings/date";
+import { toast } from "react-toastify";
 
 const TicketDeleteModal: React.FC<{
+  id: string;
   open: boolean;
   setOpen: any;
   ticket: Ticket;
-  loading: boolean;
-  method: {
-    [key: string]: any;
-  };
-}> = ({ open, setOpen, ticket, loading, method }) => {
-  const handleDelete = () => {
-    store.dispatch(deleteTicket(ticket._id));
-  };
-
-  useEffect(() => {
-    if (open && !method.delete) {
+}> = ({ id, open, setOpen, ticket }) => {
+  const deleting = useSelector(
+    (store: storeType) => store.ticket.pending.delete,
+  );
+  const handleDelete = async () => {
+    const ok = await store.dispatch(deleteTicket(ticket._id));
+    if (ok) {
+      toast.success("Ticket deleted successfully");
       setOpen(false);
     }
-  }, [method.delete]);
+  };
 
   return (
-    <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
+    <Modal id={id} open={open} setOpen={setOpen} style={{ padding: 0 }}>
       <div className="p-4">
         <header className="flex flex-col gap-2">
           <h2 className="text-lg font-semibold text-white">Delete Ticket</h2>
@@ -53,10 +52,11 @@ const TicketDeleteModal: React.FC<{
         </button>
         <button
           className="px-6 p-2 bg-red-500 text-red-50 rounded-sm font-semibold hover:bg-red-600 active:bg-red-700 transition-colors disabled:opacity-75"
-          disabled={loading && method.delete}
+          disabled={deleting}
+          aria-label={`Delete ticket ${ticket.title}`}
           onClick={handleDelete}
         >
-          {loading && method.delete ? <ThreeDotsLoader /> : "Delete"}
+          {deleting ? <ThreeDotsLoader /> : "Delete"}
         </button>
       </div>
     </Modal>

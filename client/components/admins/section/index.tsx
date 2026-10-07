@@ -1,17 +1,15 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { User } from "@/core/types/models";
 import UserRow from "./Row";
-import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import { FaSortDown, FaSortUp } from "react-icons/fa";
 
 interface UsersSectionProps {
   users: User[];
-  setUsers: any;
   search: string;
 }
 
 const UsersSection: React.FC<UsersSectionProps> = ({
   users,
-  setUsers,
   search,
 }) => {
   const [sort, setSort] = useState<"asc" | "desc" | null>("desc");
@@ -94,7 +92,6 @@ const UsersSection: React.FC<UsersSectionProps> = ({
           <UserRow
             key={user._id}
             user={user}
-            setUsers={setUsers}
             search={search}
           />
         ))}

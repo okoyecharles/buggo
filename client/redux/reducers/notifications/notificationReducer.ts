@@ -1,14 +1,13 @@
 import { Notification, NotificationType } from "@/core/types/models";
 import { ActionType } from "@/redux/types";
-import * as types from "@/redux/constants/notificationConstants";
-import * as projectTypes from "@/redux/constants/projectConstants";
-import * as userTypes from "@/redux/constants/userConstants";
+import * as types from "@/redux/types/notification";
+import * as projectTypes from "@/redux/types/project";
+import * as userTypes from "@/redux/types/user";
 
-interface NotificationsState {
+export interface NotificationsState {
   notifications: Notification[];
-  loading: boolean;
   error: { message: string } | null;
-  method: {
+  pending: {
     list: boolean;
     read: boolean;
     readAll: boolean;
@@ -16,11 +15,10 @@ interface NotificationsState {
   };
 };
 
-const initialState = {
+const initialState: NotificationsState = {
   notifications: [],
-  loading: false,
   error: null,
-  method: {
+  pending: {
     list: false,
     read: false,
     readAll: false,
@@ -34,11 +32,11 @@ const notificationReducer = (state: NotificationsState = initialState, action: A
   switch (type) {
     // Get all notifications
     case types.NOTIFICATION_LIST_REQUEST:
-      return { ...state, loading: true, error: null, method: { ...state.method, list: true } };
+      return { ...state, error: null, pending: { ...state.pending, list: true } };
     case types.NOTIFICATION_LIST_SUCCESS:
-      return { ...state, error: null, loading: false, method: { ...state.method, list: false }, notifications: payload.notifications };
+      return { ...state, error: null, pending: { ...state.pending, list: false }, notifications: payload.notifications };
     case types.NOTIFICATION_LIST_FAIL:
-      return { ...state, loading: false, method: { ...state.method, list: false }, error: payload };
+      return { ...state, pending: { ...state.pending, list: false }, error: payload };
 
     // Pushed rather than requested: the server announces each one it writes
     case types.NOTIFICATION_RECEIVE:
@@ -54,52 +52,49 @@ const notificationReducer = (state: NotificationsState = initialState, action: A
 
     // Mark a single notification as read
     case types.NOTIFICATION_READ_REQUEST:
-      return { ...state, loading: true, error: null, method: { ...state.method, read: true } };
+      return { ...state, error: null, pending: { ...state.pending, read: true } };
     case types.NOTIFICATION_READ_SUCCESS:
       return {
         ...state,
         error: null,
-        loading: false,
         notifications: state.notifications.map((notification) => {
           if (notification._id === payload.notification._id) {
             return payload.notification;
           }
           return notification;
         }),
-        method: { ...state.method, read: false }
+        pending: { ...state.pending, read: false }
       };
     case types.NOTIFICATION_READ_FAIL:
-      return { ...state, loading: false, method: { ...state.method, read: false }, error: payload };
+      return { ...state, pending: { ...state.pending, read: false }, error: payload };
 
     // Mark every notification as read
     case types.NOTIFICATION_READ_ALL_REQUEST:
-      return { ...state, loading: true, error: null, method: { ...state.method, readAll: true } };
+      return { ...state, error: null, pending: { ...state.pending, readAll: true } };
     case types.NOTIFICATION_READ_ALL_SUCCESS:
       return {
         ...state,
         error: null,
-        loading: false,
         notifications: state.notifications.map((notification) => ({ ...notification, read: true })),
-        method: { ...state.method, readAll: false }
+        pending: { ...state.pending, readAll: false }
       };
     case types.NOTIFICATION_READ_ALL_FAIL:
-      return { ...state, loading: false, method: { ...state.method, readAll: false }, error: payload };
+      return { ...state, pending: { ...state.pending, readAll: false }, error: payload };
 
     // Dismiss a notification
     case types.NOTIFICATION_DELETE_REQUEST:
-      return { ...state, loading: true, error: null, method: { ...state.method, delete: true } };
+      return { ...state, error: null, pending: { ...state.pending, delete: true } };
     case types.NOTIFICATION_DELETE_SUCCESS:
       return {
         ...state,
         error: null,
-        loading: false,
         notifications: state.notifications.filter(
           (notification) => notification._id !== payload.notificationId
         ),
-        method: { ...state.method, delete: false }
+        pending: { ...state.pending, delete: false }
       };
     case types.NOTIFICATION_DELETE_FAIL:
-      return { ...state, loading: false, method: { ...state.method, delete: false }, error: payload };
+      return { ...state, pending: { ...state.pending, delete: false }, error: payload };
 
     // Acting on an invite resolves it server side, so drop its notification
     case projectTypes.PROJECT_ACCEPT_INVITE_SUCCESS:

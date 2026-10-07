@@ -3,32 +3,29 @@ import Modal from "@/core/components/modal";
 import Image from "next/image";
 import Compressor from "compressorjs";
 import { toBase64 } from "@/core/utils/image/convert";
-import store from "@/redux/configureStore";
+import store, { storeType } from "@/redux/configureStore";
+import { useSelector } from "react-redux";
 import { updateUser } from "@/redux/actions/userActions";
 import {
   validateProfileImage,
   validateProfileName,
 } from "@/core/utils/validation/profile";
 import { ThreeDotsLoader } from "@/core/components/loader";
-import { User } from "@/core/types/models";
 import avatars from "@/core/assets/avatar";
 import { toast } from "react-toastify";
 
 interface EditProfileModalProps {
   open: boolean;
   setOpen: any;
-  user: User | null;
-  loading: boolean;
-  method: any;
 }
 
 const EditProfileModal: React.FC<EditProfileModalProps> = ({
   open,
   setOpen,
-  user,
-  loading,
-  method,
 }) => {
+  const { user, pending } = useSelector(
+    (store: storeType) => store.currentUser,
+  );
   const [name, setName] = useState(user?.name || "");
   const [nameError, setNameError] = useState<string | null>(null);
   const [image, setImage] = useState<File | Blob | null>(null);
@@ -37,9 +34,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const imageInputRef = React.useRef<HTMLInputElement>(null);
   const formRef = React.useRef<HTMLFormElement>(null);
 
-  const [processing, setProcessing] = useState(false);
-
-  const handleEdit = (event: React.FormEvent) => {
+  const handleEdit = async (event: React.FormEvent) => {
     event.preventDefault();
     setNameError(null);
 
@@ -57,7 +52,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     }
 
     const userData = { name, image: base64Image };
-    store.dispatch(updateUser(userData));
+    const ok = await store.dispatch(updateUser(userData));
+    if (ok) {
+      toast.success("User updated successfully");
+      setOpen(false);
+    }
   };
 
   const isEdited = useMemo(() => {
@@ -68,13 +67,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     event.preventDefault();
     imageInputRef.current?.click();
   };
-
-  useEffect(() => {
-    setProcessing(loading);
-    if (open && !loading && !method.update) {
-      setOpen(false);
-    }
-  }, [loading, method]);
 
   useEffect(() => {
     if (open) {
@@ -98,7 +90,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   }, [image]);
 
   return (
-    <Modal open={open} setOpen={setOpen} style={{ padding: 0 }}>
+    <Modal id="edit-profile-modal" open={open} setOpen={setOpen} style={{ padding: 0 }}>
       <div className="p-4">
         <header>
           <h2 className="text-lg font-semibold text-white">Edit Profile</h2>
@@ -198,17 +190,19 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
       <div className="flex gap-2 bg-gray-850 p-4 py-3 justify-end">
         <button
+          aria-label="Cancel profile edit"
           className="px-6 p-2 hover:underline text-white font-semibold"
           onClick={() => setOpen(false)}
         >
           Cancel
         </button>
         <button
+          aria-label="Save profile"
           className="px-6 p-2 bg-blue-600 text-green-50 rounded-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
-          disabled={(processing && method.delete) || !isEdited}
+          disabled={pending.update || !isEdited}
           onClick={() => formRef.current?.requestSubmit()}
         >
-          {processing && method.update ? <ThreeDotsLoader /> : "Save"}
+          {pending.update ? <ThreeDotsLoader /> : "Save"}
         </button>
       </div>
     </Modal>
