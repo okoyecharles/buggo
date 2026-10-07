@@ -1,67 +1,159 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import User, { UserType } from '../models/userModel';
-import { CookieOptions, Request, Response } from 'express';
-import AuthorizedRequest from '../types/request';
-import { pusher, pusherChannel } from '..';
-
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import User from "../models/userModel";
+import { CookieOptions, Response } from "express";
+import { adminsRoom, getIO } from "../config/socket";
+import { DefaultRequest, ProtectedRequest } from "../types/request";
+import { LoginBody, RegisterBody, SearchUserQuery, UpdateUserBody } from "../types/user";
+import { tokenName } from "../middleware/auth";
 const secret = process.env.JWT_SECRET!;
-const tokenExpiration = process.env.NODE_ENV === 'development' ? '1d' : '7d';
-const tokenName = "bug-tracker-token";
+const tokenExpirationInDays = process.env.NODE_ENV === "development" ? 1 : 7;
 const cookieOptions: CookieOptions = {
   httpOnly: true,
-  sameSite: 'none',
-  secure: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  maxAge: tokenExpirationInDays * 24 * 60 * 60 * 1000,
 };
 
-/* 
- * @route   GET /users
- * @desc    Get all users
- * @access  Public
-*/
-export const getUsers = async (req: AuthorizedRequest<any>, res: Response) => {
+/*
+ * @route   GET /users/search/:query
+ * @desc    Search for users
+ * @access  Private
+ */
+export const searchUsers = async (
+  req: ProtectedRequest<undefined, SearchUserQuery>,
+  res: Response,
+) => {
+  const { query } = req.params;
+  // Matched literally, so characters like "." or "(" can't build a regex
+  const pattern = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   try {
-    const users = await User.find();
+    const users = await User.find({
+      $or: [
+        { name: { $regex: pattern, $options: "i" } },
+        { email: { $regex: pattern, $options: "i" } },
+      ],
+    })
+      .limit(15)
+      .select("name email image");
     res.status(200).json({ users });
   } catch (error) {
     res
       .status(500)
-      .json({ message: 'Something went wrong... Please try again' });
+      .json({ message: "Something went wrong... Please try again" });
+  }
+};
+
+/*
+ * @route   GET /users
+ * @desc    Get all users
+ * @access  Private
+ */
+export const getUsers = async (req: ProtectedRequest, res: Response) => {
+  try {
+    if (!req.admin) return res.status(403).json({ message: "Unauthorized" });
+
+    const users = await User.find().select("-password");
+    res.status(200).json({ users });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong... Please try again" });
   }
 };
 
 /*
  * @route   DELETE /users/:id
  * @desc    Delete a user
- * @access  Public
-*/
-export const deleteUser = async (req: AuthorizedRequest<any>, res: Response) => {
+ * @access  Private
+ */
+export const deleteUser = async (
+  req: ProtectedRequest<undefined, { id: string }>,
+  res: Response,
+) => {
   try {
     const { id } = req.params;
-    const socketId = req.headers['x-pusher-socket-id'];
-
     const userExists = await User.findById(id);
 
-    if (!userExists)
-      return res.status(404).json({ message: 'User not found' });
+    if (!userExists) return res.status(404).json({ message: "User not found" });
 
-    if (req.admin !== true || req.user === userExists._id.toString() || userExists.admin)
-      return res.status(401).json({ message: 'Unauthorized Request' });
+    if (
+      req.admin !== true || // Must be admin
+      req.user === userExists._id.toString() || // Cannot delete self
+      userExists.admin // Cannot delete admin
+    )
+      return res.status(403).json({ message: "Unauthorized Request" });
 
     await userExists.remove();
-    await pusher.trigger(pusherChannel, 'delete-user', {
+
+    /*
+     * The deleted account and every admin are told: the account to sign out,
+     * the admins to drop it from their user list. Only the account's lines
+     * are then dropped -- the packet is queued behind the event, so they
+     * still hear why.
+     */
+    const io = getIO();
+    io.to([`user:${id}`, adminsRoom]).emit("user:delete", {
       userId: id,
-    }, {
-      socket_id: socketId as string
+      byAdmin: true,
     });
+    io.in(`user:${id}`).disconnectSockets();
 
-    const users = await User.find();
-
-    res.status(200).json({ users, message: 'User deleted successfully' });
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     res
       .status(500)
-      .json({ message: 'Something went wrong... Please try again' });
+      .json({ message: "Something went wrong... Please try again" });
+  }
+};
+
+/*
+ * @route   PUT /users/:id
+ * @desc    Update a user
+ * @access  Private
+ */
+export const updateUser = async (
+  req: ProtectedRequest<UpdateUserBody, { id: string }>,
+  res: Response,
+) => {
+  const { id } = req.params;
+  const { name, image } = req.body;
+
+  try {
+    const userExists = await User.findById(id);
+
+    if (!userExists) return res.status(404).json({ message: "User not found" });
+
+    if (req.user !== userExists._id.toString() && !req.admin)
+      return res.status(403).json({ message: "Unauthorized" });
+
+    if (name) userExists.name = name;
+    if (image) userExists.image = image;
+
+    const updatedUser = await userExists.save();
+
+    res.status(200).json({ user: updatedUser });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong... Please try again" });
+  }
+};
+
+/*
+ * @route   POST /users/validate
+ * @desc    Validate a user
+ * @access  Private
+ */
+export const validateUser = async (req: ProtectedRequest, res: Response) => {
+  try {
+    const user = await User.findById(req.user);
+    if (!user) return res.status(403).json({ message: "Unauthorized" });
+    res.status(200).json({ user });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong... Please try again" });
   }
 };
 
@@ -71,15 +163,15 @@ export const deleteUser = async (req: AuthorizedRequest<any>, res: Response) => 
  * @access  Public
  */
 export const register = async (
-  req: Request<never, never, UserType>,
-  res: Response
+  req: DefaultRequest<RegisterBody>,
+  res: Response,
 ) => {
   const { name, image, email, password } = req.body;
 
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(409).json({ message: "User already exists" });
     }
 
     const salt = await bcrypt.genSalt(12);
@@ -93,13 +185,11 @@ export const register = async (
     });
 
     const token = generateToken(user._id.toString(), user.admin);
-    res.status(200)
-      .cookie(tokenName, token, cookieOptions)
-      .json({ user, token });
+    res.status(201).cookie(tokenName, token, cookieOptions).json({ user });
   } catch (error) {
     res
       .status(500)
-      .json({ message: 'Something went wrong... Please try again' });
+      .json({ message: "Something went wrong... Please try again" });
   }
 };
 
@@ -108,108 +198,52 @@ export const register = async (
  * @desc    Login a user
  * @access  Public
  */
-export const login = async (
-  req: Request<never, never, UserType>,
-  res: Response
-) => {
+export const login = async (req: DefaultRequest<LoginBody>, res: Response) => {
   const { email, password } = req.body;
 
   try {
     const userExists = await User.findOne({ email });
 
-    if (!userExists) {
-      return res.status(404).json({ message: 'User does not exist' });
+    if (!userExists || !(await bcrypt.compare(password, userExists.password))) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
-
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      userExists.password
-    );
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    };
 
     const token = generateToken(userExists._id.toString(), userExists.admin);
     res
       .status(200)
       .cookie(tokenName, token, cookieOptions)
-      .json({ user: userExists, token });
+      .json({ user: userExists });
   } catch (error) {
     res
       .status(500)
-      .json({ message: 'Something went wrong... Please try again' });
+      .json({ message: "Something went wrong... Please try again" });
   }
 };
 
 /*
  * @route   POST /users/signout
-  * @desc    Logout a user
-  * @access  Public
-  */
-
-export const logout = async (req: Request, res: Response) => {
-  res.clearCookie(
-    tokenName,
-    cookieOptions
-  ).send({ message: 'Logged out successfully' });
-};
-
-/*
-  * @route   POST /users/validate
-  * @desc    Validate a user
-  * @access  Public
-*/
-export const validateUser = async (req: Request, res: Response) => {
-  const token = req.cookies[tokenName];
-
-  if (!token)
-    return res.status(401).json({ message: 'Unauthorized' });
-
-  const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-    id: string;
-    admin: boolean;
-  };
-  const user = await User.findById(decoded.id);
-  if (!user)
-    return res.status(401).json({ message: 'Unauthorized' });
-
-  res.status(200).json({
-    user, token
-  });
-};
-
-/*
- * @route   PUT /users/:id
- * @desc    Update a user
+ * @desc    Logout a user
  * @access  Public
-  */
-export const updateUser = async (
-  req: AuthorizedRequest<UserType>,
-  res: Response
-) => {
-  const { id } = req.params;
-  const { name, image } = req.body;
+ */
+export const logout = async (_req: DefaultRequest, res: Response) => {
+  res
+    .status(200)
+    .clearCookie(tokenName, cookieOptions)
+    .send({ message: "Logged out successfully" });
+};
 
-  try {
-    const userExists = await User.findById(id);
-
-    if (!userExists)
-      return res.status(404).json({ message: 'User not found' });
-
-    if (req.user !== userExists._id.toString() && !req.admin)
-      return res.status(401).json({ message: 'Unauthorized' });
-
-    if (name) userExists.name = name;
-    if (image) userExists.image = image;
-
-    const updatedUser = await userExists.save();
-
-    res.status(200).json({ user: updatedUser });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Something went wrong... Please try again' });
-  }
+/*
+ * @route   POST /users/socket-ticket
+ * @desc    Mint a short lived credential for the socket handshake
+ * @access  Private
+ */
+export const createSocketTicket = (req: ProtectedRequest, res: Response) => {
+  // The socket connects straight to the api, bypassing the proxy, so the
+  // cookie never reaches it -- this is the credential it carries instead.
+  const ticket = jwt.sign({ id: req.user, typ: "socket" }, secret, {
+    expiresIn: 120,
+  });
+  res.status(200).json({ ticket });
 };
 
 /*
@@ -217,7 +251,7 @@ export const updateUser = async (
  */
 const generateToken = (id: string, admin: boolean) => {
   const token = jwt.sign({ id, admin }, secret, {
-    expiresIn: tokenExpiration,
+    expiresIn: tokenExpirationInDays * 24 * 60 * 60,
   });
   return token;
 };

@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../redux/configureStore";
-import MyTicketsDetailsBar from "../src/features/my-tickets/details";
-import MyTicketsSection from "../src/features/my-tickets/section";
-import { fetchTickets } from "../redux/actions/ticketActions";
-import { GroupedTickets, Ticket } from "../src/types/models";
+import store, { storeType } from "@/redux/configureStore";
+import MyTicketsDetailsBar from "@/components/my-tickets/details";
+import MyTicketsSection from "@/components/my-tickets/section";
+import { fetchTickets } from "@/redux/actions/ticketActions";
+import { GroupedTickets, Ticket } from "@/core/types/models";
 import Head from "next/head";
-import Layout from "../src/layout";
+import Layout from "@/components/layout";
 
 export default function Tickets() {
   const tickets = useSelector((store: storeType) => store.tickets);
@@ -79,6 +79,7 @@ export default function Tickets() {
           group={ticketsByProjects}
         />
         <MyTicketsSection
+          detailsBarOpen={detailsBarOpen}
           setDetailsBarOpen={setDetailsBarOpen}
           group={ticketsByProjects}
           scrolledTicketGroup={scrolledTicketGroup}

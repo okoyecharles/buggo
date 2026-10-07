@@ -6,39 +6,38 @@ import {
   validateEmail,
   validatePassword,
   validateConfirmPassword,
-} from "../src/utils/forms/register";
+} from "@/core/utils/validation/register";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../redux/configureStore";
-import { toast } from "react-toastify";
+import store, { storeType } from "@/redux/configureStore";
 import { useRouter } from "next/router";
-import { register } from "../redux/actions/userActions";
+import { register, AUTH_TOAST_ID } from "@/redux/actions/userActions";
+import { toast } from "react-toastify";
 import Head from "next/head";
 import Compressor from "compressorjs";
-import { toBase64 } from "../src/utils/strings/image";
-import Button from "../src/components/Button";
+import { toBase64 } from "@/core/utils/image/convert";
+import Button from "@/core/components/button";
 import Image from "next/image";
-import avatars from "../src/assets/avatar";
+import avatars from "@/core/assets/avatar";
 
 const Register = () => {
   const router = useRouter();
+  const currentUser = useSelector((store: storeType) => store.currentUser);
+  const registerStore = useSelector((store: storeType) => store.register);
+  const [signingUp, setSigningUp] = useState(false);
 
   const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [image, setImage] = useState<File | Blob | null>(null);
-  const [base64Image, setBase64Image] = useState<string>("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
-
   const [nameError, setNameError] = useState<null | string>(null);
+  const [email, setEmail] = useState<string>("");
   const [emailError, setEmailError] = useState<null | string>(null);
+  const [password, setPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState<null | string>(null);
+  const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [passwordConfirmationError, setPasswordConfirmationError] = useState<
     null | string
   >(null);
-
-  const [processing, setProcessing] = useState<boolean>(false);
-  const registerStore = useSelector((store: storeType) => store.register);
-  const user = useSelector((store: storeType) => store.currentUser.user);
+  const [image, setImage] = useState<File | Blob | null>(null);
+  const [convertingImage, setConvertingImage] = useState(false);
+  const [base64Image, setBase64Image] = useState<string>("");
 
   const [springs, api] = useSpring(() => ({
     opacity: 0.5,
@@ -59,19 +58,17 @@ const Register = () => {
   }, []);
 
   useEffect(() => {
-    setProcessing(registerStore.loading);
-    if (registerStore.error) {
-      toast.error(registerStore.error.message);
-    }
-    if (user) {
+    if (currentUser.user) {
+      if (signingUp) {
+        toast.success("Signed up successfully", { toastId: AUTH_TOAST_ID });
+      } else {
+        toast.success("You're already signed in", { toastId: AUTH_TOAST_ID });
+      }
       router.replace("/dashboard");
     }
-  }, [registerStore, user]);
+  }, [currentUser]);
 
-  const throwError = (error: string | null, type: string) => {
-    if (error) setProcessing(false);
-
-    // Throw error
+  const showError = (error: string | null, type: string) => {
     if (type === "name") {
       setNameError(error);
     } else if (type === "email") {
@@ -89,35 +86,30 @@ const Register = () => {
     setEmailError(null);
     setPasswordError(null);
     setPasswordConfirmationError(null);
-    setProcessing(true);
 
     // Validate name
     let nameValidationError = validateName(name);
-    throwError(nameValidationError, "name");
+    if (nameValidationError) return showError(nameValidationError, "name");
 
     // Validate email
     let emailValidationError = validateEmail(email);
-    throwError(emailValidationError, "email");
+    if (emailValidationError) return showError(emailValidationError, "email");
 
     // Validate password
     let passwordValidationError = validatePassword(password);
-    throwError(passwordValidationError, "password");
+    if (passwordValidationError)
+      return showError(passwordValidationError, "password");
 
     // Validate password confirmation
     let passwordConfirmationValidationError = validateConfirmPassword(
       password,
-      passwordConfirmation
+      passwordConfirmation,
     );
-    throwError(passwordConfirmationValidationError, "passwordConfirmation");
-
-    // If errors exist, return
-    if (
-      nameValidationError ||
-      emailValidationError ||
-      passwordValidationError ||
-      passwordConfirmationValidationError
-    )
-      return;
+    if (passwordConfirmationValidationError)
+      return showError(
+        passwordConfirmationValidationError,
+        "passwordConfirmation",
+      );
 
     const formData = {
       name,
@@ -125,17 +117,23 @@ const Register = () => {
       password,
       image: base64Image || avatars[Math.floor(Math.random() * avatars.length)],
     };
-    store.dispatch(register(formData));
+    setSigningUp(true);
+    await store.dispatch(register(formData));
+    setSigningUp(false);
   };
 
   useEffect(() => {
     async function convertImage() {
-      // Convert image to base64
-      if (image) {
-        const imageFile = await toBase64(image as File | Blob);
-        setBase64Image(imageFile as string);
-      } else {
-        setBase64Image("");
+      try {
+        setConvertingImage(true);
+        if (image) {
+          const imageFile = await toBase64(image as File | Blob);
+          setBase64Image(imageFile as string);
+        } else {
+          setBase64Image("");
+        }
+      } finally {
+        setConvertingImage(false);
       }
     }
     convertImage();
@@ -155,7 +153,13 @@ const Register = () => {
           style={springs}
         >
           <div className="self-center mb-4 mt-4 sm:hidden">
-            <Image src={"/text-logo.png"} height={22} width={110} alt="buggo" />
+            <Image
+              src={"/text-logo.png"}
+              height={22}
+              width={110}
+              alt="buggo"
+              className="w-auto h-auto"
+            />
           </div>
           <h2 className="text-gray-100 text-xl font-semibold self-center mb-1">
             Create an account
@@ -297,7 +301,10 @@ const Register = () => {
             />
           </div>
 
-          <Button overrideStyle="mt-6" processing={processing}>
+          <Button
+            overrideStyle="mt-6"
+            processing={registerStore.pending || convertingImage}
+          >
             Continue
           </Button>
 

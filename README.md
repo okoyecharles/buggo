@@ -1,250 +1,245 @@
 <a name="readme-top"></a>
 
-<!-- PROJECT LOGO -->
-<br />
 <div align="center">
   <a href="https://buggo.vercel.app/">
-    <img src="client/public/circle-logo.ico" alt="portfolio-logo" height="80">
+    <img src="client/public/circle-logo.ico" alt="Buggo logo" height="80">
   </a>
 
-  <h5 align="center">
+  <h3 align="center">Buggo</h3>
+
+  <p align="center">
+    A real-time issue tracker for small teams.
     <br />
-    <a href="https://buggo.vercel.app/" target="_blank">View Live</a>
-    |
-    <a href="https://github.com/okoyecharles/buggo/issues/new" target="_blank">Report Bug</a>
-    |
-    <a href="https://github.com/okoyecharles/buggo/issues/new" target="_blank">Request Feature</a>
-  </h5>
+    <br />
+    <a href="https://buggo.vercel.app/">View Live</a>
+    ·
+    <a href="https://github.com/okoyecharles/buggo/issues/new">Report Bug</a>
+    ·
+    <a href="https://github.com/okoyecharles/buggo/issues/new">Request Feature</a>
+  </p>
+
+  <a href="https://github.com/okoyecharles/buggo/actions/workflows/playwright.yml">
+    <img src="https://github.com/okoyecharles/buggo/actions/workflows/playwright.yml/badge.svg" alt="Playwright Tests">
+  </a>
 </div>
 
-<!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#buggo">Buggo</a>
-      <ul>
-        <li><a href="#live-link">Live Link</a></li>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#built-with">Built With</a></li>
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#clone-locally">Clone Locally</a></li>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#development">Development</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#environment-variables">Environment Variables</a></li>
+        <li><a href="#running-locally">Running Locally</a></li>
       </ul>
     </li>
+    <li><a href="#testing">Testing</a></li>
+    <li><a href="#project-structure">Project Structure</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
-<!-- ABOUT THE PROJECT -->
+## About
 
-### Buggo
-
-An issue tracking project that revolutionizes the way you manage and solve problems! Say goodbye to the chaos and confusion of scattered reports and endless follow-up emails. With our issue tracker, you'll have a centralized dashboard where you can effortlessly create, track, and resolve issues.
-
-The perfect solution for anyone looking to streamline their problem-solving process and improve productivity.
+Buggo is a full-stack issue tracker. Teams create projects, invite members, and track tickets from open to closed in one place. Invites, assignments, comments and notifications are delivered live over WebSockets, so everyone sees changes without refreshing.
 
 <div align="center">
-  <img  width="1000" alt="buggo-screenshot" src="./assets/hero-screenshot.webp">
+  <img width="1000" alt="Buggo dashboard" src="./assets/hero-screenshot.webp">
 </div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-#### Live link
+## Features
 
-Experience the magic of **Buggo** for yourself! Join buggo today and discover a world of exciting features and unparalleled convenience at your fingertips. Whether you're looking to learn, connect, or simply explore. [Click here to view it live](https://buggo.vercel.app/).
-
-#### Built With
-
-<details>
-  <summary><b>🖥️ Client</b></summary>
-  <ul>
-    <li>
-      <a href="https://nextjs.org/">
-        <img src="https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white" />
-      </a>
-    </li>
-    <li>
-      <a href="https://www.typescriptlang.org/">
-        <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" />
-      </a>
-    </li>
-    <li>
-      <a href="https://tailwindcss.com/">
-        <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white" />
-      </a>
-    </li>
-    <li>
-      <a href="https://redux.js.org/">
-        <img src="https://img.shields.io/badge/redux-%23593d88.svg?style=for-the-badge&logo=redux&logoColor=white" />
-      </a>
-    </li>
-    <li>
-      <a href="https://vercel.app/">
-        <img src="https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white" />
-      </a>
-    </li>
-  </ul>
-</details>
-
-<details>
-  <summary><b>🔧 Server</b></summary>
-  <ul>
-    <li>
-      <a href="https://nodejs.com/">
-        <img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white" />
-      </a>
-    </li>
-    <li>
-      <a href="https://expressjs.com/">
-        <img src="https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB" />
-      </a>
-    </li>
-    <li>
-      <a href="https://mongodb.com/">
-        <img src="https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white" />
-      </a>
-    </li>
-  </ul>
-</details>
-
-<details>
-  <summary><b>✏️ Other</b></summary>
-  <ul>
-    <li>
-      <a href="https://figma.com/">
-        <img src="https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white" />
-      </a>
-    </li>
-    <li>
-      <a href="https://dribbble.com/">
-        <img src="https://img.shields.io/badge/Dribbble-EA4C89?style=for-the-badge&logo=dribbble&logoColor=white" />
-      </a>
-    </li>
-  </ul>
-</details>
+- **Projects:** create, rename and delete projects, and invite members by name or email
+- **Tickets:** track status, priority, type and time estimate, and assign tickets to project members
+- **Comments:** discuss tickets with comments that appear live for every member
+- **Notifications:** get notified of project invites and ticket assignments in real time
+- **My tickets:** see your open, closed, weekly and monthly ticket stats across all projects
+- **Admin dashboard:** search users and remove accounts, with changes shown live to every admin
+- **Cookie-based auth:** sessions use HTTP-only cookies sent through the Next.js API proxy
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
------
+## Built With
 
-<!-- GETTING STARTED -->
+**Client**
 
-### Getting Started
+[![Next.js][next-badge]][next-url]
+[![TypeScript][ts-badge]][ts-url]
+[![Tailwind CSS][tailwind-badge]][tailwind-url]
+[![Redux][redux-badge]][redux-url]
+[![Socket.IO][socketio-badge]][socketio-url]
 
-#### Clone Locally
+**Server**
 
-- Enter this url: [https://github.com/okoyecharles/buggo](https://github.com/okoyecharles/buggo) in your web browser.
-- Once opened navigate to the top left level of the project a green code download button will be visible on the righthand side.
-- Select download Zip option from drop down menu.
-- Once the download is complete you will be able to access my project locally.
+[![Node.js][node-badge]][node-url]
+[![Express][express-badge]][express-url]
+[![MongoDB][mongo-badge]][mongo-url]
+[![Socket.IO][socketio-badge]][socketio-url]
 
-#### Prerequisites
+**Testing and CI**
 
-- Node package manager (latest version)
-  - Firstly install **node runtime environment (node.js)** then run the code below
-  ```sh
-  npm install npm@latest -g
-  ```
-  - Then install yarn **yarn**
-  ```sh
-  npm install --global yarn
-  ```
-
-- Project dependencies
-  - Change to the client directory and install all packages with yarn
-    from **_../buggo_**
-    ```sh
-    cd client
-    yarn install
-    ```
-  - Change to the server directory and install all packages with npm
-    from **_../buggo/client_**
-    ```sh
-    cd ..
-    cd server
-    npm install
-    ```
-
-#### Development
-
-- Run the client
-  - Change to the client directory and run the code below
-    from **_../buggo_**
-    ```sh
-    cd client
-    yarn dev
-    ```
-- Run the server
-  - Change to the server directory and run the code below
-    from **_../buggo/client_**
-    ```sh
-    cd server
-    npm run dev
-    ```
+[![Playwright][playwright-badge]][playwright-url]
+[![GitHub Actions][actions-badge]][actions-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
------
+## Getting Started
 
-<!-- CONTRIBUTING -->
+### Prerequisites
 
-### Contributing
+- [Node.js](https://nodejs.org/) (LTS)
+- [Yarn](https://classic.yarnpkg.com/) for the client and npm for the server
+- A [MongoDB](https://www.mongodb.com/atlas) database
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+### Installation
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+```sh
+git clone https://github.com/okoyecharles/buggo.git
+cd buggo
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+# Client
+cd client
+yarn install
+
+# Server
+cd ../server
+npm install
+```
+
+### Environment Variables
+
+Create `client/.env`:
+
+| Variable                 | Description                                  | Example                 |
+| ------------------------ | -------------------------------------------- | ----------------------- |
+| `API_ORIGIN`             | Server origin that `/api` requests proxy to  | `http://localhost:4000` |
+| `NEXT_PUBLIC_SERVER_URL` | Base path for API requests from the browser  | `/api`                  |
+| `NEXT_PUBLIC_API_ORIGIN` | Server origin for the WebSocket connection   | `http://localhost:4000` |
+
+Create `server/.env`:
+
+| Variable          | Description                                | Example                 |
+| ----------------- | ------------------------------------------ | ----------------------- |
+| `MONGO_URI`       | MongoDB connection string                  |                         |
+| `JWT_SECRET`      | Secret used to sign auth tokens            |                         |
+| `PORT`            | Port the server listens on                 | `4000`                  |
+| `ALLOWED_ORIGINS` | Comma-separated origins allowed by CORS    | `http://localhost:3000` |
+| `NODE_ENV`        | `development` or `production`              | `development`           |
+
+### Running Locally
+
+Start the server and the client in separate terminals:
+
+```sh
+# Server, on http://localhost:4000
+cd server
+npm run server
+```
+
+```sh
+# Client, on http://localhost:3000
+cd client
+yarn dev
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
------
+## Testing
 
-<!-- LICENSE -->
+End-to-end tests are written with [Playwright](https://playwright.dev/) and live in `client/tests`. They cover projects, tickets, live comments and invites, profile editing, ticket stats and the admin dashboard. Playwright starts the client and server automatically.
 
-### License
+The tests sign in with existing accounts. Create a regular user and an admin user in your test database, then add their credentials to `client/.env.e2e.local`:
 
-Please be advised that our project is released under the terms of a License. Please ensure that you read and understand the terms of the [MIT](LICENSE) License before using our project.
+```sh
+PW_SETUP_USER_EMAIL=
+PW_SETUP_USER_PASSWORD=
+PW_SETUP_ADMIN_EMAIL=
+PW_SETUP_ADMIN_PASSWORD=
+```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+Run the suite:
 
------
+```sh
+cd client
+yarn playwright test          # headless
+yarn playwright test --ui     # interactive UI mode
+yarn playwright show-report   # open the last HTML report
+```
 
-<!-- CONTACT -->
-
-### Contact
-
-#### Okoye Charles
-
- <div align="center">
- <a href="https://www.linkedin.com/in/charles-k-okoye/"><img src="https://img.shields.io/badge/linkedin-%23f78a38.svg?style=for-the-badge&logo=linkedin&logoColor=white" alt="Linkedin"></a> 
- <a href="https://twitter.com/okoyecharles_"><img src="https://img.shields.io/badge/Twitter-%23f78a38.svg?style=for-the-badge&logo=Twitter&logoColor=white" alt="Twitter"></a> 
- <a href="https://github.com/okoyecharles/"><img src="https://img.shields.io/badge/github-%23f78a38.svg?style=for-the-badge&logo=github&logoColor=white" alt="Github"></a> 
- <a href="https://angel.co/u/charles-k-okoye"><img src="https://img.shields.io/badge/AngelList-%23f78a38.svg?style=for-the-badge&logo=AngelList&logoColor=white" alt="AngelList"></a> 
- <a href="mailto:okoyecharles509@gmail.com"><img src="https://img.shields.io/badge/Gmail-f78a38?style=for-the-badge&logo=gmail&logoColor=white" alt="Linkedin"></a>
- </div>
+The suite runs on GitHub Actions for every pull request into `main` and `dev`, and can be started manually from the Actions tab.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
------
+## Project Structure
 
-<!-- ACKNOWLEDGMENTS -->
+```
+buggo/
+├── client/              Next.js app
+│   ├── components/      UI components
+│   ├── pages/           Routes
+│   ├── redux/           Store, actions and reducers
+│   └── tests/           Playwright fixtures and specs
+├── server/              Express API and Socket.IO server
+│   ├── controllers/
+│   ├── models/          Mongoose schemas (see server/README.md)
+│   └── routes/
+└── .github/workflows/   CI
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Contributing
+
+Contributions are welcome. To propose a change:
+
+1. Fork the repository
+2. Create a branch from `dev` (`git checkout -b feat/my-feature`)
+3. Commit using [Conventional Commits](https://www.conventionalcommits.org/) (`git commit -m "feat: add my feature"`)
+4. Push the branch (`git push origin feat/my-feature`)
+5. Open a pull request into `dev`
+
+Pull requests must pass the Playwright suite before they can be merged. For larger changes, please open an issue first to discuss the idea.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Acknowledgments
 
-- [Discord](https://discord.com/) for the UI design inspiration for this project.
+- [Discord](https://discord.com/) for the UI design inspiration
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+[next-badge]: https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[next-url]: https://nextjs.org/
+[ts-badge]: https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white
+[ts-url]: https://www.typescriptlang.org/
+[tailwind-badge]: https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white
+[tailwind-url]: https://tailwindcss.com/
+[redux-badge]: https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white
+[redux-url]: https://redux.js.org/
+[socketio-badge]: https://img.shields.io/badge/Socket.IO-010101?style=for-the-badge&logo=socketdotio&logoColor=white
+[socketio-url]: https://socket.io/
+[node-badge]: https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
+[node-url]: https://nodejs.org/
+[express-badge]: https://img.shields.io/badge/Express-404D59?style=for-the-badge&logo=express&logoColor=white
+[express-url]: https://expressjs.com/
+[mongo-badge]: https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white
+[mongo-url]: https://www.mongodb.com/
+[playwright-badge]: https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white
+[playwright-url]: https://playwright.dev/
+[actions-badge]: https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white
+[actions-url]: https://github.com/features/actions

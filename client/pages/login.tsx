@@ -1,28 +1,29 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSpring, a } from "@react-spring/web";
-import { validateEmail, validatePassword } from "../src/utils/forms/register";
+import {
+  validateEmail,
+  validatePassword,
+} from "@/core/utils/validation/register";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../redux/configureStore";
-import { toast } from "react-toastify";
+import store, { storeType } from "@/redux/configureStore";
 import { useRouter } from "next/router";
-import { login } from "../redux/actions/userActions";
+import { login, AUTH_TOAST_ID } from "@/redux/actions/userActions";
+import { toast } from "react-toastify";
 import Head from "next/head";
-import Button from "../src/components/Button";
+import Button from "@/core/components/button";
 import Image from "next/image";
 
 const Login = () => {
   const router = useRouter();
-
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [processing, setProcessing] = useState<boolean>(false);
-
-  const [emailError, setEmailError] = useState<null | string>(null);
-  const [passwordError, setPasswordError] = useState<null | string>(null);
-
   const loginStore = useSelector((store: storeType) => store.login);
   const currentUser = useSelector((store: storeType) => store.currentUser);
+
+  const [email, setEmail] = useState<string>("");
+  const [emailError, setEmailError] = useState<null | string>(null);
+  const [password, setPassword] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<null | string>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const [springs, api] = useSpring(() => ({
     opacity: 0.5,
@@ -43,22 +44,17 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    setProcessing(loginStore.loading);
-    if (loginStore.error) {
-      toast.error(loginStore.error.message);
-    }
-  }, [loginStore, currentUser]);
-
-  useEffect(() => {
-    if (currentUser.user && !currentUser.loading) {
+    if (currentUser.user) {
+      if (loggingIn) {
+        toast.success("Logged In successfully", { toastId: AUTH_TOAST_ID });
+      } else {
+        toast.success("You're already signed in", { toastId: AUTH_TOAST_ID });
+      }
       router.replace("/dashboard");
     }
-  }, [currentUser.user]);
+  }, [currentUser]);
 
-  const throwError = (error: string | null, type: string) => {
-    if (error) setProcessing(false);
-
-    // Throw error
+  const showError = (error: string, type: string) => {
     if (type === "email") {
       setEmailError(error);
     } else if (type === "password") {
@@ -66,25 +62,24 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setEmailError(null);
     setPasswordError(null);
-    setProcessing(true);
 
     // Validate email
     let emailValidationError = validateEmail(email);
-    throwError(emailValidationError, "email");
+    if (emailValidationError) return showError(emailValidationError, "email");
 
     // Validate password
     let passwordValidationError = validatePassword(password);
-    throwError(passwordValidationError, "password");
-
-    // If errors exist, return
-    if (emailValidationError || passwordValidationError) return;
+    if (passwordValidationError)
+      return showError(passwordValidationError, "password");
 
     // If no errors, send request to server
-    store.dispatch(login(email, password));
+		setLoggingIn(true);
+    await store.dispatch(login(email, password));
+		setLoggingIn(false);
   };
 
   return (
@@ -101,7 +96,13 @@ const Login = () => {
           style={springs}
         >
           <div className="self-center mb-4 mt-4 sm:hidden">
-            <Image src={"/text-logo.png"} height={22} width={110} alt="buggo" />
+            <Image
+              src={"/text-logo.png"}
+              height={22}
+              width={110}
+              alt="buggo"
+              className="w-auto h-auto"
+            />
           </div>
           <h2 className="text-gray-100 text-xl font-semibold self-center mb-1">
             Welcome back!
@@ -169,7 +170,7 @@ const Login = () => {
             />
           </div>
 
-          <Button overrideStyle="mt-6" processing={processing}>
+          <Button overrideStyle="mt-6" processing={loginStore.pending}>
             Log In
           </Button>
 

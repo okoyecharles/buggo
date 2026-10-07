@@ -1,45 +1,31 @@
 import Head from "next/head";
 import React, { useEffect, useMemo, useState } from "react";
-import Layout from "../src/layout";
+import Layout from "@/components/layout";
 import { BsDot } from "react-icons/bs";
-import UsersSection from "../src/features/users/section";
-import { getUsers } from "../redux/actions/userActions";
-import { User } from "../src/types/models";
-import UsersSearch from "../src/features/users/Search";
+import UsersSection from "@/components/admins/section";
+import UsersSearch from "@/components/admins/Search";
 import { useSelector } from "react-redux";
-import { storeType } from "../redux/configureStore";
-import { useRouter } from "next/router";
-import { searchByNameOrEmail } from "../src/utils/strings/search";
-import { IoMdRefresh } from "react-icons/io";
-import { TailSpinLoader } from "../src/features/loader";
+import store, { storeType } from "@/redux/configureStore";
+import { searchByNameOrEmail } from "@/core/utils/strings/search";
+import { TailSpinLoader } from "@/core/components/loader";
 import { IoSearch } from "react-icons/io5";
 import { a, useSpring } from "@react-spring/web";
+import { getAllUsers } from "@/redux/actions/adminActions";
 
 export default function Users() {
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
-
-  async function fetchUsers() {
-    setLoading(true);
-    const { users } = await getUsers();
-    setUsers(users);
-    setLoading(false);
-  }
+  const { users, pending } = useSelector(
+    (state: storeType) => state.adminUsers,
+  );
 
   useEffect(() => {
-    fetchUsers();
+    store.dispatch(getAllUsers());
   }, []);
 
   const searchedUsers = useMemo(() => {
     return searchByNameOrEmail(search, users);
   }, [users, search]);
-
-  const handleRefresh = () => {
-    if (loading) return;
-    fetchUsers();
-  };
 
   const searchSpring = useSpring({
     y: openSearch ? 0 : -54,
@@ -68,25 +54,23 @@ export default function Users() {
           All Users
         </h1>
         <p className="text-sm font-noto font-semibold text-gray-400 ml-2 lg:ml-4 flex items-center">
-          <span className="text-white">{users.length} total</span>
+          <span id="users-total-count" className="text-white">
+            {users.length} total
+          </span>
           <BsDot className="text-xl text-gray-600 hidden lg:block" />
-          <span className="text-blue-400 hidden lg:block">
+          <span id="users-admin-count" className="text-blue-400 hidden lg:block">
             {users.filter((user) => user.admin).length} admin
           </span>
         </p>
 
-        <button className="p-2 bg-gray-850 rounded-full ml-auto mr-1 lg:mr-2 text-gray-200 hover:text-white active:bg-gray-900 transition-colors ">
-          <IoMdRefresh className="text-lg" onClick={handleRefresh} />
-        </button>
-
-        <button className="p-2 bg-gray-850 rounded-full text-gray-200 hover:text-white active:bg-gray-900 transition-colors lg:hidden">
+        <button className="p-2 bg-gray-850 rounded-full ml-auto text-gray-200 hover:text-white active:bg-gray-900 transition-colors lg:hidden">
           <IoSearch
             className="text-lg"
             onClick={() => setOpenSearch((prev) => !prev)}
           />
         </button>
 
-        <div className="hidden lg:block">
+        <div className="hidden lg:block ml-auto">
           <UsersSearch search={search} setSearch={setSearch} />
         </div>
       </header>
@@ -100,7 +84,7 @@ export default function Users() {
         </a.div>
       </a.div>
 
-      {loading ? (
+      {pending.list ? (
         <div className="flex justify-center h-[calc(100%-129px)]">
           <TailSpinLoader
             color="orange"
@@ -110,11 +94,7 @@ export default function Users() {
           />
         </div>
       ) : (
-        <UsersSection
-          users={searchedUsers}
-          setUsers={setUsers}
-          search={search}
-        />
+        <UsersSection users={searchedUsers} search={search} />
       )}
     </>
   );

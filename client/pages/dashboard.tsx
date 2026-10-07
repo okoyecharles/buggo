@@ -1,16 +1,16 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import store, { storeType } from "../redux/configureStore";
-import { fetchProjects } from "../redux/actions/projectActions";
-import { fetchTickets } from "../redux/actions/ticketActions";
-import getGreeting from "../src/utils/strings/greeting";
+import store, { storeType } from "@/redux/configureStore";
+import { fetchProjects } from "@/redux/actions/projectActions";
+import { fetchTickets } from "@/redux/actions/ticketActions";
+import getGreeting from "@/core/utils/strings/greeting";
 import { Tooltip } from "react-tooltip";
-import TicketStats from "../src/features/tickets/Stats";
+import TicketStats from "@/components/tickets/Stats";
 import { AiFillQuestionCircle } from "react-icons/ai";
-import ProjectSection from "../src/features/projects";
-import { searchProjectByName } from "../src/utils/strings/search";
-import Layout from "../src/layout";
+import ProjectSection from "@/components/projects";
+import { searchProjectByName } from "@/core/utils/strings/search";
+import Layout from "@/components/layout";
 
 export default function Home() {
   const user = useSelector((store: storeType) => store.currentUser.user);
@@ -24,13 +24,13 @@ export default function Home() {
     if (!user) return;
 
     // Fetch projects if user state updates
-    if (!projects.loading && !projects.method.list)
+    if (!projects.pending.list)
       store.dispatch(fetchProjects());
 
     if (pageLoaded) return;
 
     // Fetch tickets only on initial load
-    if (!tickets.loading) store.dispatch(fetchTickets());
+    if (!tickets.pending.list) store.dispatch(fetchTickets());
 
     setPageLoaded(true);
   }, [user]);
@@ -45,19 +45,17 @@ export default function Home() {
         <h2 className="text-lg lg:text-xl font-noto flex flex-col">
           <span className="text-gray-200 text-ss">{getGreeting()}</span>
           <div className="text-orange-400 font-semibold leading-5">
-            Welcome Back!
+            Welcome Back {user?.name}!
           </div>
         </h2>
       </header>
       <div className="grid gap-16 xl:gap-4 xl:grid-cols-4 m-4">
         <ProjectSection
           projects={searchProjectByName(projectSearch, projects.projects)}
-          loading={projects.loading}
-          method={projects.method}
           search={projectSearch}
           setSearch={setProjectSearch}
         />
-        <section className="ticketStats xl:col-span-1 bg-gray-850 rounded flex flex-col p-4">
+        <section className="ticketStats xl:col-span-1 bg-gray-850 rounded flex flex-col p-4 h-fit">
           <header className="mb-4">
             <h3 className="text-xl font-bold text-white  flex items-center justify-between">
               Ticket Stats{" "}
@@ -71,7 +69,7 @@ export default function Home() {
               content="Statistics based on your tickets"
             />
           </header>
-          <TicketStats ticketStore={tickets} />
+          <TicketStats />
         </section>
       </div>
     </>

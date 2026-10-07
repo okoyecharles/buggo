@@ -1,18 +1,22 @@
-import { ActionType } from "../../types";
-import * as types from "../../constants/ticketConstants";
-import * as projectTypes from "../../constants/projectConstants";
-import * as userTypes from "../../constants/userConstants";
-import { Ticket } from "../../../src/types/models";
+import { ActionType } from "@/redux/types";
+import * as types from "@/redux/types/ticket";
+import * as projectTypes from "@/redux/types/project";
+import * as userTypes from "@/redux/types/user";
+import { Ticket } from "@/core/types/models";
 
-interface TicketsState {
+export interface TicketsState {
   tickets: Ticket[];
-  loading: boolean;
+  pending: {
+    list: boolean;
+  };
   error: { messsage: string } | null;
 };
 
-const initialState = {
+const initialState: TicketsState = {
   tickets: [],
-  loading: false,
+  pending: {
+    list: false,
+  },
   error: null,
 };
 
@@ -21,11 +25,23 @@ const ticketsReducer = (state: TicketsState = initialState, action: ActionType):
 
   switch (type) {
     case types.TICKET_LIST_REQUEST:
-      return { ...state, loading: true, error: null };
+      return { ...state, error: null, pending: { ...state.pending, list: true } };
     case types.TICKET_LIST_SUCCESS:
-      return { ...state, loading: false, ...payload, error: null };
+      return { ...state, ...payload, error: null, pending: { ...state.pending, list: false } };
     case types.TICKET_LIST_FAIL:
-      return { ...state, loading: false, error: payload };
+      return { ...state, error: payload, pending: { ...state.pending, list: false } };
+
+    case types.TICKET_CREATE_SUCCESS:
+      // Every project member is sent a creation, but this list is the user's
+      // own tickets, so keep only the ones they authored.
+      if (payload.ticket.author !== payload.userId) return state;
+      return {
+        ...state,
+        tickets: [
+          payload.ticket,
+          ...state.tickets.filter((ticket) => ticket._id !== payload.ticket._id)
+        ],
+      };
 
     case types.TICKET_UPDATE_SUCCESS:
       return {
@@ -44,10 +60,18 @@ const ticketsReducer = (state: TicketsState = initialState, action: ActionType):
         tickets: state.tickets.filter((ticket) => ticket._id !== payload.ticketId),
       };
   
+    case projectTypes.PROJECT_REMOVED:
+      return {
+        ...state,
+        tickets: state.tickets.filter(
+          (ticket) => ticket.project._id !== payload.projectId
+        ),
+      };
+
     case projectTypes.PROJECT_DELETE_SUCCESS:
       return {
         ...state,
-        tickets: state.tickets.filter((ticket) => ticket.project._id !== payload),
+        tickets: state.tickets.filter((ticket) => ticket.project && ticket.project._id !== payload),
       };
     
     case types.TICKET_COMMENT_SUCCESS:
@@ -57,7 +81,13 @@ const ticketsReducer = (state: TicketsState = initialState, action: ActionType):
           if (ticket._id === payload.comment.ticket) {
             return {
               ...ticket,
-              comments: [...ticket.comments, payload.comment._id],
+              // Socket delivery can repeat what the request already applied.
+              comments: [
+                ...ticket.comments.filter(
+                  (commentId) => commentId !== payload.comment._id
+                ),
+                payload.comment._id,
+              ],
             };
           }
           return ticket;

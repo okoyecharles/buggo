@@ -1,38 +1,49 @@
-import React, { useEffect, useMemo } from "react";
-import { Provider } from "react-redux";
-import store from "../redux/configureStore";
-import "../styles/globals.css";
+import Head from "next/head";
+import React, { useEffect } from "react";
+import { Provider, useSelector } from "react-redux";
+import UnAuthorized from "@/core/components/unauthorized";
+import store, { storeType } from "@/redux/configureStore";
+import { validateUserSession } from "@/redux/actions/userActions";
 import type { AppProps } from "next/app";
-import { ToastContainer } from "react-toastify";
+import * as reactToastify from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-tooltip/dist/react-tooltip.css";
-import { validateUserSession } from "../redux/actions/userActions";
-import Head from "next/head";
-import UnAuthorized from "../src/features/unauthorized";
+import "@/styles/globals.css";
+
+// Lives inside the Provider so it re-renders when the session check loads
+// the user -- reading the store directly from App never updates.
+function AdminOnly({ children }: { children: React.ReactNode }) {
+  const user = useSelector((store: storeType) => store.currentUser.user);
+  // Nothing to decide until the user loads; the layout sends signed out
+  // visitors to the login page
+  if (!user) return null;
+  if (!user.admin) return <UnAuthorized />;
+  return <>{children}</>;
+}
 
 export default function App({ Component, pageProps }: AppProps) {
   // Use the layout defined at the page level, if defined
   const getLayout = (Component as any).getLayout || ((page: any) => page);
-
   const protectedRoute = (Component as any).protected || false;
+  // progamatically import toastify css
 
   useEffect(() => {
     store.dispatch(validateUserSession());
   }, []);
-
-  const admin = useMemo(() => {
-    return !!store.getState().currentUser.user?.admin;
-  }, [store.getState().currentUser.user]);
 
   return (
     <>
       <Head>
         <link rel="icon" href="/circle-logo.ico" />
       </Head>
-      <ToastContainer position={"bottom-right"} />
+      <reactToastify.ToastContainer position={"bottom-right"} />
       <Provider store={store}>
-        {protectedRoute && !admin
-          ? getLayout(<UnAuthorized />)
+        {protectedRoute
+          ? getLayout(
+              <AdminOnly>
+                <Component {...pageProps} />
+              </AdminOnly>,
+            )
           : getLayout(<Component {...pageProps} />)}
       </Provider>
     </>

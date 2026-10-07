@@ -1,25 +1,27 @@
-import * as types from '../../constants/userConstants';
-import { ActionType } from '../../types';
+import * as types from "@/redux/types/user";
+import { ActionType } from "@/redux/types";
 
-type State = {
-  loading: boolean;
+export type RegisterState = {
+  pending: boolean;
   error: null | { message: string };
 };
-const initialState = {
-  loading: false,
+const initialState: RegisterState = {
+  pending: false,
   error: null,
 };
 
 const registerReducer = (
-  state: State = initialState,
-  action: ActionType
-): State => {
+  state: RegisterState = initialState,
+  action: ActionType,
+): RegisterState => {
   const { type, payload } = action;
   switch (type) {
     case types.USER_REGISTER_REQUEST:
-      return { ...state, loading: true, error: null };
+      return { ...state, pending: true, error: null };
+    case types.USER_REGISTER_SUCCESS:
+      return { ...state, pending: false, error: null };
     case types.USER_REGISTER_FAIL:
-      return { ...state, loading: false, error: payload };
+      return { ...state, pending: false, error: payload };
     case types.USER_LOGOUT:
       return initialState;
     default:

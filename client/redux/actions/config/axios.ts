@@ -1,18 +1,14 @@
 import { AxiosRequestConfig } from "axios";
-import store from "../../configureStore";
 
-// config with option to include pusher socket id in headers
-export const generateConfig = (socket_id?: string): AxiosRequestConfig<any> => {
-  const { user, token } = store.getState().currentUser;
-
-  return {
-    headers: {
-      "Content-Type": "application/json",
-      ...(user && { "Authorization": `Bearer ${token}` }),
-      ...(socket_id && { "X-Pusher-Socket-ID": socket_id }),
-    },
-    withCredentials: true,
-  };
-};
+/*
+ * Auth rides entirely on the httpOnly cookie, which the browser attaches
+ * itself -- withCredentials is the only thing needed to ask for it.
+ */
+export const generateConfig = (): AxiosRequestConfig<any> => ({
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+});
 
 export default generateConfig;

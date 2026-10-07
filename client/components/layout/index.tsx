@@ -1,0 +1,76 @@
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
+import { useSpring, a } from "@react-spring/web";
+import store, { storeType } from "@/redux/configureStore";
+import { fetchNotifications } from "@/redux/actions/notificationActions";
+import SideBar from "./sidebar";
+import Navigation from "./navigation";
+import socket from "./socket";
+
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const router = useRouter();
+  const currentUser = useSelector((store: storeType) => store.currentUser);
+
+  const [expandNav, setExpandNav] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+
+  // Redirect to login if user is not logged in
+  useEffect(() => {
+    if (
+      !currentUser.user &&
+      !currentUser.pending.validate
+    ) {
+      router.replace("/login?redirected=true");
+    }
+  }, [currentUser]);
+
+	// Once the user logs in
+  useEffect(() => {
+    if (currentUser.user?._id && !currentUser.pending.validate) {
+			// Connect to the socket
+			socket.connect();
+			// Load notifications
+			store.dispatch(fetchNotifications());
+    }
+  }, [currentUser.user?._id]);
+
+  const spring = useSpring({
+    opacity: notificationOpen ? 0.75 : 1,
+    config: {
+      tension: 800,
+      friction: 50,
+    },
+  });
+
+  return (
+    <a.div
+      className="flex flex-col min-h-screen isolate"
+      style={{
+        ...spring,
+        transformOrigin: "center",
+      }}
+    >
+      <Navigation
+        notificationOpen={notificationOpen}
+        setNotificationOpen={setNotificationOpen}
+      />
+      <div className="flex-1 flex flex-col lg:flex-row-reverse lg:relative mt-16 mb-[60px] lg:mb-0">
+        <main
+          className={`text-gray-300 font-open flex-1 ${
+            expandNav ? "lg:ml-36" : "lg:ml-[60px]"
+          } transition-all`}
+        >
+          {children}
+        </main>
+        <SideBar expandNav={expandNav} setExpandNav={setExpandNav} />
+      </div>
+    </a.div>
+  );
+};
+
+export default Layout;
