@@ -1,7 +1,7 @@
 import { ActionType } from "@/redux/types";
-import * as types from "@/redux/constants/ticketConstants";
-import * as projectTypes from "@/redux/constants/projectConstants";
-import * as userTypes from "@/redux/constants/userConstants";
+import * as types from "@/redux/types/ticket";
+import * as projectTypes from "@/redux/types/project";
+import * as userTypes from "@/redux/types/user";
 import { Ticket } from "@/core/types/models";
 
 export interface TicketsState {

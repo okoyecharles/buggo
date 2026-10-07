@@ -4,16 +4,15 @@ import Image from "next/image";
 import getDate from "@/core/utils/strings/date";
 import { BsTrashFill } from "react-icons/bs";
 import { Tooltip } from "react-tooltip";
-import UserDeleteModal from "@/components/users/modal/userDelete";
 import Highlighter from "react-highlight-words";
+import UserDeleteModal from "../modal/userDelete";
 
 interface UserRowProps {
   user: User;
-  setUsers: any;
   search: string;
 }
 
-const UserRow: React.FC<UserRowProps> = ({ user, setUsers, search }) => {
+const UserRow: React.FC<UserRowProps> = ({ user, search }) => {
   const [deleteOpen, setDeleteOpen] = React.useState<boolean>(false);
 
   return (
@@ -92,7 +91,6 @@ const UserRow: React.FC<UserRowProps> = ({ user, setUsers, search }) => {
       <UserDeleteModal
         open={deleteOpen}
         setOpen={setDeleteOpen}
-        setUsers={setUsers}
         user={user}
       />
     </li>

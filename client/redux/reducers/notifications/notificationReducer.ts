@@ -1,8 +1,8 @@
 import { Notification, NotificationType } from "@/core/types/models";
 import { ActionType } from "@/redux/types";
-import * as types from "@/redux/constants/notificationConstants";
-import * as projectTypes from "@/redux/constants/projectConstants";
-import * as userTypes from "@/redux/constants/userConstants";
+import * as types from "@/redux/types/notification";
+import * as projectTypes from "@/redux/types/project";
+import * as userTypes from "@/redux/types/user";
 
 export interface NotificationsState {
   notifications: Notification[];

@@ -1,6 +1,6 @@
 import { storeType } from "./../configureStore";
 import SERVER_URL from "@/core/data/backend";
-import * as types from "./../constants/ticketConstants";
+import * as types from "../types/ticket";
 import axios from "axios";
 import { DispatchType } from "@/redux/types";
 import generateConfig from "./config/axios";

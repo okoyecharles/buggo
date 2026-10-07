@@ -1,12 +1,11 @@
 import { IoMdClose, IoMdReturnRight } from "react-icons/io";
 import Modal from "@/core/components/modal";
-import { Project, User } from "@/core/types/models";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { Project, SearchedUser } from "@/core/types/models";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { MdOutlineClose } from "react-icons/md";
 import { TailSpinLoader, ThreeDotsLoader } from "@/core/components/loader";
-import { getUsers } from "@/redux/actions/userActions";
-import { searchByNameOrEmail } from "@/core/utils/strings/search";
+import { searchUsersRequest } from "@/redux/actions/userActions";
 import Image from "next/image";
 import { restrictLength } from "@/core/utils/components/string";
 import Highlighter from "react-highlight-words";
@@ -15,8 +14,9 @@ import { inviteToProject } from "@/redux/actions/projectActions";
 import { validateInvitees } from "@/core/utils/validation/project";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import { SEARCH_DEBOUNCE_DELAY } from "@/core/data/app";
 
-const projectInviteesReducer = (state: User[], action: any) => {
+const projectInviteesReducer = (state: SearchedUser[], action: any) => {
   switch (action.type) {
     case "ADD":
       if (state.find((member) => member._id === action.payload._id)) {
@@ -40,64 +40,70 @@ const ProjectInviteModal: React.FC<{
   const inviting = useSelector(
     (store: storeType) => store.project.pending.update,
   );
-
   const searchRef = useRef<HTMLInputElement>(null);
-  const [search, setSearch] = useState<string>("");
-  const [showClose, setShowClose] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>("");
+  const [invitees, updateInvitees] = useReducer(projectInviteesReducer, []);
+  const [users, setUsers] = useState<SearchedUser[]>([]);
   const [searching, setSearching] = useState<boolean>(false);
 
-  const [users, setUsers] = useState<null | User[]>(null);
+  useEffect(() => {
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery) {
+      setUsers([]);
+      setSearching(false);
+      return;
+    }
 
-  const [searchTimeOutID, setSearchTimeOutID] = useState<any>(null);
+    setSearching(true);
+    // Typing again before the delay ends cancels this search, and a response
+    // that arrives after the query changed is ignored so it can't overwrite
+    // newer results.
+    let cancelled = false;
+    const timeoutId = setTimeout(async () => {
+      const searchResponse = await searchUsersRequest(trimmedQuery);
+      if (cancelled) return;
+      if (searchResponse.ok) {
+        setUsers(searchResponse.users);
+      } else {
+        toast.error(searchResponse.error?.message || "Something went wrong");
+      }
+      setSearching(false);
+    }, SEARCH_DEBOUNCE_DELAY);
 
-  const [invitees, updateInvitees] = useReducer(projectInviteesReducer, []);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [query]);
 
-  const searchUsers = async () => {
-    setUsers(null);
-    const { users } = await getUsers();
-    let filteredUsers = searchByNameOrEmail(search, users);
-    filteredUsers = filteredUsers.filter((searchedUser) => {
+  // Filtered on render so invites and joins that happen while the modal is
+  // open are reflected without searching again.
+  const unInvitedUsers = useMemo(() => {
+    return users.filter((user) => {
       return (
-        searchedUser._id !== project.author._id &&
-        !project.invitees.find(
-          (invitee) => invitee.user._id === searchedUser._id,
-        ) &&
-        !project.team.find((member) => member._id === searchedUser._id)
+        user._id !== project.author._id && // Not the project author
+        !project.invitees.find((invitee) => invitee.user._id === user._id) && // Not already invited
+        !project.team.find((member) => member._id === user._id) // Not in the project team
       );
     });
-    setUsers(filteredUsers);
-  };
-
-  useEffect(() => {
-    setShowClose(search.length > 0);
-
-    if (search.length > 0) {
-      if (searchTimeOutID) {
-        clearTimeout(searchTimeOutID);
-      }
-      setSearchTimeOutID(
-        setTimeout(() => {
-          searchUsers();
-          setSearching(true);
-        }, 1000),
-      );
-    } else {
-      clearTimeout(searchTimeOutID);
-      setSearching(false);
-      setUsers(null);
-    }
-  }, [search]);
+  }, [users, project]);
 
   useEffect(() => {
     if (open) {
-      setSearch("");
-      updateInvitees({ type: "RESET", payload: [] });
       searchRef.current?.focus();
+    } else {
+      setQuery("");
+      updateInvitees({ type: "RESET", payload: [] });
     }
   }, [open]);
 
   return (
-    <Modal id={`invite-project-modal-${project._id}`} open={open} setOpen={setOpen} style={{ padding: 0 }}>
+    <Modal
+      id={`invite-project-modal-${project._id}`}
+      open={open}
+      setOpen={setOpen}
+      style={{ padding: 0 }}
+    >
       <div className="modal__container p-4">
         <header className="header flex justify-between items-center">
           <h3 className="text-lg text-gray-100 font-semibold">
@@ -124,7 +130,7 @@ const ProjectInviteModal: React.FC<{
           {invitees.length === 0 && (
             <p className="text-gray-400 self-center">No members invited...</p>
           )}
-          {invitees.map((invitee: User) => (
+          {invitees.map((invitee: SearchedUser) => (
             <>
               <li
                 className="flex gap-2 bg-gray-950 items-center p-2 rounded-lg group select-none"
@@ -164,13 +170,13 @@ const ProjectInviteModal: React.FC<{
               type="text"
               placeholder="Search user by name or email"
               className="bg-gray-900 text-ss placeholder:text-gray-500 hover:bg-gray-950 focus:bg-gray-950 focus:ring-1 ring-blue-500/75 text-gray-200 rounded py-2 px-3 pr-9 outline-none w-full transition-all"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
             />
           </label>
           <FaSearch
             className={`search-icon text-gray-500 cursor-pointer absolute top-1/2 -translate-y-1/2 right-3 lg:right-2 hover:text-gray-400 transition ${
-              showClose
+              query.length > 0
                 ? "opacity-0 pointer-events-none rotate-90"
                 : "opacity-100 pointer-events-auto rotate-0"
             }`}
@@ -181,12 +187,12 @@ const ProjectInviteModal: React.FC<{
           />
           <MdOutlineClose
             className={`close-icon text-xl text-gray-500 cursor-pointer absolute top-1/2 -translate-y-1/2 right-3 lg:right-2 hover:text-gray-400 transition ${
-              showClose
+              query.length > 0
                 ? "opacity-100 pointer-events-auto rotate-0"
                 : "opacity-0 pointer-events-none -rotate-90"
             }`}
             onClick={() => {
-              setSearch("");
+              setQuery("");
               searchRef.current?.focus();
             }}
             onMouseDown={(e) => e.preventDefault()}
@@ -195,16 +201,16 @@ const ProjectInviteModal: React.FC<{
 
         {/* List of users */}
         <ul className="users-wrapper flex flex-col gap-2 mt-1 p-2 h-60 bg-gray-850 overflow-y-scroll rounded-sm">
-          {!searching ? (
+          {!query.length ? (
             <li className="text-gray-400">
-              Please enter atleast a character to search
+              Please enter atleast one character to search
             </li>
-          ) : !users ? (
+          ) : searching ? (
             <TailSpinLoader color="#1aa6fe" className="self-center my-4" />
-          ) : !users.length ? (
+          ) : !unInvitedUsers.length ? (
             <li className="text-gray-400">No users found</li>
           ) : (
-            users.map((user) => (
+            unInvitedUsers.map((user) => (
               <li
                 className="flex items-center gap-2 p-2 px-3 bg-gray-950 rounded cursor-pointer select-none"
                 key={user._id}
@@ -223,7 +229,7 @@ const ProjectInviteModal: React.FC<{
                     <Highlighter
                       autoEscape={true}
                       textToHighlight={restrictLength(user.name, 25)}
-                      searchWords={[search.trim()]}
+                      searchWords={[query.trim()]}
                       highlightClassName="bg-blue-500/0 text-blue-500"
                     />
                   </h4>
@@ -234,7 +240,7 @@ const ProjectInviteModal: React.FC<{
                         user.email.split("@")[0],
                         30,
                       )}
-                      searchWords={[search.trim()]}
+                      searchWords={[query.trim()]}
                       highlightClassName="bg-blue-500/0 text-blue-500"
                     />
                     <span className="text-gray-200/30">
@@ -246,11 +252,11 @@ const ProjectInviteModal: React.FC<{
                   id="default-checkbox"
                   type="checkbox"
                   checked={invitees.some(
-                    (invitee: User) => invitee._id === user._id,
+                    (invitee: SearchedUser) => invitee._id === user._id,
                   )}
                   aria-label={"invite " + user.email + " to project"}
                   aria-checked={invitees.some(
-                    (invitee: User) => invitee._id === user._id,
+                    (invitee: SearchedUser) => invitee._id === user._id,
                   )}
                   onChange={(e) => {
                     if (e.target.checked) {
@@ -276,11 +282,11 @@ const ProjectInviteModal: React.FC<{
       {/* Buttons */}
       <div className="flex gap-2 bg-gray-850 p-4 py-3 justify-end">
         <button
-					aria-label="Confirm Invite"
+          aria-label="Confirm Invite"
           className="px-6 p-2 bg-blue-600 text-blue-50 rounded-sm font-semibold hover:bg-blue-700 group transition disabled:opacity-75 disabled:cursor-not-allowed"
           disabled={inviting || !invitees.length}
           onClick={async () => {
-            const payload = invitees.map((invitee: User) => ({
+            const payload = invitees.map((invitee: SearchedUser) => ({
               user: invitee._id,
               email: invitee.email,
             }));

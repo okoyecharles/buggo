@@ -1,31 +1,26 @@
-import { useRouter } from "next/router";
 import { User } from "@/core/types/models";
-import { useState } from "react";
-import { deleteUser } from "@/redux/actions/userActions";
 import Modal from "@/core/components/modal";
 import getDate from "@/core/utils/strings/date";
 import { ThreeDotsLoader } from "@/core/components/loader";
+import { useSelector } from "react-redux";
+import store, { storeType } from "@/redux/configureStore";
+import { deleteUser } from "@/redux/actions/adminActions";
+import { toast } from "react-toastify";
 
 const UserDeleteModal: React.FC<{
   open: boolean;
   setOpen: any;
   user: User;
-  setUsers: any;
-}> = ({ open, setOpen, user, setUsers }) => {
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const handleDelete = async () => {
-    setLoading(true);
-    const newUsers = await deleteUser(user._id);
-    setLoading(false);
-    if (newUsers) {
-      setOpen(false);
-      setUsers(newUsers);
-    }
-  };
+}> = ({ open, setOpen, user }) => {
+  const { pending } = useSelector((state: storeType) => state.adminUsers);
 
   return (
-    <Modal id={`delete-user-modal-${user._id}`} open={open} setOpen={setOpen} style={{ padding: 0 }}>
+    <Modal
+      id={`delete-user-modal-${user._id}`}
+      open={open}
+      setOpen={setOpen}
+      style={{ padding: 0 }}
+    >
       <div className="p-4">
         <header className="flex flex-col gap-2">
           <h2 className="text-lg font-semibold text-white">Delete User</h2>
@@ -53,10 +48,16 @@ const UserDeleteModal: React.FC<{
         </button>
         <button
           className="px-6 p-2 bg-red-500 text-red-50 rounded-sm font-semibold hover:bg-red-600 active:bg-red-700 transition-colors disabled:opacity-75"
-          disabled={loading}
-          onClick={handleDelete}
+          disabled={pending.delete}
+          onClick={async () => {
+            const ok = await store.dispatch(deleteUser(user._id));
+            if (ok) {
+              toast.success("User deleted successfully.");
+              setOpen(false);
+            }
+          }}
         >
-          {loading ? <ThreeDotsLoader /> : "Delete"}
+          {pending.delete ? <ThreeDotsLoader /> : "Delete"}
         </button>
       </div>
     </Modal>

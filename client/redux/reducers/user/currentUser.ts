@@ -1,5 +1,5 @@
 import { User } from '@/core/types/models';
-import * as types from '@/redux/constants/userConstants';
+import * as types from '@/redux/types/user';
 import { ActionType } from '@/redux/types';
 
 export type CurrentUserState = {
