@@ -29,3 +29,8 @@ export const updateUserSchema = z.object({
   image: image.optional(),
 });
 export type UpdateUserBody = z.infer<typeof updateUserSchema>;
+
+export const searchUserSchema = z.object({
+  query: z.string().min(1),
+});
+export type SearchUserQuery = z.infer<typeof searchUserSchema>;

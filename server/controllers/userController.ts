@@ -2,9 +2,9 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel";
 import { CookieOptions, Response } from "express";
-import { getIO } from "../config/socket";
+import { adminsRoom, getIO } from "../config/socket";
 import { DefaultRequest, ProtectedRequest } from "../types/request";
-import { LoginBody, RegisterBody, UpdateUserBody } from "../types/user";
+import { LoginBody, RegisterBody, SearchUserQuery, UpdateUserBody } from "../types/user";
 import { tokenName } from "../middleware/auth";
 const secret = process.env.JWT_SECRET!;
 const tokenExpirationInDays = process.env.NODE_ENV === "development" ? 1 : 7;
@@ -16,13 +16,44 @@ const cookieOptions: CookieOptions = {
 };
 
 /*
+ * @route   GET /users/search/:query
+ * @desc    Search for users
+ * @access  Private
+ */
+export const searchUsers = async (
+  req: ProtectedRequest<undefined, SearchUserQuery>,
+  res: Response,
+) => {
+  const { query } = req.params;
+  // Matched literally, so characters like "." or "(" can't build a regex
+  const pattern = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  try {
+    const users = await User.find({
+      $or: [
+        { name: { $regex: pattern, $options: "i" } },
+        { email: { $regex: pattern, $options: "i" } },
+      ],
+    })
+      .limit(15)
+      .select("name email image");
+    res.status(200).json({ users });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong... Please try again" });
+  }
+};
+
+/*
  * @route   GET /users
  * @desc    Get all users
  * @access  Private
  */
-export const getUsers = async (_req: ProtectedRequest, res: Response) => {
+export const getUsers = async (req: ProtectedRequest, res: Response) => {
   try {
-    const users = await User.find();
+    if (!req.admin) return res.status(403).json({ message: "Unauthorized" });
+
+    const users = await User.find().select("-password");
     res.status(200).json({ users });
   } catch (error) {
     res
@@ -47,26 +78,28 @@ export const deleteUser = async (
     if (!userExists) return res.status(404).json({ message: "User not found" });
 
     if (
-      req.admin !== true ||
-      req.user === userExists._id.toString() ||
-      userExists.admin
+      req.admin !== true || // Must be admin
+      req.user === userExists._id.toString() || // Cannot delete self
+      userExists.admin // Cannot delete admin
     )
       return res.status(403).json({ message: "Unauthorized Request" });
 
     await userExists.remove();
 
     /*
-     * Only the deleted account's own room is told, so the event never reaches
-     * anyone it does not concern. Their lines are then dropped -- the packet
-     * is queued behind the event, so they still hear why.
+     * The deleted account and every admin are told: the account to sign out,
+     * the admins to drop it from their user list. Only the account's lines
+     * are then dropped -- the packet is queued behind the event, so they
+     * still hear why.
      */
     const io = getIO();
-    io.to(`user:${id}`).emit("user:delete", { userId: id });
+    io.to([`user:${id}`, adminsRoom]).emit("user:delete", {
+      userId: id,
+      byAdmin: true,
+    });
     io.in(`user:${id}`).disconnectSockets();
 
-    const users = await User.find();
-
-    res.status(200).json({ users, message: "User deleted successfully" });
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     res
       .status(500)
@@ -118,7 +151,9 @@ export const validateUser = async (req: ProtectedRequest, res: Response) => {
     if (!user) return res.status(403).json({ message: "Unauthorized" });
     res.status(200).json({ user });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong... Please try again" });
+    res
+      .status(500)
+      .json({ message: "Something went wrong... Please try again" });
   }
 };
 
