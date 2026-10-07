@@ -9,24 +9,67 @@ import {
   Page,
 } from "@playwright/test";
 
+type UserContext = {
+  details: User;
+  storageState: Awaited<ReturnType<BrowserContext["storageState"]>>;
+};
+
 const test = base.extend<
   {
     projectId: string;
     sharedProjectId: string;
     otherPage: Page;
     otherRequest: APIRequestContext;
+    adminPage: Page;
+    adminRequest: APIRequestContext;
   },
   {
-    otherUser: {
-      details: User;
-      storageState: Awaited<ReturnType<BrowserContext["storageState"]>>;
-    };
+    otherUser: UserContext;
+    adminUser: UserContext;
   }
 >({
-  otherUser: [
+  adminUser: [
     async ({ browser }, use, workerInfo) => {
+			const { baseURL } = workerInfo.project.use;
+      // Login to admin user in context
+      const context = await browser.newContext({ baseURL });
+      const request = context.request;
+      const signInAdminResponse = await request.post("/api/users/signin", {
+        data: {
+          email: process.env.PW_SETUP_ADMIN_EMAIL,
+          password: process.env.PW_SETUP_ADMIN_PASSWORD,
+        },
+      });
+      expect(signInAdminResponse.ok()).toBeTruthy();
+      const { user } = await signInAdminResponse.json();
+      const storageState = await context.storageState();
+
+      await use({
+        details: user,
+        storageState,
+      });
+
+      await context.close();
+    },
+    { scope: "worker" },
+  ],
+  adminPage: async ({ browser, adminUser }, use) => {
+    const context = await browser.newContext({
+      storageState: adminUser.storageState,
+    });
+    const page = await context.newPage();
+    await use(page);
+    await context.close();
+  },
+  adminRequest: async ({ adminPage }, use) => {
+    await use(adminPage.request);
+  },
+  otherUser: [
+    async ({ browser, adminUser }, use, workerInfo) => {
+      // get base url because a request is called after teardown
+      const { baseURL } = workerInfo.project.use;
       // Create other user context
-      const context = await browser.newContext();
+      const context = await browser.newContext({ baseURL });
       const request = context.request;
 
       const createUserResponse = (await request.post("/api/users/signup", {
@@ -43,11 +86,20 @@ const test = base.extend<
       expect(createUserResponse.ok()).toBeTruthy();
       const { user } = await createUserResponse.json();
       const storageState = await context.storageState();
-
       await use({
         details: user,
         storageState,
       });
+
+      const adminContext = await browser.newContext({
+        baseURL,
+        storageState: adminUser.storageState,
+      });
+      const deleteUserResponse = await adminContext.request.delete(
+        `/api/users/${user._id}`,
+      );
+      expect(deleteUserResponse.ok()).toBeTruthy();
+      await adminContext.close();
 
       await context.close();
     },
@@ -64,7 +116,10 @@ const test = base.extend<
   otherRequest: async ({ otherPage }, use) => {
     await use(otherPage.request);
   },
-  sharedProjectId: async ({ projectId, request, otherUser, otherRequest }, use) => {
+  sharedProjectId: async (
+    { projectId, request, otherUser, otherRequest },
+    use,
+  ) => {
     // The other user joins through the API, so specs start with two members
     const inviteResponse = await request.put(
       "/api/projects/" + projectId + "/invite",

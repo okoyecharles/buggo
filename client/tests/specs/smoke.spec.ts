@@ -1,7 +1,8 @@
-import { test, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../fixtures";
 
-test("visit dashboard", async ({ page }) => {
-  await page.goto("/dashboard");
-  await expect(page.getByRole("main")).toContainText("Recent Projects");
+test("smoke", async ({ otherPage }) => {
+  await otherPage.goto("/dashboard");
+  await expect(otherPage.getByRole("main")).toContainText("Recent Projects");
 });
 
